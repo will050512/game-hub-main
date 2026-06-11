@@ -1,0 +1,342 @@
+- main [ref=e4]:
+  - region "遊戲中心首頁" [ref=e5]:
+    - generic:
+      - generic:
+        - img:
+          - img
+      - generic:
+        - img:
+          - img
+      - generic:
+        - img:
+          - img
+      - generic:
+        - img:
+          - img
+    - generic [ref=e6]:
+      - button "點擊吉祥物" [ref=e8] [cursor=pointer]:
+        - img [ref=e10]:
+          - img [ref=e11]
+      - generic [ref=e16]:
+        - heading "Welcome to Game Hub" [level=1] [ref=e17]:
+          - generic [ref=e18]: Welcome to
+          - generic [ref=e19]: Game Hub
+        - paragraph [ref=e21]:
+          - generic [ref=e22]: "12"
+          - generic [ref=e23]: 款遊戲等你來挑戰
+    - generic [ref=e24]:
+      - button "查看每日任務" [ref=e25] [cursor=pointer]:
+        - generic [ref=e26]:
+          - img [ref=e27]:
+            - img [ref=e28]
+          - img [ref=e33]
+        - generic [ref=e36]:
+          - generic [ref=e37]: Lv.1
+          - generic [ref=e38]: 新手
+      - generic "已遊玩場次" [ref=e40] [cursor=pointer]:
+        - img [ref=e42]:
+          - img [ref=e43]
+        - generic [ref=e49]:
+          - generic [ref=e50]: "0"
+          - generic [ref=e51]: 已遊玩
+      - generic "成就解鎖數" [ref=e52] [cursor=pointer]:
+        - img [ref=e54]:
+          - img [ref=e55]
+        - generic [ref=e60]:
+          - generic [ref=e61]: "0"
+          - generic [ref=e62]: 成就
+  - tablist "檢視切換" [ref=e63]:
+    - tab "遊戲" [selected] [ref=e64] [cursor=pointer]:
+      - img [ref=e65]:
+        - img [ref=e66]
+      - generic [ref=e72]: 遊戲
+    - tab "每日任務" [ref=e73] [cursor=pointer]:
+      - img [ref=e74]:
+        - img [ref=e75]
+      - generic [ref=e79]: 每日任務
+    - tab "成就" [ref=e80] [cursor=pointer]:
+      - img [ref=e81]:
+        - img [ref=e82]
+      - generic [ref=e87]: 成就
+    - tab "音訊" [ref=e88] [cursor=pointer]:
+      - img [ref=e89]:
+        - img [ref=e90]
+      - generic [ref=e94]: 音訊
+    - tab "商店" [ref=e95] [cursor=pointer]:
+      - img [ref=e96]:
+        - img [ref=e97]
+      - generic [ref=e102]: 商店
+  - generic [ref=e103]:
+    - img:
+      - img
+    - textbox "搜尋遊戲名稱、類型..." [ref=e104]
+  - navigation "遊戲分類" [ref=e105]:
+    - button "全部" [ref=e106] [cursor=pointer]:
+      - img [ref=e107]:
+        - img [ref=e108]
+      - generic [ref=e114]: 全部
+    - button "動作" [ref=e116] [cursor=pointer]:
+      - img [ref=e117]:
+        - img [ref=e118]
+      - generic [ref=e123]: 動作
+    - button "益智" [ref=e124] [cursor=pointer]:
+      - img [ref=e125]:
+        - img [ref=e126]
+      - generic [ref=e129]: 益智
+    - button "策略" [ref=e130] [cursor=pointer]:
+      - img [ref=e131]:
+        - img [ref=e132]
+      - generic [ref=e138]: 策略
+    - button "休閒" [ref=e139] [cursor=pointer]:
+      - img [ref=e140]:
+        - img [ref=e141]
+      - generic [ref=e144]: 休閒
+    - button "棋類" [ref=e145] [cursor=pointer]:
+      - img [ref=e146]:
+        - img [ref=e147]
+      - generic [ref=e151]: 棋類
+  - main "遊戲列表" [ref=e152]:
+    - generic [ref=e153]:
+      - generic [ref=e154]:
+        - img [ref=e155]:
+          - img [ref=e156]
+        - text: 顯示 12 款遊戲
+      - generic [ref=e162]:
+        - button "網格視圖" [ref=e163] [cursor=pointer]:
+          - img [ref=e164]:
+            - img [ref=e165]
+        - button "列表視圖" [ref=e169] [cursor=pointer]:
+          - img [ref=e170]:
+            - img [ref=e171]
+    - generic [ref=e176]:
+      - generic [ref=e179]:
+        - generic [ref=e180]:
+          - generic: NEW
+          - generic [ref=e181]:
+            - img "暗夜倖存者" [ref=e182]
+            - generic: action
+          - generic [ref=e183]:
+            - generic [ref=e184]: 暗夜倖存者
+            - generic [ref=e185]: 在無盡的黑夜中生存！自動攻擊敵人、收集經驗值升級，合成強大武器擊退怪物潮。結合吸血鬼倖存者的自動戰鬥與武器合成系統，打造你的專屬Build！
+          - generic [ref=e186]:
+            - generic [ref=e188]: "0"
+            - generic [ref=e189]: 點擊開始
+        - generic [ref=e191]:
+          - generic [ref=e192]: 暗夜倖存者
+          - paragraph [ref=e193]: 在無盡的黑夜中生存！自動攻擊敵人、收集經驗值升級，合成強大武器擊退怪物潮。結合吸血鬼倖存者的自動戰鬥與武器合成系統，打造你的專屬Build！
+          - generic [ref=e194]:
+            - generic [ref=e196]: 最高分 0
+            - generic [ref=e198]: action
+          - button "立即遊玩" [ref=e199] [cursor=pointer]: 立即遊玩
+      - generic [ref=e202]:
+        - generic [ref=e203]:
+          - generic: NEW
+          - generic [ref=e204]:
+            - img "打磚塊" [ref=e205]
+            - generic: casual
+          - generic [ref=e206]:
+            - generic [ref=e207]: 打磚塊
+            - generic [ref=e208]: 經典打磚塊遊戲！控制底部擋板反彈球體，擊碎所有磚塊通關。收集道具強化能力，解鎖修飾符組合獲得永久加成。6種關卡變體與Boss磚塊挑戰等你征服！
+          - generic [ref=e209]:
+            - generic [ref=e211]: "0"
+            - generic [ref=e212]: 點擊開始
+        - generic [ref=e214]:
+          - generic [ref=e215]: 打磚塊
+          - paragraph [ref=e216]: 經典打磚塊遊戲！控制底部擋板反彈球體，擊碎所有磚塊通關。收集道具強化能力，解鎖修飾符組合獲得永久加成。6種關卡變體與Boss磚塊挑戰等你征服！
+          - generic [ref=e217]:
+            - generic [ref=e219]: 最高分 0
+            - generic [ref=e221]: casual
+          - button "立即遊玩" [ref=e222] [cursor=pointer]: 立即遊玩
+      - generic [ref=e225]:
+        - generic [ref=e226]:
+          - generic: NEW
+          - generic [ref=e227]:
+            - img "俄羅斯方塊" [ref=e228]
+            - generic: puzzle
+          - generic [ref=e229]:
+            - generic [ref=e230]: 俄羅斯方塊
+            - generic [ref=e231]: 永恆經典的俄羅斯方塊！操控七種不同形狀的方塊，旋轉、移動並堆疊它們。消除完整的一行得分，同時消除越多行分數越高。速度會隨等級提升，你能堅持多久？
+          - generic [ref=e232]:
+            - generic [ref=e234]: "0"
+            - generic [ref=e235]: 點擊開始
+        - generic [ref=e237]:
+          - generic [ref=e238]: 俄羅斯方塊
+          - paragraph [ref=e239]: 永恆經典的俄羅斯方塊！操控七種不同形狀的方塊，旋轉、移動並堆疊它們。消除完整的一行得分，同時消除越多行分數越高。速度會隨等級提升，你能堅持多久？
+          - generic [ref=e240]:
+            - generic [ref=e242]: 最高分 0
+            - generic [ref=e244]: puzzle
+          - button "立即遊玩" [ref=e245] [cursor=pointer]: 立即遊玩
+      - generic [ref=e248]:
+        - generic [ref=e249]:
+          - generic: NEW
+          - generic [ref=e250]:
+            - img "貪吃蛇" [ref=e251]
+            - generic: casual
+          - generic [ref=e252]:
+            - generic [ref=e253]: 貪吃蛇
+            - generic [ref=e254]: 經典貪吃蛇遊戲！控制蛇在格子中移動，吃掉蘋果讓蛇身成長。隨著蛇越來越長，躲避自己身體的難度也越來越高。看看你能長到多長！
+          - generic [ref=e255]:
+            - generic [ref=e257]: "0"
+            - generic [ref=e258]: 點擊開始
+        - generic [ref=e260]:
+          - generic [ref=e261]: 貪吃蛇
+          - paragraph [ref=e262]: 經典貪吃蛇遊戲！控制蛇在格子中移動，吃掉蘋果讓蛇身成長。隨著蛇越來越長，躲避自己身體的難度也越來越高。看看你能長到多長！
+          - generic [ref=e263]:
+            - generic [ref=e265]: 最高分 0
+            - generic [ref=e267]: casual
+          - button "立即遊玩" [ref=e268] [cursor=pointer]: 立即遊玩
+      - generic [ref=e271]:
+        - generic [ref=e272]:
+          - generic: NEW
+          - generic [ref=e273]:
+            - img "2048" [ref=e274]
+            - generic: puzzle
+          - generic [ref=e275]:
+            - generic [ref=e276]: "2048"
+            - generic [ref=e277]: 風靡全球的數字益智遊戲！滑動合併相同數字的方塊，目標是合成 2048。每次滑動後會出現新方塊，棋盤填滿且無法合併時遊戲結束。考驗你的策略思維！
+          - generic [ref=e278]:
+            - generic [ref=e280]: "0"
+            - generic [ref=e281]: 點擊開始
+        - generic [ref=e283]:
+          - generic [ref=e284]: "2048"
+          - paragraph [ref=e285]: 風靡全球的數字益智遊戲！滑動合併相同數字的方塊，目標是合成 2048。每次滑動後會出現新方塊，棋盤填滿且無法合併時遊戲結束。考驗你的策略思維！
+          - generic [ref=e286]:
+            - generic [ref=e288]: 最高分 0
+            - generic [ref=e290]: puzzle
+          - button "立即遊玩" [ref=e291] [cursor=pointer]: 立即遊玩
+      - generic [ref=e294]:
+        - generic [ref=e295]:
+          - generic: NEW
+          - generic [ref=e296]:
+            - img "Flappy Bird" [ref=e297]
+            - generic: casual
+          - generic [ref=e298]:
+            - generic [ref=e299]: Flappy Bird
+            - generic [ref=e300]: 簡單卻令人上癮的飛行遊戲！點擊螢幕讓小鳥飛起，穿越一對對管道之間的縫隙。看似簡單，實則需要精準的時機掌控。你能飛多遠？
+          - generic [ref=e301]:
+            - generic [ref=e303]: "0"
+            - generic [ref=e304]: 點擊開始
+        - generic [ref=e306]:
+          - generic [ref=e307]: Flappy Bird
+          - paragraph [ref=e308]: 簡單卻令人上癮的飛行遊戲！點擊螢幕讓小鳥飛起，穿越一對對管道之間的縫隙。看似簡單，實則需要精準的時機掌控。你能飛多遠？
+          - generic [ref=e309]:
+            - generic [ref=e311]: 最高分 0
+            - generic [ref=e313]: casual
+          - button "立即遊玩" [ref=e314] [cursor=pointer]: 立即遊玩
+      - generic [ref=e317]:
+        - generic [ref=e318]:
+          - generic: NEW
+          - generic [ref=e319]:
+            - img "小蜜蜂" [ref=e320]
+            - generic: action
+          - generic [ref=e321]:
+            - generic [ref=e322]: 小蜜蜂
+            - generic [ref=e323]: 致敬經典太空侵略者！操控戰機左右移動，射擊從天而降的外星人軍團。收集道具組合解鎖戰術配置，獲得永久加成。6種陣型變化與護盾破壞系統，越後面的波次越困難！
+          - generic [ref=e324]:
+            - generic [ref=e326]: "0"
+            - generic [ref=e327]: 點擊開始
+        - generic [ref=e329]:
+          - generic [ref=e330]: 小蜜蜂
+          - paragraph [ref=e331]: 致敬經典太空侵略者！操控戰機左右移動，射擊從天而降的外星人軍團。收集道具組合解鎖戰術配置，獲得永久加成。6種陣型變化與護盾破壞系統，越後面的波次越困難！
+          - generic [ref=e332]:
+            - generic [ref=e334]: 最高分 0
+            - generic [ref=e336]: action
+          - button "立即遊玩" [ref=e337] [cursor=pointer]: 立即遊玩
+      - generic [ref=e340]:
+        - generic [ref=e341]:
+          - generic: NEW
+          - generic [ref=e342]:
+            - img "接水果" [ref=e343]
+            - generic: casual
+          - generic [ref=e344]:
+            - generic [ref=e345]: 接水果
+            - generic [ref=e346]: 輕鬆有趣的休閒遊戲！移動籃子接住從天而降的各種水果，不同水果分數不同。小心炸彈！接到會扣命，水果漏接也會扣命。看你能接到幾分！
+          - generic [ref=e347]:
+            - generic [ref=e349]: "0"
+            - generic [ref=e350]: 點擊開始
+        - generic [ref=e352]:
+          - generic [ref=e353]: 接水果
+          - paragraph [ref=e354]: 輕鬆有趣的休閒遊戲！移動籃子接住從天而降的各種水果，不同水果分數不同。小心炸彈！接到會扣命，水果漏接也會扣命。看你能接到幾分！
+          - generic [ref=e355]:
+            - generic [ref=e357]: 最高分 0
+            - generic [ref=e359]: casual
+          - button "立即遊玩" [ref=e360] [cursor=pointer]: 立即遊玩
+      - generic [ref=e363]:
+        - generic [ref=e364]:
+          - generic: NEW
+          - generic [ref=e365]:
+            - img "塔防大戰" [ref=e366]
+            - generic: strategy
+          - generic [ref=e367]:
+            - generic [ref=e368]: 塔防大戰
+            - generic [ref=e369]: 經典策略塔防遊戲！在敵人路徑旁放置砲塔，阻止敵人抵達終點。多種砲塔類型、敵人波次、升級系統。策略佈局是勝利的關鍵！
+          - generic [ref=e370]:
+            - generic [ref=e372]: "0"
+            - generic [ref=e373]: 點擊開始
+        - generic [ref=e375]:
+          - generic [ref=e376]: 塔防大戰
+          - paragraph [ref=e377]: 經典策略塔防遊戲！在敵人路徑旁放置砲塔，阻止敵人抵達終點。多種砲塔類型、敵人波次、升級系統。策略佈局是勝利的關鍵！
+          - generic [ref=e378]:
+            - generic [ref=e380]: 最高分 0
+            - generic [ref=e382]: strategy
+          - button "立即遊玩" [ref=e383] [cursor=pointer]: 立即遊玩
+      - generic [ref=e386]:
+        - generic [ref=e387]:
+          - generic: NEW
+          - generic [ref=e388]:
+            - img "井字棋" [ref=e389]
+            - generic: board
+          - generic [ref=e390]:
+            - generic [ref=e391]: 井字棋
+            - generic [ref=e392]: 經典棋類遊戲！在 3x3 棋盤上與 AI 對戰，率先連成一線者獲勝。提供三種難度，挑戰你的策略思維！
+          - generic [ref=e393]:
+            - generic [ref=e395]: "0"
+            - generic [ref=e396]: 點擊開始
+        - generic [ref=e398]:
+          - generic [ref=e399]: 井字棋
+          - paragraph [ref=e400]: 經典棋類遊戲！在 3x3 棋盤上與 AI 對戰，率先連成一線者獲勝。提供三種難度，挑戰你的策略思維！
+          - generic [ref=e401]:
+            - generic [ref=e403]: 最高分 0
+            - generic [ref=e405]: board
+          - button "立即遊玩" [ref=e406] [cursor=pointer]: 立即遊玩
+      - generic [ref=e409]:
+        - generic [ref=e410]:
+          - generic: NEW
+          - generic [ref=e411]:
+            - img "記憶翻牌" [ref=e412]
+            - generic: puzzle
+          - generic [ref=e413]:
+            - generic [ref=e414]: 記憶翻牌
+            - generic [ref=e415]: 考驗記憶力的配對遊戲！翻開兩張相同的卡片即可消除。在限定翻牌次數內消除所有配對。連擊可獲得額外分數！
+          - generic [ref=e416]:
+            - generic [ref=e418]: "0"
+            - generic [ref=e419]: 點擊開始
+        - generic [ref=e421]:
+          - generic [ref=e422]: 記憶翻牌
+          - paragraph [ref=e423]: 考驗記憶力的配對遊戲！翻開兩張相同的卡片即可消除。在限定翻牌次數內消除所有配對。連擊可獲得額外分數！
+          - generic [ref=e424]:
+            - generic [ref=e426]: 最高分 0
+            - generic [ref=e428]: puzzle
+          - button "立即遊玩" [ref=e429] [cursor=pointer]: 立即遊玩
+      - generic [ref=e432]:
+        - generic [ref=e433]:
+          - generic: NEW
+          - generic [ref=e434]:
+            - img "數獨" [ref=e435]
+            - generic: puzzle
+          - generic [ref=e436]:
+            - generic [ref=e437]: 數獨
+            - generic [ref=e438]: 經典數字邏輯遊戲！在 9x9 棋盤中填入 1-9，使每行、每列、每宮都不重複。提供多種難度，鍛鍊你的邏輯思維！
+          - generic [ref=e439]:
+            - generic [ref=e441]: "0"
+            - generic [ref=e442]: 點擊開始
+        - generic [ref=e444]:
+          - generic [ref=e445]: 數獨
+          - paragraph [ref=e446]: 經典數字邏輯遊戲！在 9x9 棋盤中填入 1-9，使每行、每列、每宮都不重複。提供多種難度，鍛鍊你的邏輯思維！
+          - generic [ref=e447]:
+            - generic [ref=e449]: 最高分 0
+            - generic [ref=e451]: puzzle
+          - button "立即遊玩" [ref=e452] [cursor=pointer]: 立即遊玩
+  - generic [ref=e453]:
+    - paragraph [ref=e454]: 共 12 款遊戲可遊玩
+    - paragraph [ref=e455]: 選擇你喜歡的遊戲，開始挑戰吧！

@@ -915,6 +915,7 @@ class TowerDefenseGame extends GameEngine {
   }
 
   private roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number): void {
+    ctx.beginPath()
     ctx.moveTo(x + r, y)
     ctx.lineTo(x + w - r, y)
     ctx.quadraticCurveTo(x + w, y, x + w, y + r)
