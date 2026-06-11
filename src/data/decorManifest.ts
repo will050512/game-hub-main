@@ -8,15 +8,21 @@ export type DecorAssetId =
   | 'rabbitCorner'
   | 'soundBubble'
 
+const BASE = import.meta.env.BASE_URL
+
+function resolve(path: string): string {
+  return path.startsWith('/') ? `${BASE}${path.slice(1)}` : path
+}
+
 export const decorAssets: Record<DecorAssetId, string> = {
-  ghostPeek: '/images/decor/ghost-peek.svg',
-  pixelHeart: '/images/decor/pixel-heart.svg',
-  kawaiiStar: '/images/decor/kawaii-star.svg',
-  frogBadge: '/images/decor/frog-badge.svg',
-  pandaToken: '/images/decor/panda-token.svg',
-  chibiGirlToken: '/images/decor/chibi-girl-token.svg',
-  rabbitCorner: '/images/decor/rabbit-corner.svg',
-  soundBubble: '/images/decor/sound-bubble.svg',
+  ghostPeek: resolve('/images/decor/ghost-peek.svg'),
+  pixelHeart: resolve('/images/decor/pixel-heart.svg'),
+  kawaiiStar: resolve('/images/decor/kawaii-star.svg'),
+  frogBadge: resolve('/images/decor/frog-badge.svg'),
+  pandaToken: resolve('/images/decor/panda-token.svg'),
+  chibiGirlToken: resolve('/images/decor/chibi-girl-token.svg'),
+  rabbitCorner: resolve('/images/decor/rabbit-corner.svg'),
+  soundBubble: resolve('/images/decor/sound-bubble.svg'),
 }
 
 export const gameDecorByCategory = {
