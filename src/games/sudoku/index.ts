@@ -247,21 +247,22 @@ class SudokuGame extends GameEngine {
 
     ctx.fillStyle = '#94a3b8'
     ctx.font = `${Math.floor(14 * scale)}px sans-serif`
-    ctx.fillText('Sudoku', this.width / 2, this.height * 0.15 + Math.floor(40 * scale))
+    ctx.fillText('邏輯益智', this.width / 2, this.height * 0.15 + Math.floor(40 * scale))
     
     if (this.dailyChallenge) {
       const dailyY = this.height * 0.15 + Math.floor(70 * scale)
       ctx.fillStyle = this.dailyChallenge.completed ? '#22c55e' : '#fbbf24'
       ctx.font = `${Math.floor(12 * scale)}px sans-serif`
-      const status = this.dailyChallenge.completed ? 'Completed' : 'Daily Challenge'
-      ctx.fillText(`${status} (${this.dailyChallenge.difficulty})`, this.width / 2, dailyY)
+      const status = this.dailyChallenge.completed ? '已完成' : '每日挑戰'
+      const diffLabel = { easy: '簡單', medium: '普通', hard: '困難', expert: '專家' }[this.dailyChallenge.difficulty]
+      ctx.fillText(`${status} (${diffLabel})`, this.width / 2, dailyY)
     }
 
     const diffItems: { key: Difficulty; label: string; color: string }[] = [
-      { key: 'easy', label: 'Easy', color: '#22c55e' },
-      { key: 'medium', label: 'Medium', color: '#eab308' },
-      { key: 'hard', label: 'Hard', color: '#f97316' },
-      { key: 'expert', label: 'Expert', color: '#ef4444' },
+      { key: 'easy', label: '簡單', color: '#22c55e' },
+      { key: 'medium', label: '普通', color: '#eab308' },
+      { key: 'hard', label: '困難', color: '#f97316' },
+      { key: 'expert', label: '專家', color: '#ef4444' },
     ]
 
     const btnWidth = Math.floor(this.width * 0.6)
@@ -296,7 +297,7 @@ class SudokuGame extends GameEngine {
       y: startBtnY,
       width: startBtnW,
       height: startBtnH,
-      label: 'Start Game',
+      label: '開始遊戲',
       iconKind: 'target',
       fill: '#ccfbf1',
       activeFill: '#5eead4',
@@ -308,7 +309,7 @@ class SudokuGame extends GameEngine {
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
 
-    drawKawaiiPanel(ctx, this.width / 2 - 110 * scale, Math.floor(6 * scale), 220 * scale, 50 * scale, {
+    drawKawaiiPanel(ctx, this.width / 2 - 120 * scale, Math.floor(6 * scale), 240 * scale, 50 * scale, {
       fill: 'rgba(255,250,246,0.9)',
       accent: '#14b8a6',
       stroke: '#171717',
@@ -317,7 +318,7 @@ class SudokuGame extends GameEngine {
     drawKawaiiInlineLabel(ctx, {
       x: this.width / 2 - 92 * scale,
       y: Math.floor(20 * scale),
-      text: `Errors ${this.errors}/${this.maxErrors} · Hints ${this.hintsUsed}`,
+      text: `錯誤 ${this.errors}/${this.maxErrors} · 提示 ${this.hintsUsed}`,
       iconKind: 'target',
       color: '#134e4a',
       fontSize: Math.max(10, Math.floor(11 * scale)),
@@ -337,7 +338,7 @@ class SudokuGame extends GameEngine {
      drawKawaiiInlineLabel(ctx, {
        x: this.width / 2 - 54 * scale,
        y: Math.floor(48 * scale),
-       text: `Lv.${this.masteryLevel} · ${this.masteryPoints}/${this.masteryLevel * 100} MP`,
+        text: `Lv.${this.masteryLevel} · ${this.masteryPoints}/${this.masteryLevel * 100} 點`,
        iconKind: 'star',
        color: '#a16207',
        fontSize: Math.max(9, Math.floor(9 * scale)),
@@ -498,9 +499,9 @@ class SudokuGame extends GameEngine {
     const btnY = this.boardOffsetY + this.cellSize * 9 + Math.floor(12 * scale) + Math.floor(90 * scale)
 
     this.actionButtons = [
-      { label: 'Erase', action: 'erase', x: startX, y: btnY, w: btnW, h: btnH },
-      { label: 'Hint', action: 'hint', x: startX + btnW + gap, y: btnY, w: btnW, h: btnH },
-      { label: 'Menu', action: 'menu', x: startX + (btnW + gap) * 2, y: btnY, w: btnW, h: btnH },
+      { label: '擦除', action: 'erase', x: startX, y: btnY, w: btnW, h: btnH },
+      { label: '提示', action: 'hint', x: startX + btnW + gap, y: btnY, w: btnW, h: btnH },
+      { label: '選單', action: 'menu', x: startX + (btnW + gap) * 2, y: btnY, w: btnW, h: btnH },
     ]
 
     this.actionButtons.forEach(btn => {
@@ -524,9 +525,9 @@ class SudokuGame extends GameEngine {
     const assistH = Math.floor(28 * scale)
     
     this.assistToolButtons = [
-      { label: 'Notes', action: 'notes', active: this.notesMode },
-      { label: 'Highlight', action: 'highlight', active: this.highlightMode },
-      { label: 'AutoFill', action: 'autofill', active: this.autoFillEnabled },
+      { label: '筆記', action: 'notes', active: this.notesMode },
+      { label: '高亮', action: 'highlight', active: this.highlightMode },
+      { label: '自動填入', action: 'autofill', active: this.autoFillEnabled },
     ]
     
     this.assistToolButtons.forEach((tool, i) => {
