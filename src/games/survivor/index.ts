@@ -71,11 +71,11 @@ interface DamageNumber {
 // Effects managed by EffectsManager
 
 export const SURVIVOR_VISUAL_TUNING = {
-  worldScale: 1.28,
-  playerRadius: 18,
-  enemyScale: 1.25,
-  pickupScale: 1.35,
-  projectileScale: 1.25,
+  worldScale: 3.84,
+  playerRadius: 36,
+  enemyScale: 3.75,
+  pickupScale: 4.05,
+  projectileScale: 3.75,
 } as const
 
 interface OwnedWeapon {
