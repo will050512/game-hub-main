@@ -393,17 +393,30 @@ class SudokuGame extends GameEngine {
           ctx.fillRect(x, y, this.cellSize, this.cellSize)
         }
 
+        // Thin cell grid lines
+        ctx.strokeStyle = 'rgba(255,255,255,0.08)'
+        ctx.lineWidth = Math.floor(1 * scale)
+        ctx.beginPath()
+        ctx.moveTo(x, y)
+        ctx.lineTo(x, y + this.cellSize)
+        ctx.stroke()
+        ctx.beginPath()
+        ctx.moveTo(x, y)
+        ctx.lineTo(x + this.cellSize, y)
+        ctx.stroke()
+
+        // Thick 3x3 box boundary lines
         if (c % 3 === 0) {
-          ctx.strokeStyle = 'rgba(255,255,255,0.2)'
-          ctx.lineWidth = Math.floor(2 * scale)
+          ctx.strokeStyle = 'rgba(255,255,255,0.5)'
+          ctx.lineWidth = Math.floor(3 * scale)
           ctx.beginPath()
           ctx.moveTo(x, y)
           ctx.lineTo(x, y + this.cellSize)
           ctx.stroke()
         }
         if (r % 3 === 0) {
-          ctx.strokeStyle = 'rgba(255,255,255,0.2)'
-          ctx.lineWidth = Math.floor(2 * scale)
+          ctx.strokeStyle = 'rgba(255,255,255,0.5)'
+          ctx.lineWidth = Math.floor(3 * scale)
           ctx.beginPath()
           ctx.moveTo(x, y)
           ctx.lineTo(x + this.cellSize, y)
@@ -431,9 +444,9 @@ class SudokuGame extends GameEngine {
       }
     }
 
-    // Board border
-    ctx.strokeStyle = 'rgba(255,255,255,0.3)'
-    ctx.lineWidth = Math.floor(2 * scale)
+    // Board outer border
+    ctx.strokeStyle = 'rgba(255,255,255,0.6)'
+    ctx.lineWidth = Math.floor(4 * scale)
     ctx.strokeRect(this.boardOffsetX, this.boardOffsetY, this.cellSize * 9, this.cellSize * 9)
 
     // Number pad
