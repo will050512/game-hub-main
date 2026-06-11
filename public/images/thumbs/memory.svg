@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
+  <rect width="320" height="200" fill="#6d28d9"/>
+  <circle cx="63" cy="44" r="30" fill="#f9a8d4" opacity="0.22"/>
+  <circle cx="265" cy="153" r="42" fill="#22d3ee" opacity="0.15"/>
+  <path d="M0 151 C45 126 83 157 123 132 C165 106 199 143 239 116 C269 96 292 106 320 95 L320 200 L0 200 Z" fill="#581c87" opacity="0.6"/>
+  <g stroke="#1a1a1a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="26" y="54" width="82" height="115" rx="16" fill="#fef8f0" transform="rotate(-9 67 111)"/>
+    <polygon points="68,74 78,96 102,98 84,114 90,138 68,126 46,138 52,114 34,98 58,96" fill="#fbbf24" transform="rotate(-9 67 111)"/>
+    <circle cx="54" cy="143" r="5" fill="#f9a8d4" stroke="none"/>
+    <circle cx="84" cy="137" r="5" fill="#f9a8d4" stroke="none"/>
+    <rect x="119" y="44" width="82" height="115" rx="16" fill="#f9a8d4"/>
+    <path d="M137 64 L183 64 L183 139 L137 139 Z" fill="#a78bfa"/>
+    <circle cx="160" cy="101" r="18" fill="#fbcfe8"/>
+    <path d="M149 101 Q160 88 171 101 Q160 114 149 101 Z" fill="#ffffff"/>
+    <rect x="210" y="54" width="82" height="115" rx="16" fill="#60a5fa" transform="rotate(8 251 111)"/>
+    <path d="M228 75 L274 75 L274 149 L228 149 Z" fill="#22d3ee" transform="rotate(8 251 111)"/>
+    <circle cx="251" cy="111" r="18" fill="#bae6fd" transform="rotate(8 251 111)"/>
+    <path d="M240 111 Q251 98 262 111 Q251 124 240 111 Z" fill="#ffffff" transform="rotate(8 251 111)"/>
+  </g>
+</svg>

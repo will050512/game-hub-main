@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Pink Rabbit - Win/Celebration Expression -->
+  <defs>
+    <clipPath id="rabbit-clip">
+      <rect width="128" height="128"/>
+    </clipPath>
+  </defs>
+  
+  <!-- Body -->
+  <g stroke="#1a1a1a" stroke-width="4" fill="#f9a8d4">
+    <ellipse cx="64" cy="78" rx="28" ry="32"/>
+    <circle cx="64" cy="48" r="32"/>
+    <ellipse cx="48" cy="18" rx="10" ry="24"/>
+    <ellipse cx="80" cy="18" rx="10" ry="24"/>
+  </g>
+  
+  <!-- Inner ears -->
+  <g fill="#fbcfe8" stroke="none">
+    <ellipse cx="48" cy="18" rx="6" ry="18"/>
+    <ellipse cx="80" cy="18" rx="6" ry="18"/>
+  </g>
+  
+  <!-- Sparkle decorations -->
+  <g fill="#fbbf24" stroke="none">
+    <path d="M24 16 L26 22 L32 24 L26 26 L24 32 L22 26 L16 24 L22 22 Z"/>
+    <path d="M104 16 L106 22 L112 24 L106 26 L104 32 L102 26 L96 24 L102 22 Z"/>
+  </g>
+  
+  <!-- Eyes - WIN (star shapes) -->
+  <g fill="#1a1a1a">
+    <path d="M44 38 L48 48 L58 48 L50 54 L54 64 L44 58 L38 64 L42 54 L34 48 L44 48 Z" transform="translate(8, 0) scale(0.8)"/>
+    <path d="M44 38 L48 48 L58 48 L50 54 L54 64 L44 58 L38 64 L42 54 L34 48 L44 48 Z" transform="translate(44, 0) scale(0.8)"/>
+  </g>
+  
+  <!-- Eye highlights -->
+  <g fill="#ffffff">
+    <circle cx="50" cy="42" r="3"/>
+    <circle cx="78" cy="42" r="3"/>
+  </g>
+  
+  <!-- Blush - excited -->
+  <g fill="#fbbf24" opacity="0.7">
+    <ellipse cx="38" cy="56" rx="8" ry="5"/>
+    <ellipse cx="90" cy="56" rx="8" ry="5"/>
+  </g>
+  
+  <!-- Nose -->
+  <ellipse cx="64" cy="52" rx="4" ry="3" fill="#1a1a1a"/>
+  
+  <!-- Mouth - big grin -->
+  <path d="M48 56 Q64 76 80 56" fill="none" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/>
+  
+  <!-- Tongue visible -->
+  <path d="M58 66 Q64 72 70 66" fill="#f87171" stroke="none"/>
+  
+  <!-- Arms - celebrating -->
+  <g stroke="#1a1a1a" stroke-width="4" fill="#f9a8d4">
+    <ellipse cx="28" cy="62" rx="10" ry="14" transform="rotate(-20 28 62)"/>
+    <ellipse cx="100" cy="62" rx="10" ry="14" transform="rotate(20 100 62)"/>
+  </g>
+  
+  <!-- Feet - jumping -->
+  <g stroke="#1a1a1a" stroke-width="4" fill="#f9a8d4">
+    <ellipse cx="46" cy="106" rx="12" ry="8"/>
+    <ellipse cx="82" cy="106" rx="12" ry="8"/>
+  </g>
+</svg>

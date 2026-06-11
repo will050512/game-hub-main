@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="80" fill="#0a0a0a"/>
+  <rect x="16" y="16" width="480" height="480" rx="72" fill="none" stroke="#6366f1" stroke-width="4" opacity="0.3"/>
+  <!-- Game controller body -->
+  <ellipse cx="256" cy="272" rx="140" ry="96" fill="#6366f1"/>
+  <!-- D-pad -->
+  <rect x="180" y="248" width="54" height="16" rx="4" fill="#0a0a0a"/>
+  <rect x="198" y="230" width="16" height="54" rx="4" fill="#0a0a0a"/>
+  <!-- Action buttons -->
+  <circle cx="310" cy="252" r="11" fill="#0a0a0a"/>
+  <circle cx="336" cy="268" r="11" fill="#0a0a0a"/>
+  <!-- Grips -->
+  <rect x="136" y="296" width="44" height="76" rx="22" fill="#6366f1"/>
+  <rect x="332" y="296" width="44" height="76" rx="22" fill="#6366f1"/>
+  <!-- GH text -->
+  <text x="256" y="430" text-anchor="middle" font-family="system-ui, sans-serif" font-size="54" font-weight="bold" fill="#6366f1" opacity="0.8">GH</text>
+</svg>

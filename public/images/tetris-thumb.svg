@@ -1,0 +1,205 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-label="俄羅斯方塊 thumbnail">
+
+  <!-- Background -->
+  <rect width="640" height="360" fill="#0f0f23"/>
+
+  <!-- Pixel grid overlay (28px cells) -->
+  <g stroke="#1a1a3a" stroke-width="1" opacity="0.4">
+    <line x1="0" y1="0" x2="640" y2="0"/>
+    <line x1="0" y1="28" x2="640" y2="28"/>
+    <line x1="0" y1="56" x2="640" y2="56"/>
+    <line x1="0" y1="84" x2="640" y2="84"/>
+    <line x1="0" y1="112" x2="640" y2="112"/>
+    <line x1="0" y1="140" x2="640" y2="140"/>
+    <line x1="0" y1="168" x2="640" y2="168"/>
+    <line x1="0" y1="196" x2="640" y2="196"/>
+    <line x1="0" y1="224" x2="640" y2="224"/>
+    <line x1="0" y1="252" x2="640" y2="252"/>
+    <line x1="0" y1="280" x2="640" y2="280"/>
+    <line x1="0" y1="308" x2="640" y2="308"/>
+    <line x1="0" y1="336" x2="640" y2="336"/>
+    <line x1="28" y1="0" x2="28" y2="360"/>
+    <line x1="56" y1="0" x2="56" y2="360"/>
+    <line x1="84" y1="0" x2="84" y2="360"/>
+    <line x1="112" y1="0" x2="112" y2="360"/>
+    <line x1="140" y1="0" x2="140" y2="360"/>
+    <line x1="168" y1="0" x2="168" y2="360"/>
+    <line x1="196" y1="0" x2="196" y2="360"/>
+    <line x1="224" y1="0" x2="224" y2="360"/>
+    <line x1="252" y1="0" x2="252" y2="360"/>
+    <line x1="280" y1="0" x2="280" y2="360"/>
+    <line x1="308" y1="0" x2="308" y2="360"/>
+    <line x1="336" y1="0" x2="336" y2="360"/>
+    <line x1="364" y1="0" x2="364" y2="360"/>
+    <line x1="392" y1="0" x2="392" y2="360"/>
+    <line x1="420" y1="0" x2="420" y2="360"/>
+    <line x1="448" y1="0" x2="448" y2="360"/>
+    <line x1="476" y1="0" x2="476" y2="360"/>
+    <line x1="504" y1="0" x2="504" y2="360"/>
+    <line x1="532" y1="0" x2="532" y2="360"/>
+    <line x1="560" y1="0" x2="560" y2="360"/>
+    <line x1="588" y1="0" x2="588" y2="360"/>
+  </g>
+
+  <!-- Side panels (info area) -->
+  <rect x="14" y="50" width="180" height="270" rx="4" fill="#1e2749" stroke="#4a4a8a" stroke-width="2"/>
+  <rect x="446" y="50" width="180" height="270" rx="4" fill="#1e2749" stroke="#4a4a8a" stroke-width="2"/>
+
+  <!-- Game board area -->
+  <rect x="204" y="56" width="232" height="258" rx="4" fill="#121832" stroke="#3a3a6a" stroke-width="2"/>
+
+  <!-- Game board pixel grid lines -->
+  <g stroke="#2a2a5a" stroke-width="1" opacity="0.6">
+    <!-- Vertical lines -->
+    <line x1="228" y1="56" x2="228" y2="314"/>
+    <line x1="252" y1="56" x2="252" y2="314"/>
+    <line x1="276" y1="56" x2="276" y2="314"/>
+    <line x1="300" y1="56" x2="300" y2="314"/>
+    <line x1="324" y1="56" x2="324" y2="314"/>
+    <line x1="348" y1="56" x2="348" y2="314"/>
+    <line x1="372" y1="56" x2="372" y2="314"/>
+    <line x1="396" y1="56" x2="396" y2="314"/>
+    <line x1="420" y1="56" x2="420" y2="314"/>
+    <!-- Horizontal lines -->
+    <line x1="204" y1="80" x2="436" y2="80"/>
+    <line x1="204" y1="104" x2="436" y2="104"/>
+    <line x1="204" y1="128" x2="436" y2="128"/>
+    <line x1="204" y1="152" x2="436" y2="152"/>
+    <line x1="204" y1="176" x2="436" y2="176"/>
+    <line x1="204" y1="200" x2="436" y2="200"/>
+    <line x1="204" y1="224" x2="436" y2="224"/>
+    <line x1="204" y1="248" x2="436" y2="248"/>
+    <line x1="204" y1="272" x2="436" y2="272"/>
+    <line x1="204" y1="296" x2="436" y2="296"/>
+  </g>
+
+  <!-- Locked pieces on board (stacked blocks) -->
+  <g>
+    <!-- Gray locked blocks on board -->
+    <rect x="228" y="236" width="24" height="24" fill="#4a4a6a" stroke="#5a5a7a" stroke-width="1"/>
+    <rect x="252" y="236" width="24" height="24" fill="#4a4a6a" stroke="#5a5a7a" stroke-width="1"/>
+    <rect x="276" y="236" width="24" height="24" fill="#4a4a6a" stroke="#5a5a7a" stroke-width="1"/>
+    <rect x="300" y="236" width="24" height="24" fill="#4a4a6a" stroke="#5a5a7a" stroke-width="1"/>
+    <rect x="228" y="212" width="24" height="24" fill="#4a4a6a" stroke="#5a5a7a" stroke-width="1"/>
+    <rect x="276" y="212" width="24" height="24" fill="#4a4a6a" stroke="#5a5a7a" stroke-width="1"/>
+    <rect x="324" y="236" width="24" height="24" fill="#4a4a6a" stroke="#5a5a7a" stroke-width="1"/>
+    <rect x="348" y="236" width="24" height="24" fill="#4a4a6a" stroke="#5a5a7a" stroke-width="1"/>
+    <rect x="348" y="212" width="24" height="24" fill="#4a4a6a" stroke="#5a5a7a" stroke-width="1"/>
+    <rect x="252" y="260" width="24" height="24" fill="#3a5a5a" stroke="#4a6a6a" stroke-width="1"/>
+    <rect x="276" y="260" width="24" height="24" fill="#3a5a5a" stroke="#4a6a6a" stroke-width="1"/>
+    <rect x="252" y="284" width="24" height="24" fill="#3a5a5a" stroke="#4a6a6a" stroke-width="1"/>
+    <rect x="228" y="260" width="24" height="24" fill="#4a4a6a" stroke="#5a5a7a" stroke-width="1"/>
+    <rect x="372" y="236" width="24" height="24" fill="#4a4a6a" stroke="#5a5a7a" stroke-width="1"/>
+    <rect x="372" y="212" width="24" height="24" fill="#4a4a6a" stroke="#5a5a7a" stroke-width="1"/>
+    <rect x="300" y="260" width="24" height="24" fill="#4a4a6a" stroke="#5a5a7a" stroke-width="1"/>
+    <rect x="300" y="284" width="24" height="24" fill="#4a4a6a" stroke="#5a5a7a" stroke-width="1"/>
+    <rect x="348" y="260" width="24" height="24" fill="#4a4a6a" stroke="#5a5a7a" stroke-width="1"/>
+  </g>
+
+  <!-- Active falling piece: T-piece (purple) -->
+  <g>
+    <rect x="276" y="128" width="24" height="24" fill="#aa44ff" stroke="#000" stroke-width="1"/>
+    <rect x="252" y="152" width="24" height="24" fill="#aa44ff" stroke="#000" stroke-width="1"/>
+    <rect x="276" y="152" width="24" height="24" fill="#aa44ff" stroke="#000" stroke-width="1"/>
+    <rect x="300" y="152" width="24" height="24" fill="#aa44ff" stroke="#000" stroke-width="1"/>
+  </g>
+
+  <!-- Ghost preview for T-piece -->
+  <g opacity="0.3">
+    <rect x="276" y="212" width="24" height="24" fill="#aa44ff" stroke="#000" stroke-width="1"/>
+    <rect x="252" y="236" width="24" height="24" fill="#aa44ff" stroke="#000" stroke-width="1"/>
+    <rect x="276" y="236" width="24" height="24" fill="#aa44ff" stroke="#000" stroke-width="1"/>
+    <rect x="300" y="236" width="24" height="24" fill="#aa44ff" stroke="#000" stroke-width="1"/>
+  </g>
+
+  <!-- Left panel: next piece (I-piece cyan) -->
+  <text x="104" y="82" font-family="'Press Start 2P', monospace" font-size="9" fill="#6a6a9a" text-anchor="middle">NEXT</text>
+  <rect x="78" y="100" width="24" height="24" fill="#00d4ff" stroke="#000" stroke-width="1"/>
+  <rect x="78" y="124" width="24" height="24" fill="#00d4ff" stroke="#000" stroke-width="1"/>
+  <rect x="78" y="148" width="24" height="24" fill="#00d4ff" stroke="#000" stroke-width="1"/>
+  <rect x="78" y="172" width="24" height="24" fill="#00d4ff" stroke="#000" stroke-width="1"/>
+
+  <!-- Left panel: hold piece (O-piece yellow) -->
+  <text x="104" y="230" font-family="'Press Start 2P', monospace" font-size="9" fill="#6a6a9a" text-anchor="middle">HOLD</text>
+  <rect x="86" y="248" width="24" height="24" fill="#ffff00" stroke="#000" stroke-width="1"/>
+  <rect x="110" y="248" width="24" height="24" fill="#ffff00" stroke="#000" stroke-width="1"/>
+  <rect x="86" y="272" width="24" height="24" fill="#ffff00" stroke="#000" stroke-width="1"/>
+  <rect x="110" y="272" width="24" height="24" fill="#ffff00" stroke="#000" stroke-width="1"/>
+
+  <!-- Right panel: all 7 tetrominoes showcase -->
+  <text x="536" y="82" font-family="'Press Start 2P', monospace" font-size="9" fill="#6a6a9a" text-anchor="middle">PIECES</text>
+
+  <!-- I piece (cyan) -->
+  <g>
+    <rect x="478" y="100" width="16" height="16" fill="#00d4ff" stroke="#000" stroke-width="1"/>
+    <rect x="478" y="118" width="16" height="16" fill="#00d4ff" stroke="#000" stroke-width="1"/>
+    <rect x="478" y="136" width="16" height="16" fill="#00d4ff" stroke="#000" stroke-width="1"/>
+    <rect x="478" y="154" width="16" height="16" fill="#00d4ff" stroke="#000" stroke-width="1"/>
+  </g>
+
+  <!-- O piece (yellow) -->
+  <g>
+    <rect x="520" y="100" width="16" height="16" fill="#ffff00" stroke="#000" stroke-width="1"/>
+    <rect x="538" y="100" width="16" height="16" fill="#ffff00" stroke="#000" stroke-width="1"/>
+    <rect x="520" y="118" width="16" height="16" fill="#ffff00" stroke="#000" stroke-width="1"/>
+    <rect x="538" y="118" width="16" height="16" fill="#ffff00" stroke="#000" stroke-width="1"/>
+  </g>
+
+  <!-- T piece (purple) -->
+  <g>
+    <rect x="486" y="162" width="16" height="16" fill="#aa44ff" stroke="#000" stroke-width="1"/>
+    <rect x="468" y="180" width="16" height="16" fill="#aa44ff" stroke="#000" stroke-width="1"/>
+    <rect x="486" y="180" width="16" height="16" fill="#aa44ff" stroke="#000" stroke-width="1"/>
+    <rect x="504" y="180" width="16" height="16" fill="#aa44ff" stroke="#000" stroke-width="1"/>
+  </g>
+
+  <!-- S piece (green) -->
+  <g>
+    <rect x="530" y="162" width="16" height="16" fill="#44ff88" stroke="#000" stroke-width="1"/>
+    <rect x="548" y="162" width="16" height="16" fill="#44ff88" stroke="#000" stroke-width="1"/>
+    <rect x="512" y="180" width="16" height="16" fill="#44ff88" stroke="#000" stroke-width="1"/>
+    <rect x="530" y="180" width="16" height="16" fill="#44ff88" stroke="#000" stroke-width="1"/>
+  </g>
+
+  <!-- Z piece (red) -->
+  <g>
+    <rect x="486" y="198" width="16" height="16" fill="#ff4444" stroke="#000" stroke-width="1"/>
+    <rect x="504" y="198" width="16" height="16" fill="#ff4444" stroke="#000" stroke-width="1"/>
+    <rect x="468" y="216" width="16" height="16" fill="#ff4444" stroke="#000" stroke-width="1"/>
+    <rect x="486" y="216" width="16" height="16" fill="#ff4444" stroke="#000" stroke-width="1"/>
+  </g>
+
+  <!-- L piece (orange) -->
+  <g>
+    <rect x="530" y="198" width="16" height="16" fill="#ffaa00" stroke="#000" stroke-width="1"/>
+    <rect x="530" y="216" width="16" height="16" fill="#ffaa00" stroke="#000" stroke-width="1"/>
+    <rect x="530" y="234" width="16" height="16" fill="#ffaa00" stroke="#000" stroke-width="1"/>
+    <rect x="548" y="234" width="16" height="16" fill="#ffaa00" stroke="#000" stroke-width="1"/>
+  </g>
+
+  <!-- J piece (blue) -->
+  <g>
+    <rect x="468" y="254" width="16" height="16" fill="#0088ff" stroke="#000" stroke-width="1"/>
+    <rect x="468" y="272" width="16" height="16" fill="#0088ff" stroke="#000" stroke-width="1"/>
+    <rect x="468" y="290" width="16" height="16" fill="#0088ff" stroke="#000" stroke-width="1"/>
+    <rect x="486" y="290" width="16" height="16" fill="#0088ff" stroke="#000" stroke-width="1"/>
+  </g>
+
+  <!-- Right panel: Score display -->
+  <rect x="456" y="254" width="162" height="60" rx="4" fill="#14142a" stroke="#4a4a8a" stroke-width="2"/>
+  <text x="466" y="276" font-family="'Press Start 2P', monospace" font-size="9" fill="#6a6a9a">SCORE</text>
+  <text x="620" y="278" font-family="'Press Start 2P', monospace" font-size="14" fill="#e0e0ff" text-anchor="end">0</text>
+
+  <rect x="456" y="320" width="162" height="40" rx="4" fill="#14142a" stroke="#4a4a8a" stroke-width="2"/>
+  <text x="466" y="340" font-family="'Press Start 2P', monospace" font-size="9" fill="#6a6a9a">LINES</text>
+  <text x="610" y="342" font-family="'Press Start 2P', monospace" font-size="14" fill="#e0e0ff" text-anchor="end">0</text>
+
+  <!-- Bottom left: Title text -->
+  <rect x="14" y="270" width="180" height="44" rx="4" fill="#1e2749" stroke="#4a4a8a" stroke-width="2"/>
+  <text x="104" y="300" font-family="'Press Start 2P', monospace" font-size="20" fill="#e0e0ff" text-anchor="middle">俄羅斯方塊</text>
+
+  <!-- Decorative bottom-right: small "PLAY" button -->
+  <rect x="520" y="290" width="110" height="30" rx="4" fill="#2a2a6a" stroke="#6a6aaa" stroke-width="2"/>
+  <text x="575" y="311" font-family="'Press Start 2P', monospace" font-size="12" fill="#e0e0ff" text-anchor="middle">▶ PLAY</text>
+
+</svg>

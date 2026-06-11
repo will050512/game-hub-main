@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-label="Flappy Bird thumbnail">
+
+  <!-- Sky Background -->
+  <rect width="640" height="360" fill="#0f0f23"/>
+
+  <!-- Pixel Clouds -->
+  <g opacity="0.25" fill="#ffffff">
+    <!-- Cloud cluster 1 (top-right area) -->
+    <rect x="448" y="40" width="16" height="4"/>
+    <rect x="452" y="36" width="40" height="4"/>
+    <rect x="456" y="32" width="32" height="4"/>
+    <rect x="464" y="28" width="16" height="4"/>
+    <rect x="456" y="40" width="32" height="4"/>
+    <rect x="460" y="44" width="24" height="4"/>
+    <rect x="464" y="48" width="16" height="4"/>
+    <rect x="468" y="52" width="8" height="4"/>
+  </g>
+
+  <!-- Pixel Cloud cluster 2 (upper-left) -->
+  <g opacity="0.18" fill="#ffffff">
+    <rect x="40" y="56" width="24" height="4"/>
+    <rect x="44" y="52" width="36" height="4"/>
+    <rect x="52" y="48" width="24" height="4"/>
+    <rect x="48" y="60" width="32" height="4"/>
+    <rect x="52" y="64" width="24" height="4"/>
+  </g>
+
+  <!-- Pixel Cloud cluster 3 (small, mid-right) -->
+  <g opacity="0.15" fill="#ffffff">
+    <rect x="560" y="80" width="16" height="4"/>
+    <rect x="564" y="76" width="20" height="4"/>
+    <rect x="568" y="84" width="12" height="4"/>
+  </g>
+
+  <!-- Pixel Stars / Sparkles -->
+  <g>
+    <!-- White stars -->
+    <rect x="592" y="32" width="4" height="4" fill="#ffffff"/>
+    <rect x="588" y="36" width="4" height="4" fill="#ffffff"/>
+    <rect x="596" y="36" width="4" height="4" fill="#ffffff"/>
+    <rect x="592" y="40" width="4" height="4" fill="#ffffff"/>
+
+    <rect x="120" y="64" width="4" height="4" fill="#ffffff"/>
+    <rect x="116" y="68" width="4" height="4" fill="#ffffff"/>
+    <rect x="124" y="68" width="4" height="4" fill="#ffffff"/>
+    <rect x="120" y="72" width="4" height="4" fill="#ffffff"/>
+
+    <rect x="400" y="56" width="4" height="4" fill="#ffffff"/>
+    <rect x="396" y="60" width="4" height="4" fill="#ffffff"/>
+    <rect x="404" y="60" width="4" height="4" fill="#ffffff"/>
+    <rect x="400" y="64" width="4" height="4" fill="#ffffff"/>
+
+    <rect x="64" y="120" width="4" height="4" fill="#ffffff"/>
+    <rect x="60" y="124" width="4" height="4" fill="#ffffff"/>
+    <rect x="68" y="124" width="4" height="4" fill="#ffffff"/>
+    <rect x="64" y="128" width="4" height="4" fill="#ffffff"/>
+
+    <rect x="200" y="104" width="4" height="4" fill="#ffffff"/>
+    <rect x="196" y="108" width="4" height="4" fill="#ffffff"/>
+    <rect x="204" y="108" width="4" height="4" fill="#ffffff"/>
+    <rect x="200" y="112" width="4" height="4" fill="#ffffff"/>
+
+    <!-- Yellow sparkle accents -->
+    <rect x="464" y="24" width="4" height="4" fill="#ffaa00"/>
+    <rect x="472" y="28" width="4" height="4" fill="#ffaa00"/>
+    <rect x="560" y="48" width="4" height="4" fill="#ffaa00"/>
+    <rect x="336" y="112" width="4" height="4" fill="#ffaa00"/>
+    <rect x="344" y="116" width="4" height="4" fill="#ffaa00"/>
+    <rect x="520" y="160" width="4" height="4" fill="#ffaa00"/>
+    <rect x="152" y="80" width="4" height="4" fill="#ffaa00"/>
+    <rect x="640" y="200" width="4" height="4" fill="#ffaa00"/>
+  </g>
+
+  <!-- Ground (bottom 40px) -->
+  <g>
+    <!-- Dark soil base -->
+    <rect width="640" height="32" y="328" fill="#1a3a1a"/>
+    <!-- Grass top row -->
+    <rect y="316" width="640" height="12" fill="#2a5a2a"/>
+    <!-- Pixel grass tufts pattern -->
+    <rect y="312" width="8" height="4" fill="#3a7a3a"/>
+    <rect x="40" y="312" width="8" height="4" fill="#3a7a3a"/>
+    <rect x="80" y="312" width="8" height="4" fill="#3a7a3a"/>
+    <rect x="120" y="312" width="8" height="4" fill="#3a7a3a"/>
+    <rect x="160" y="312" width="8" height="4" fill="#3a7a3a"/>
+    <rect x="200" y="312" width="8" height="4" fill="#3a7a3a"/>
+    <rect x="240" y="312" width="8" height="4" fill="#3a7a3a"/>
+    <rect x="280" y="312" width="8" height="4" fill="#3a7a3a"/>
+    <rect x="320" y="312" width="8" height="4" fill="#3a7a3a"/>
+    <rect x="360" y="312" width="8" height="4" fill="#3a7a3a"/>
+    <rect x="400" y="312" width="8" height="4" fill="#3a7a3a"/>
+    <rect x="440" y="312" width="8" height="4" fill="#3a7a3a"/>
+    <rect x="480" y="312" width="8" height="4" fill="#3a7a3a"/>
+    <rect x="520" y="312" width="8" height="4" fill="#3a7a3a"/>
+    <rect x="560" y="312" width="8" height="4" fill="#3a7a3a"/>
+    <rect x="600" y="312" width="8" height="4" fill="#3a7a3a"/>
+  </g>
+
+  <!-- Pipe -->
+  <g>
+    <!-- Pipe cap (top) -->
+    <rect x="480" y="80" width="80" height="16" fill="#2a8a4a"/>
+    <rect x="484" y="84" width="72" height="8" fill="#3a9a5a"/>
+
+    <!-- Pipe shaft -->
+    <rect x="504" y="96" width="32" height="192" fill="#44ff88"/>
+    <rect x="508" y="100" width="24" height="184" fill="#33cc6a"/>
+    <rect x="504" y="96" width="4" height="192" fill="#2a8a4a"/>
+    <rect x="532" y="96" width="4" height="192" fill="#22aa55"/>
+  </g>
+
+  <!-- Bird (pixel art) -->
+  <g>
+    <!-- Wing (back layer) -->
+    <rect x="256" y="224" width="48" height="16" fill="#ffaa00"/>
+    <rect x="248" y="232" width="48" height="16" fill="#ffaa00"/>
+    <rect x="256" y="248" width="40" height="16" fill="#ffaa00"/>
+
+    <!-- Body -->
+    <rect x="272" y="208" width="32" height="8" fill="#ffff00"/>
+    <rect x="264" y="216" width="48" height="8" fill="#ffff00"/>
+    <rect x="256" y="224" width="64" height="8" fill="#ffff00"/>
+    <rect x="256" y="232" width="72" height="8" fill="#ffff00"/>
+    <rect x="256" y="240" width="72" height="8" fill="#ffff00"/>
+    <rect x="256" y="248" width="72" height="8" fill="#ffff00"/>
+    <rect x="264" y="256" width="64" height="8" fill="#ffff00"/>
+    <rect x="272" y="264" width="48" height="8" fill="#ffff00"/>
+    <rect x="280" y="272" width="32" height="8" fill="#ffff00"/>
+    <rect x="288" y="280" width="16" height="8" fill="#ffff00"/>
+
+    <!-- Head -->
+    <rect x="304" y="192" width="32" height="8" fill="#ffff00"/>
+    <rect x="296" y="200" width="48" height="8" fill="#ffff00"/>
+    <rect x="296" y="208" width="48" height="8" fill="#ffff00"/>
+    <rect x="304" y="216" width="40" height="8" fill="#ffff00"/>
+
+    <!-- Eye -->
+    <rect x="320" y="200" width="8" height="8" fill="#e0e0ff"/>
+    <rect x="324" y="204" width="4" height="4" fill="#000000"/>
+
+    <!-- Beak -->
+    <rect x="336" y="208" width="16" height="8" fill="#ff4444"/>
+    <rect x="344" y="216" width="16" height="8" fill="#ff4444"/>
+
+    <!-- Tail -->
+    <rect x="240" y="232" width="8" height="8" fill="#e6cc00"/>
+    <rect x="232" y="240" width="8" height="8" fill="#e6cc00"/>
+  </g>
+
+  <!-- Score Display -->
+  <rect x="592" y="24" width="44" height="36" rx="4" fill="#111122"/>
+  <rect x="594" y="26" width="40" height="32" rx="2" fill="#0a0a15" stroke="#4a4a8a" stroke-width="1"/>
+  <text x="614" y="54" text-anchor="middle" font-family="'Press Start 2P', monospace" font-size="18" fill="#ffffff">0</text>
+
+  <!-- Title Bar -->
+  <rect x="24" y="24" width="236" height="54" rx="4" fill="#1e2749" stroke="#4a4a8a" stroke-width="2"/>
+  <text x="44" y="60" font-family="'Press Start 2P', monospace" font-size="20" fill="#e0e0ff">Flappy Bird</text>
+
+</svg>

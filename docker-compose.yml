@@ -1,0 +1,15 @@
+services:
+  game-hub:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: game-hub
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+    networks:
+      - game-network
+
+networks:
+  game-network:
+    driver: bridge

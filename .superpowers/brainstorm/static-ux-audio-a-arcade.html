@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>A 方案精修：Kawaii Arcade</title>
+  <style>
+    :root {
+      font-family: Inter, "Noto Sans TC", system-ui, sans-serif;
+      background: #f7efe4;
+      color: #241b22;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f7efe4; }
+    main { width: min(1120px, calc(100vw - 32px)); margin: 0 auto; padding: 32px 0 48px; }
+    h1 { margin: 0 0 8px; font-size: clamp(28px, 4vw, 42px); letter-spacing: 0; }
+    .intro { margin: 0 0 24px; color: #68545d; line-height: 1.7; max-width: 860px; }
+    .stage {
+      border: 2px solid #241b22;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fffaf2;
+      box-shadow: 8px 8px 0 rgba(36, 27, 34, 0.15);
+    }
+    .mock {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      min-height: 640px;
+    }
+    .lobby {
+      padding: 20px;
+      background:
+        linear-gradient(90deg, rgba(36, 27, 34, 0.035) 1px, transparent 1px),
+        linear-gradient(rgba(36, 27, 34, 0.035) 1px, transparent 1px),
+        linear-gradient(180deg, #fff8ec, #fce5ee);
+      background-size: 18px 18px, 18px 18px, auto;
+    }
+    .play {
+      padding: 20px;
+      background: #16131a;
+      color: #fff8ed;
+      border-left: 2px solid #241b22;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .topbar, .hud {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 900; }
+    .mark {
+      width: 38px; height: 38px; display: grid; place-items: center;
+      border: 2px solid currentColor; border-radius: 8px;
+      background: #f7bed4; box-shadow: 3px 3px 0 rgba(36, 27, 34, 0.2);
+    }
+    .coin {
+      border: 2px solid #241b22; border-radius: 999px; padding: 8px 12px;
+      background: #ffe09b; font-weight: 900; box-shadow: 3px 3px 0 rgba(36, 27, 34, 0.16);
+    }
+    .hero {
+      margin-top: 18px;
+      border: 2px solid #241b22;
+      border-radius: 8px;
+      padding: 18px;
+      background: #fffdf8;
+      box-shadow: 5px 5px 0 rgba(36, 27, 34, 0.14);
+    }
+    .hero h2 { margin: 0 0 8px; font-size: 26px; }
+    .hero p { margin: 0; color: #68545d; line-height: 1.55; }
+    .tabs { display: flex; gap: 8px; margin: 16px 0; }
+    .tab, .pill {
+      border: 2px solid #241b22;
+      border-radius: 999px;
+      padding: 8px 12px;
+      background: #fffdf8;
+      font-weight: 900;
+      box-shadow: 3px 3px 0 rgba(36, 27, 34, 0.14);
+    }
+    .tab.active { background: #9ad6ba; }
+    .cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .card {
+      border: 2px solid #241b22;
+      border-radius: 8px;
+      background: #fffdf8;
+      min-height: 138px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 5px 5px 0 rgba(36, 27, 34, 0.14);
+    }
+    .thumb {
+      height: 64px;
+      border: 2px solid #241b22;
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 25% 44%, #f7bed4 0 12px, transparent 13px),
+        radial-gradient(circle at 72% 62%, #9ad6ba 0 18px, transparent 19px),
+        linear-gradient(135deg, #d9eff7, #fff1b8);
+    }
+    .card-title { font-weight: 900; display: flex; justify-content: space-between; }
+    .play-button {
+      align-self: flex-start;
+      border: 2px solid #241b22;
+      border-radius: 8px;
+      padding: 8px 12px;
+      background: #ffcf6a;
+      font-weight: 900;
+      box-shadow: 3px 3px 0 #241b22;
+    }
+    .canvas {
+      position: relative;
+      min-height: 360px;
+      border: 2px solid #fff8ed;
+      border-radius: 8px;
+      background:
+        radial-gradient(circle at 50% 42%, rgba(154, 214, 186, 0.34), transparent 24%),
+        linear-gradient(180deg, #2b2230, #17131b);
+      overflow: hidden;
+    }
+    .player, .enemy, .item {
+      position: absolute;
+      border: 2px solid #fff8ed;
+      box-shadow: 0 0 0 2px rgba(36, 27, 34, 0.35);
+    }
+    .player { left: 44%; bottom: 54px; width: 44px; height: 44px; border-radius: 12px; background: #9ad6ba; }
+    .enemy { right: 24%; top: 72px; width: 38px; height: 38px; border-radius: 50%; background: #f7bed4; }
+    .item { left: 22%; top: 132px; width: 30px; height: 30px; border-radius: 8px; background: #ffcf6a; transform: rotate(12deg); }
+    .score-pop {
+      position: absolute; left: 52%; top: 42%;
+      padding: 6px 10px;
+      border: 2px solid #fff8ed;
+      border-radius: 999px;
+      color: #241b22;
+      background: #ffcf6a;
+      font-weight: 900;
+    }
+    .hud .pill {
+      color: #241b22;
+      border-color: #fff8ed;
+      background: #fff8ed;
+      box-shadow: none;
+    }
+    .audio {
+      border: 2px solid #fff8ed;
+      border-radius: 8px;
+      padding: 14px;
+      background: #231b29;
+    }
+    .audio h3 { margin: 0 0 12px; font-size: 16px; }
+    .row { display: grid; grid-template-columns: 68px 1fr 44px; align-items: center; gap: 10px; margin: 10px 0; font-weight: 900; }
+    .track { height: 10px; border: 2px solid #fff8ed; border-radius: 999px; overflow: hidden; background: #3a2d42; }
+    .fill { height: 100%; background: #9ad6ba; width: 75%; }
+    .fill.music { width: 45%; background: #ffcf6a; }
+    .spec {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      padding: 20px;
+      border-top: 2px solid #241b22;
+    }
+    .spec-card { border: 2px solid #241b22; border-radius: 8px; padding: 14px; background: #fffdf8; }
+    .spec-card h3 { margin: 0 0 8px; }
+    .spec-card ul { margin: 0; padding-left: 18px; color: #68545d; line-height: 1.65; }
+    .confirm {
+      margin-top: 18px;
+      border: 2px solid #241b22;
+      border-radius: 8px;
+      padding: 16px;
+      background: #fffdf8;
+      box-shadow: 6px 6px 0 rgba(36, 27, 34, 0.14);
+    }
+    @media (max-width: 900px) {
+      .mock, .spec { grid-template-columns: 1fr; }
+      .play { border-left: 0; border-top: 2px solid #241b22; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>A 方案精修：Kawaii Arcade，但更有遊戲感</h1>
+    <p class="intro">方向定義：用暖色手繪統一美術，但互動回饋要像遊戲 UI。按鈕有實體壓感，卡片像遊戲選單，HUD 像 arcade overlay，音效有分層混音與節奏感。</p>
+
+    <section class="stage">
+      <div class="mock">
+        <div class="lobby">
+          <div class="topbar">
+            <div class="brand"><div class="mark">G</div><span>Game Hub</span></div>
+            <div class="coin">金幣 2,480</div>
+          </div>
+          <div class="hero">
+            <h2>今日挑戰</h2>
+            <p>完成任務、累積金幣、解鎖收藏。每個遊戲保留自己的主色，但共用同一套手繪按鈕、卡片與徽章。</p>
+          </div>
+          <div class="tabs">
+            <div class="tab active">遊戲</div><div class="tab">任務</div><div class="tab">收藏</div><div class="tab">音訊</div>
+          </div>
+          <div class="cards">
+            <div class="card"><div class="thumb"></div><div class="card-title"><span>貪吃蛇</span><span>Lv.4</span></div><button class="play-button">開始</button></div>
+            <div class="card"><div class="thumb"></div><div class="card-title"><span>打磚塊</span><span>Lv.7</span></div><button class="play-button">開始</button></div>
+            <div class="card"><div class="thumb"></div><div class="card-title"><span>小蜜蜂</span><span>Lv.3</span></div><button class="play-button">開始</button></div>
+            <div class="card"><div class="thumb"></div><div class="card-title"><span>數獨</span><span>Lv.2</span></div><button class="play-button">開始</button></div>
+          </div>
+        </div>
+
+        <div class="play">
+          <div class="hud">
+            <div class="pill">HP 88%</div><div class="pill">SCORE 12,400</div><div class="pill">暫停</div>
+          </div>
+          <div class="canvas">
+            <div class="enemy"></div>
+            <div class="item"></div>
+            <div class="player"></div>
+            <div class="score-pop">+120</div>
+          </div>
+          <div class="audio">
+            <h3>音效與音量</h3>
+            <div class="row"><span>主音量</span><div class="track"><div class="fill" style="width:85%"></div></div><span>85%</span></div>
+            <div class="row"><span>音效</span><div class="track"><div class="fill"></div></div><span>75%</span></div>
+            <div class="row"><span>音樂</span><div class="track"><div class="fill music"></div></div><span>45%</span></div>
+            <div class="row"><span>UI</span><div class="track"><div class="fill" style="width:60%"></div></div><span>60%</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="spec">
+        <div class="spec-card">
+          <h3>美術規格</h3>
+          <ul>
+            <li>暖紙色背景 + 2px 深墨描邊</li>
+            <li>卡片圓角固定 8px，避免過度膨脹</li>
+            <li>遊戲主色只作為識別色，不破壞整體調性</li>
+            <li>移除混雜的霓虹/pixel 全域語彙，保留少量 arcade 強調</li>
+          </ul>
+        </div>
+        <div class="spec-card">
+          <h3>UI/UX 規格</h3>
+          <ul>
+            <li>大廳像遊戲選單：遊戲、任務、收藏、商店、音訊入口清楚</li>
+            <li>遊戲中 HUD 低遮擋，手機全螢幕優先</li>
+            <li>按鈕有壓下回饋，分數/獎勵有短促動效</li>
+            <li>商店與結果頁沿用同一套徽章、面板與進度條</li>
+          </ul>
+        </div>
+        <div class="spec-card">
+          <h3>音效規格</h3>
+          <ul>
+            <li>新增主音量、音效、音樂、UI 音四個控制</li>
+            <li>使用程式生成音效：點擊、確認、得分、受擊、道具、升級、勝負</li>
+            <li>不同遊戲類型使用不同音色 preset，但音量規則一致</li>
+            <li>音訊設定放在全域設定與遊戲暫停選單</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="confirm">
+      <strong>請確認：</strong>
+      這版是否就是你要的方向？回覆「確認」後，我會把它寫成規格並開始實作；如果要調整，請指出要更可愛、更街機、更簡潔、或更有聲音層次。
+    </section>
+  </main>
+</body>
+</html>

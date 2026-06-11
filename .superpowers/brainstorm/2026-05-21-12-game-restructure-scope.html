@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>12 款遊戲重構範圍選擇</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #271b23;
+      --paper: #fff9ef;
+      --paper-2: #fff0dc;
+      --mint: #61c6b6;
+      --pink: #f08ab5;
+      --butter: #f7d46b;
+      --peach: #f4a06d;
+      --line: #2c2028;
+      --muted: #6e5b64;
+      --shadow: 6px 6px 0 rgba(39, 27, 35, 0.18);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Microsoft JhengHei", "Noto Sans TC", system-ui, sans-serif;
+      color: var(--ink);
+      background:
+        linear-gradient(rgba(39, 27, 35, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(39, 27, 35, 0.035) 1px, transparent 1px),
+        radial-gradient(circle at 20% 10%, rgba(97, 198, 182, 0.24), transparent 28%),
+        linear-gradient(180deg, var(--paper) 0%, var(--paper-2) 100%);
+      background-size: 28px 28px, 28px 28px, auto, auto;
+      min-height: 100vh;
+      padding: 32px;
+    }
+
+    main {
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    header {
+      display: grid;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(28px, 5vw, 52px);
+      line-height: 1.04;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      max-width: 820px;
+      margin: 0;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.65;
+    }
+
+    .options {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+      margin-bottom: 32px;
+    }
+
+    .option {
+      position: relative;
+      display: grid;
+      gap: 16px;
+      align-content: start;
+      min-height: 470px;
+      padding: 20px;
+      border: 3px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 252, 246, 0.92);
+      box-shadow: var(--shadow);
+    }
+
+    .option.recommended {
+      background: linear-gradient(180deg, rgba(255, 252, 246, 0.98), rgba(230, 250, 245, 0.95));
+    }
+
+    .badge {
+      width: fit-content;
+      padding: 6px 10px;
+      border: 2px solid var(--line);
+      border-radius: 999px;
+      background: var(--butter);
+      font-weight: 800;
+      font-size: 12px;
+    }
+
+    .option h2 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.2;
+    }
+
+    .option p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .mini-screen {
+      height: 180px;
+      border: 3px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #241a22;
+      display: grid;
+      grid-template-rows: 34px 1fr 44px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 10px;
+      background: #fff8ef;
+      border-bottom: 3px solid var(--line);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .playfield {
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.22), transparent 20%),
+        linear-gradient(180deg, #8fd7e8, #4fae8e);
+    }
+
+    .playfield.puzzle {
+      background: #f7e4bd;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+      padding: 12px;
+    }
+
+    .tile {
+      border: 2px solid var(--line);
+      border-radius: 6px;
+      background: #fff8ef;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+    }
+
+    .ship,
+    .basket,
+    .player {
+      position: absolute;
+      border: 3px solid var(--line);
+      background: var(--pink);
+      box-shadow: 3px 3px 0 rgba(39, 27, 35, 0.22);
+    }
+
+    .ship {
+      width: 54px;
+      height: 24px;
+      left: calc(50% - 27px);
+      bottom: 16px;
+      border-radius: 50% 50% 10px 10px;
+    }
+
+    .basket {
+      width: 68px;
+      height: 28px;
+      left: calc(50% - 34px);
+      bottom: 16px;
+      border-radius: 8px 8px 16px 16px;
+      background: var(--butter);
+    }
+
+    .player {
+      width: 28px;
+      height: 28px;
+      left: calc(50% - 14px);
+      top: calc(50% - 14px);
+      border-radius: 50%;
+      background: var(--mint);
+    }
+
+    .enemy,
+    .fruit,
+    .bullet {
+      position: absolute;
+      border: 2px solid var(--line);
+      border-radius: 50%;
+      background: var(--peach);
+    }
+
+    .enemy:nth-child(1) { width: 24px; height: 24px; left: 22%; top: 24%; }
+    .enemy:nth-child(2) { width: 18px; height: 18px; right: 26%; top: 34%; }
+    .enemy:nth-child(3) { width: 20px; height: 20px; left: 54%; top: 16%; }
+    .fruit:nth-child(1) { width: 22px; height: 22px; left: 22%; top: 20%; background: #ef6f6c; }
+    .fruit:nth-child(2) { width: 20px; height: 20px; right: 30%; top: 36%; background: #67c76f; }
+    .bullet { width: 8px; height: 22px; left: 50%; bottom: 52px; border-radius: 999px; background: #fff8ef; }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      background: #fff8ef;
+      border-top: 3px solid var(--line);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .control-pill {
+      text-align: center;
+      padding: 5px 8px;
+      border: 2px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 20px;
+      color: var(--muted);
+      line-height: 1.65;
+    }
+
+    .matrix {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .game {
+      min-height: 112px;
+      padding: 12px;
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 252, 246, 0.86);
+      box-shadow: 3px 3px 0 rgba(39, 27, 35, 0.12);
+    }
+
+    .game strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 15px;
+    }
+
+    .game span {
+      display: block;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .question {
+      margin-top: 28px;
+      padding: 20px;
+      border: 3px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: var(--shadow);
+    }
+
+    .question h2 {
+      margin: 0 0 8px;
+      font-size: 24px;
+    }
+
+    .question p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    @media (max-width: 980px) {
+      body {
+        padding: 20px;
+      }
+
+      .options,
+      .matrix {
+        grid-template-columns: 1fr;
+      }
+
+      .option {
+        min-height: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>12 款遊戲重構範圍</h1>
+      <p class="subtitle">這張圖用來先確認重構深度。縮圖、操作提示、遊玩合理程度都會處理，差別在於是否只做一致化打磨，或進一步調整每款遊戲的核心節奏。</p>
+    </header>
+
+    <section class="options" aria-label="重構深度選項">
+      <article class="option">
+        <span class="badge">A. 輕量</span>
+        <h2>統一外觀與入口</h2>
+        <div class="mini-screen">
+          <div class="topbar"><span>縮圖更清楚</span><span>操作標籤</span></div>
+          <div class="playfield">
+            <div class="basket"></div>
+            <div class="fruit"></div>
+            <div class="fruit"></div>
+          </div>
+          <div class="controls">
+            <span class="control-pill">左</span>
+            <span>接水果</span>
+            <span class="control-pill">右</span>
+          </div>
+        </div>
+        <p>主要改大廳縮圖、遊戲說明、共用 HUD、手機操作提示與畫面一致性。</p>
+        <ul>
+          <li>風險最低，完成最快</li>
+          <li>核心玩法幾乎不變</li>
+          <li>不會深入修每款難度曲線</li>
+        </ul>
+      </article>
+
+      <article class="option recommended">
+        <span class="badge">B. 建議</span>
+        <h2>視覺 + 操作 + 合理節奏</h2>
+        <div class="mini-screen">
+          <div class="topbar"><span>HP 100</span><span>Lv. 2</span></div>
+          <div class="playfield">
+            <div class="enemy"></div>
+            <div class="enemy"></div>
+            <div class="enemy"></div>
+            <div class="player"></div>
+          </div>
+          <div class="controls">
+            <span class="control-pill">搖桿</span>
+            <span>安全區 + 目標</span>
+            <span class="control-pill">技能</span>
+          </div>
+        </div>
+        <p>逐款檢查可玩性，修正不合理的速度、碰撞、AI、資源、失敗條件，並同步更新縮圖與操作。</p>
+        <ul>
+          <li>符合「縮圖、操作、遊戲合理程度」</li>
+          <li>保留現有架構，風險可控</li>
+          <li>需要針對 12 款建立驗收清單</li>
+        </ul>
+      </article>
+
+      <article class="option">
+        <span class="badge">C. 深度</span>
+        <h2>重做部分遊戲體驗</h2>
+        <div class="mini-screen">
+          <div class="topbar"><span>任務</span><span>連段</span></div>
+          <div class="playfield puzzle">
+            <div class="tile">2</div>
+            <div class="tile">4</div>
+            <div class="tile">8</div>
+            <div class="tile">16</div>
+            <div class="tile">32</div>
+            <div class="tile">64</div>
+            <div class="tile">128</div>
+            <div class="tile">256</div>
+          </div>
+          <div class="controls">
+            <span class="control-pill">復原</span>
+            <span>新規則</span>
+            <span class="control-pill">提示</span>
+          </div>
+        </div>
+        <p>除了 B 的內容，還會為部分遊戲加新模式、新關卡結構或更完整的新手教學。</p>
+        <ul>
+          <li>體驗提升最大</li>
+          <li>工期與回歸測試最多</li>
+          <li>容易超出一次修改範圍</li>
+        </ul>
+      </article>
+    </section>
+
+    <section class="matrix" aria-label="12 款遊戲檢查面向">
+      <div class="game"><strong>暗夜倖存者</strong><span>敵群密度、升級選擇、移動空間、手機搖桿。</span></div>
+      <div class="game"><strong>打磚塊</strong><span>球速、道具可讀性、關卡節奏、擋板操作。</span></div>
+      <div class="game"><strong>俄羅斯方塊</strong><span>旋轉手感、落下速度、觸控分區、下一塊提示。</span></div>
+      <div class="game"><strong>貪吃蛇</strong><span>轉向緩衝、速度曲線、食物位置、失敗回饋。</span></div>
+      <div class="game"><strong>2048</strong><span>滑動判定、合併動畫、可動提示、棋盤可讀性。</span></div>
+      <div class="game"><strong>Flappy Bird</strong><span>跳躍力、管道間距、碰撞寬容度、節奏。</span></div>
+      <div class="game"><strong>小蜜蜂</strong><span>射擊冷卻、敵彈密度、掩體價值、觸控射擊。</span></div>
+      <div class="game"><strong>接水果</strong><span>掉落速度、炸彈辨識、籃子寬度、生命扣除。</span></div>
+      <div class="game"><strong>塔防大戰</strong><span>路徑可讀性、建塔成本、波次節奏、升級決策。</span></div>
+      <div class="game"><strong>井字棋</strong><span>AI 難度、公平性、特殊卡可理解性、結果回饋。</span></div>
+      <div class="game"><strong>記憶翻牌</strong><span>翻牌速度、配對辨識、步數限制、難度曲線。</span></div>
+      <div class="game"><strong>數獨</strong><span>選格/填數流程、錯誤提示、提示成本、題目難度。</span></div>
+    </section>
+
+    <section class="question">
+      <h2>請選一個重構深度</h2>
+      <p>我建議選 B：足夠涵蓋你提到的縮圖、操作、合理程度，又不會把 12 款遊戲擴成全新專案。請在對話中回覆 A、B 或 C，也可以補充你最在意哪幾款遊戲。</p>
+    </section>
+  </main>
+</body>
+</html>

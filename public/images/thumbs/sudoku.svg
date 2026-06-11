@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
+  <rect width="320" height="200" fill="#fef8f0"/>
+  <circle cx="46" cy="158" r="27" fill="#fbcfe8" opacity="0.5"/>
+  <circle cx="277" cy="42" r="30" fill="#a7f3d0" opacity="0.46"/>
+  <g stroke="#1a1a1a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="48" y="14" width="172" height="172" rx="12" fill="#ffffff"/>
+    <line x1="67.1" y1="14" x2="67.1" y2="186"/><line x1="86.2" y1="14" x2="86.2" y2="186"/><line x1="105.3" y1="14" x2="105.3" y2="186"/><line x1="124.4" y1="14" x2="124.4" y2="186"/><line x1="143.5" y1="14" x2="143.5" y2="186"/><line x1="162.6" y1="14" x2="162.6" y2="186"/><line x1="181.7" y1="14" x2="181.7" y2="186"/><line x1="200.8" y1="14" x2="200.8" y2="186"/>
+    <line x1="48" y1="33.1" x2="220" y2="33.1"/><line x1="48" y1="52.2" x2="220" y2="52.2"/><line x1="48" y1="71.3" x2="220" y2="71.3"/><line x1="48" y1="90.4" x2="220" y2="90.4"/><line x1="48" y1="109.5" x2="220" y2="109.5"/><line x1="48" y1="128.6" x2="220" y2="128.6"/><line x1="48" y1="147.7" x2="220" y2="147.7"/><line x1="48" y1="166.8" x2="220" y2="166.8"/>
+    <line x1="105.3" y1="14" x2="105.3" y2="186" stroke-width="2.4"/><line x1="162.6" y1="14" x2="162.6" y2="186" stroke-width="2.4"/>
+    <line x1="48" y1="71.3" x2="220" y2="71.3" stroke-width="2.4"/><line x1="48" y1="128.6" x2="220" y2="128.6" stroke-width="2.4"/>
+    <circle cx="76.6" cy="42.7" r="5" fill="#f87171"/><circle cx="134" cy="42.7" r="5" fill="#60a5fa"/><circle cx="191.2" cy="42.7" r="5" fill="#fbbf24"/>
+    <circle cx="95.7" cy="81" r="5" fill="#6ee7b7"/><circle cx="153.1" cy="100" r="5" fill="#a78bfa"/><circle cx="76.6" cy="138.2" r="5" fill="#fbbf24"/><circle cx="191.2" cy="157.3" r="5" fill="#f87171"/>
+    <rect x="229" y="93" width="21" height="88" rx="8" fill="#fbbf24" transform="rotate(-28 239.5 137)"/>
+    <polygon points="221,88 242,76 244,100" fill="#fef3c7"/>
+    <polygon points="221,88 229,83 230,93" fill="#1a1a1a"/>
+    <line x1="252" y1="163" x2="264" y2="185" stroke-width="2.4"/>
+  </g>
+</svg>

@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Pink Rabbit - Surprised Expression -->
+  <defs>
+    <clipPath id="rabbit-clip">
+      <rect width="128" height="128"/>
+    </clipPath>
+  </defs>
+  
+  <!-- Body -->
+  <g stroke="#1a1a1a" stroke-width="4" fill="#f9a8d4">
+    <ellipse cx="64" cy="78" rx="28" ry="32"/>
+    <circle cx="64" cy="48" r="32"/>
+    <ellipse cx="48" cy="18" rx="10" ry="24"/>
+    <ellipse cx="80" cy="18" rx="10" ry="24"/>
+  </g>
+  
+  <!-- Inner ears -->
+  <g fill="#fbcfe8" stroke="none">
+    <ellipse cx="48" cy="18" rx="6" ry="18"/>
+    <ellipse cx="80" cy="18" rx="6" ry="18"/>
+  </g>
+  
+  <!-- Eyes - SURPRISED (big circles) -->
+  <g fill="#1a1a1a">
+    <circle cx="50" cy="44" r="10"/>
+    <circle cx="78" cy="44" r="10"/>
+  </g>
+  
+  <!-- Eye highlights -->
+  <g fill="#ffffff">
+    <circle cx="53" cy="41" r="4"/>
+    <circle cx="81" cy="41" r="4"/>
+  </g>
+  
+  <!-- Blush -->
+  <g fill="#f9a8d4" opacity="0.5">
+    <ellipse cx="38" cy="58" rx="6" ry="4"/>
+    <ellipse cx="90" cy="58" rx="6" ry="4"/>
+  </g>
+  
+  <!-- Nose - raised -->
+  <ellipse cx="64" cy="50" rx="4" ry="3" fill="#1a1a1a"/>
+  
+  <!-- Mouth - O shape surprised -->
+  <ellipse cx="64" cy="58" rx="6" ry="8" fill="none" stroke="#1a1a1a" stroke-width="3"/>
+  
+  <!-- Arms - up in surprise -->
+  <g stroke="#1a1a1a" stroke-width="4" fill="#f9a8d4">
+    <ellipse cx="34" cy="78" rx="10" ry="14"/>
+    <ellipse cx="94" cy="78" rx="10" ry="14"/>
+  </g>
+  
+  <!-- Feet -->
+  <g stroke="#1a1a1a" stroke-width="4" fill="#f9a8d4">
+    <ellipse cx="50" cy="108" rx="12" ry="8"/>
+    <ellipse cx="78" cy="108" rx="12" ry="8"/>
+  </g>
+</svg>

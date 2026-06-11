@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 200">
+  <defs>
+    <linearGradient id="invaders-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#050816"/>
+      <stop offset="0.62" stop-color="#312e81"/>
+      <stop offset="1" stop-color="#581c87"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="200" fill="url(#invaders-bg)"/>
+  <g fill="#ffffff" opacity="0.75">
+    <circle cx="33" cy="27" r="1.8"/><circle cx="82" cy="53" r="1.4"/><circle cx="145" cy="26" r="2"/><circle cx="236" cy="38" r="1.7"/><circle cx="286" cy="83" r="1.5"/><circle cx="46" cy="120" r="1.3"/>
+  </g>
+  <circle cx="258" cy="52" r="25" fill="#f9a8d4" opacity="0.22"/>
+  <g stroke="#1a1a1a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+    <g transform="translate(65 62)">
+      <path d="M0 22 L12 4 L39 4 L52 22 L43 45 L9 45 Z" fill="#6ee7b7"/>
+      <circle cx="17" cy="21" r="5" fill="#1a1a1a"/>
+      <circle cx="35" cy="21" r="5" fill="#1a1a1a"/>
+      <line x1="3" y1="1" x2="-7" y2="-8"/>
+      <line x1="49" y1="1" x2="59" y2="-8"/>
+      <line x1="8" y1="45" x2="-4" y2="57"/>
+      <line x1="43" y1="45" x2="55" y2="57"/>
+    </g>
+    <g transform="translate(135 43)">
+      <path d="M0 26 L15 5 L43 5 L58 26 L46 51 L12 51 Z" fill="#fbbf24"/>
+      <circle cx="19" cy="25" r="5" fill="#1a1a1a"/>
+      <circle cx="39" cy="25" r="5" fill="#1a1a1a"/>
+      <path d="M20 39 Q29 45 39 39" fill="none"/>
+      <line x1="4" y1="2" x2="-8" y2="-8"/>
+      <line x1="54" y1="2" x2="66" y2="-8"/>
+    </g>
+    <g transform="translate(215 70)">
+      <path d="M0 22 L13 4 L41 4 L54 22 L44 47 L10 47 Z" fill="#f87171"/>
+      <circle cx="18" cy="22" r="5" fill="#1a1a1a"/>
+      <circle cx="36" cy="22" r="5" fill="#1a1a1a"/>
+      <line x1="6" y1="47" x2="-5" y2="58"/>
+      <line x1="48" y1="47" x2="59" y2="58"/>
+    </g>
+    <line x1="160" y1="126" x2="160" y2="93" stroke="#fef08a" stroke-width="2.4"/>
+    <line x1="127" y1="141" x2="127" y2="112" stroke="#fef08a" stroke-width="2.4"/>
+    <line x1="197" y1="139" x2="197" y2="110" stroke="#fef08a" stroke-width="2.4"/>
+    <path d="M104 175 L130 141 L160 126 L190 141 L216 175 Z" fill="#60a5fa"/>
+    <ellipse cx="160" cy="158" rx="40" ry="20" fill="#a78bfa"/>
+    <circle cx="160" cy="151" r="10" fill="#ffffff"/>
+  </g>
+</svg>

@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Pink Rabbit - Lose/Defeated Expression -->
+  <defs>
+    <clipPath id="rabbit-clip">
+      <rect width="128" height="128"/>
+    </clipPath>
+  </defs>
+  
+  <!-- Body - greyed out slightly -->
+  <g stroke="#1a1a1a" stroke-width="4" fill="#d1d5db">
+    <ellipse cx="64" cy="78" rx="28" ry="32"/>
+    <circle cx="64" cy="48" r="32"/>
+    <ellipse cx="48" cy="18" rx="10" ry="24"/>
+    <ellipse cx="80" cy="18" rx="10" ry="24"/>
+  </g>
+  
+  <!-- Inner ears - droopy -->
+  <g fill="#e5e7eb" stroke="none">
+    <ellipse cx="48" cy="24" rx="6" ry="16"/>
+    <ellipse cx="80" cy="24" rx="6" ry="16"/>
+  </g>
+  
+  <!-- Eyes - LOSE (X shapes) -->
+  <g fill="none" stroke="#1a1a1a" stroke-width="4" stroke-linecap="round">
+    <path d="M44 38 L60 54"/>
+    <path d="M60 38 L44 54"/>
+    <path d="M68 38 L84 54"/>
+    <path d="M84 38 L68 54"/>
+  </g>
+  
+  <!-- Blush - faded -->
+  <g fill="#d1d5db" opacity="0.5">
+    <ellipse cx="40" cy="58" rx="6" ry="4"/>
+    <ellipse cx="88" cy="58" rx="6" ry="4"/>
+  </g>
+  
+  <!-- Nose -->
+  <ellipse cx="64" cy="54" rx="4" ry="3" fill="#6b7280"/>
+  
+  <!-- Mouth - wavy line -->
+  <path d="M50 64 Q56 60 64 64 Q72 68 80 64" fill="none" stroke="#6b7280" stroke-width="3" stroke-linecap="round"/>
+  
+  <!-- Arms - down -->
+  <g stroke="#1a1a1a" stroke-width="4" fill="#d1d5db">
+    <ellipse cx="38" cy="74" rx="8" ry="12"/>
+    <ellipse cx="90" cy="74" rx="8" ry="12"/>
+  </g>
+  
+  <!-- Feet -->
+  <g stroke="#1a1a1a" stroke-width="4" fill="#d1d5db">
+    <ellipse cx="50" cy="108" rx="12" ry="8"/>
+    <ellipse cx="78" cy="108" rx="12" ry="8"/>
+  </g>
+  
+  <!-- Sweat drop -->
+  <g fill="#60a5fa" stroke="none">
+    <path d="M96 36 Q100 44 96 52 Q92 44 96 36"/>
+  </g>
+</svg>

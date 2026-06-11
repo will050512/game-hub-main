@@ -1,0 +1,417 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@500;700;900&display=swap');
+
+:root {
+  /* =============================================
+   * Game Hub - CSS Design Tokens
+   * Kawaii Arcade Aesthetic
+   * ============================================= */
+
+  /* === Kawaii Arcade Color Palette === */
+  --pixel-bg: #fff6e8;
+  --pixel-bg-alt: #fbe8ef;
+  --pixel-surface: #fffdf8;
+  --pixel-accent: #8ecfad;
+  --pixel-accent-alt: #f5bdcf;
+  --pixel-text: #261b22;
+  --pixel-text-muted: #735f68;
+  --pixel-border: #261b22;
+  --pixel-border-bright: #5f4953;
+  --pixel-danger: #d94b67;
+  --pixel-warning: #f0b44b;
+  --pixel-success: #74bd92;
+  --pixel-purple: #a98bd8;
+  --pixel-pink: #f5a8c2;
+
+  /* === Pixel Scale === */
+  --pixel-scale: 4;
+
+  /* === Pixel Border Widths === */
+  --border-pixel: 2px solid;
+  --border-pixel-thick: 4px solid;
+
+  /* === Arcade Border Radii === */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 8px;
+  --radius-none: 0;
+  --radius-base: 6px;
+  --radius-2xl: 8px;
+  --radius-3xl: 12px;
+  --radius-full: 9999px;
+
+  /* === Pixel Shadow System (Solid Offset) === */
+  --shadow-sm: 2px 2px 0 rgba(38, 27, 34, 0.14);
+  --shadow-base: 3px 3px 0 rgba(38, 27, 34, 0.16);
+  --shadow-md: 4px 4px 0 rgba(38, 27, 34, 0.18);
+  --shadow-lg: 6px 6px 0 rgba(38, 27, 34, 0.2);
+  --shadow-xl: 8px 8px 0 rgba(38, 27, 34, 0.22);
+  --shadow-2xl: 12px 12px 0 rgba(38, 27, 34, 0.24);
+  --shadow-card: 4px 4px 0 rgba(38, 27, 34, 0.14), 0 8px 18px rgba(88, 64, 76, 0.08);
+  --shadow-card-hover: 6px 6px 0 rgba(38, 27, 34, 0.18), 0 12px 24px rgba(88, 64, 76, 0.12);
+  --shadow-float: 0 18px 34px rgba(88, 64, 76, 0.18), 6px 6px 0 rgba(38, 27, 34, 0.12);
+
+  /* === Pixel Neon Glow === */
+  --glow-cyan: #00d4ff;
+  --glow-magenta: #ff44aa;
+  --glow-gold: #ffaa00;
+  --glow-purple: #aa44ff;
+  --glow-sm-cyan: 0 0 8px rgba(0, 212, 255, 0.4);
+  --glow-sm-magenta: 0 0 8px rgba(255, 68, 170, 0.4);
+  --glow-sm-gold: 0 0 8px rgba(255, 170, 0, 0.4);
+  --glow-base-cyan: 0 0 12px rgba(0, 212, 255, 0.5), 0 0 24px rgba(0, 212, 255, 0.25);
+  --glow-base-magenta: 0 0 12px rgba(255, 68, 170, 0.5), 0 0 24px rgba(255, 68, 170, 0.25);
+  --glow-base-gold: 0 0 12px rgba(255, 170, 0, 0.5), 0 0 24px rgba(255, 170, 0, 0.25);
+  --glow-strong-cyan: 0 0 20px rgba(0, 212, 255, 0.6), 0 0 40px rgba(0, 212, 255, 0.3), 0 0 60px rgba(0, 212, 255, 0.15);
+  --glow-strong-magenta: 0 0 20px rgba(255, 68, 170, 0.6), 0 0 40px rgba(255, 68, 170, 0.3);
+  --glow-strong-gold: 0 0 20px rgba(255, 170, 0, 0.6), 0 0 40px rgba(255, 170, 0, 0.3);
+
+  /* =============================================
+   * BACKWARD-COMPAT: Semantic Colors (pixel-tuned)
+   * All existing --color-* variables preserved.
+   * ============================================= */
+
+  /* === Game-specific Colors === */
+  --game-survivor: #00d4ff;
+  --game-breakout: #ffaa00;
+  --game-tetris: #aa44ff;
+  --game-snake: #44ff88;
+  --game-2048: #ff8800;
+  --game-flappy: #00b4d8;
+  --game-invaders: #ff44aa;
+  --game-fruit-catch: #ff4444;
+  --game-tower-defense: #ff8844;
+  --game-tic-tac-toe: #8866ff;
+  --game-memory: #ff44aa;
+  --game-sudoku: #22ccbb;
+
+  /* === Semantic Colors === */
+  --color-primary: #8ecfad;
+  --color-primary-light: #b8e5cb;
+  --color-primary-dark: #4f9c72;
+  --color-primary-alpha: rgba(142, 207, 173, 0.18);
+
+  --color-secondary: #f5a8c2;
+  --color-secondary-light: #ffd4e2;
+  --color-secondary-dark: #bf5678;
+  --color-secondary-alpha: rgba(245, 168, 194, 0.22);
+
+  --color-accent: #f0b44b;
+  --color-accent-light: #ffd783;
+  --color-accent-dark: #a86420;
+  --color-accent-alpha: rgba(240, 180, 75, 0.2);
+
+  --color-danger: #ff4444;
+  --color-danger-light: #ff6666;
+  --color-danger-dark: #cc2222;
+  --color-danger-alpha: rgba(255, 68, 68, 0.12);
+
+  --color-success: #44ff88;
+  --color-success-light: #66ffaa;
+  --color-success-dark: #22cc66;
+  --color-success-alpha: rgba(68, 255, 136, 0.12);
+
+  --color-info: #00d4ff;
+  --color-info-light: #00eaff;
+  --color-info-dark: #0099cc;
+
+  /* === Background Colors === */
+  --color-bg: #fff6e8;
+  --color-bg-secondary: #fbe8ef;
+  --color-bg-card: #fffdf8;
+  --color-bg-card-hover: #fff4df;
+  --color-bg-overlay: rgba(38, 27, 34, 0.74);
+  --color-bg-accent-mint: rgba(142, 207, 173, 0.18);
+  --color-bg-accent-peach: rgba(246, 196, 162, 0.2);
+  --color-bg-accent-lavender: rgba(199, 182, 245, 0.16);
+  --color-bg-accent-lemon: rgba(240, 180, 75, 0.16);
+
+  /* === Kawaii Palette (preserved as fallback) === */
+  --color-kawaii-pink: #ec4899;
+  --color-kawaii-pink-light: #f472b6;
+  --color-kawaii-mint: #06b6d4;
+  --color-kawaii-mint-light: #22d3ee;
+  --color-kawaii-yellow: #eab308;
+  --color-kawaii-coral: #f43f5e;
+
+  /* === Kawaii Component Colors — Warm === */
+  --color-kawaii-warm-main: #f6b7d2;
+  --color-kawaii-warm-alt: #fce7f3;
+  --color-kawaii-warm-accent: #f59e0b;
+  --color-kawaii-warm-paper: #fffdf8;
+
+  /* === Kawaii Component Colors — Mint === */
+  --color-kawaii-mint-main: #92d5aa;
+  --color-kawaii-mint-alt: #d9f7e4;
+  --color-kawaii-mint-accent: #f59e0b;
+  --color-kawaii-mint-paper: #fffef9;
+
+  /* === Kawaii Component Colors — Sky === */
+  --color-kawaii-sky-main: #a6d9f7;
+  --color-kawaii-sky-alt: #e0f2fe;
+  --color-kawaii-sky-accent: #fb7185;
+  --color-kawaii-sky-paper: #fffefb;
+
+  /* === Kawaii Component Colors — Lilac === */
+  --color-kawaii-lilac-main: #c7b6f5;
+  --color-kawaii-lilac-alt: #ede9fe;
+  --color-kawaii-lilac-accent: #f472b6;
+  --color-kawaii-lilac-paper: #fffefb;
+
+  /* === Kawaii Component Colors — Butter === */
+  --color-kawaii-butter-main: #f4d47a;
+  --color-kawaii-butter-alt: #fef3c7;
+  --color-kawaii-butter-accent: #fb7185;
+  --color-kawaii-butter-paper: #fffdf7;
+
+  /* === Kawaii Component Colors — Peach === */
+  --color-kawaii-peach-main: #f6c4a2;
+  --color-kawaii-peach-alt: #fde7d7;
+  --color-kawaii-peach-accent: #f97316;
+  --color-kawaii-peach-paper: #fffdf8;
+
+  /* === Kawaii Ink (shared dark ink for SVG strokes) === */
+  --color-kawaii-ink: #261b22;
+
+  /* === Text Colors === */
+  --color-text: #261b22;
+  --color-text-secondary: #67545d;
+  --color-text-dim: #8a7480;
+  --color-text-muted: #9c8791;
+
+  /* === Border Colors === */
+  --color-border: #261b22;
+  --color-border-light: #67545d;
+  --color-border-subtle: rgba(38, 27, 34, 0.18);
+  --color-border-dark: #140e12;
+  --color-border-dashed: rgba(38, 27, 34, 0.24);
+
+  /* === Glass Morphism (dark adapted) === */
+  --color-glass-bg: rgba(255, 253, 248, 0.68);
+  --color-glass-bg-hover: rgba(255, 253, 248, 0.86);
+  --color-glass-bg-elevated: rgba(255, 253, 248, 0.94);
+  --color-glass-border: rgba(38, 27, 34, 0.18);
+  --color-glass-border-hover: rgba(38, 27, 34, 0.32);
+  --color-glass-blur: 8px;
+
+  /* === Gradients === */
+  --color-gradient-start: #8ecfad;
+  --color-gradient-mid: #f0b44b;
+  --color-gradient-end: #f5a8c2;
+  --color-gradient-gold-start: #ffd783;
+  --color-gradient-gold-end: #f0b44b;
+  --color-gradient-to-cyan: linear-gradient(135deg, #9fd7e5, #8ecfad);
+  --color-gradient-to-magenta: linear-gradient(135deg, #ffd4e2, #f5a8c2);
+  --color-gradient-to-gold: linear-gradient(135deg, #ffd783, #f0b44b);
+  --color-gradient-to-frost: linear-gradient(135deg, #8ecfad, #ffd783, #f5a8c2);
+  --color-gradient-hero: linear-gradient(180deg, rgba(255, 253, 248, 0.98), rgba(251, 232, 239, 0.78), rgba(255, 246, 232, 0.9));
+  --color-gradient-card: linear-gradient(180deg, #fffdf8 0%, #fff4df 100%);
+  --color-gradient-card-hover: linear-gradient(180deg, #ffffff 0%, #fce8ef 100%);
+
+  /* === Neon Glow Effects === */
+  --color-glow-cyan: #00d4ff;
+  --color-glow-magenta: #ff44aa;
+  --color-glow-gold: #ffaa00;
+  --color-glow-purple: #aa44ff;
+  --color-glow-sm-cyan: 0 0 8px rgba(0, 212, 255, 0.4);
+  --color-glow-sm-magenta: 0 0 8px rgba(255, 68, 170, 0.4);
+  --color-glow-sm-gold: 0 0 8px rgba(255, 170, 0, 0.4);
+  --color-glow-base-cyan: 0 0 12px rgba(0, 212, 255, 0.5), 0 0 24px rgba(0, 212, 255, 0.25);
+  --color-glow-base-magenta: 0 0 12px rgba(255, 68, 170, 0.5), 0 0 24px rgba(255, 68, 170, 0.25);
+  --color-glow-base-gold: 0 0 12px rgba(255, 170, 0, 0.5), 0 0 24px rgba(255, 170, 0, 0.25);
+  --color-glow-strong-cyan: 0 0 20px rgba(0, 212, 255, 0.6), 0 0 40px rgba(0, 212, 255, 0.3), 0 0 60px rgba(0, 212, 255, 0.15);
+  --color-glow-strong-magenta: 0 0 20px rgba(255, 68, 170, 0.6), 0 0 40px rgba(255, 68, 170, 0.3);
+  --color-glow-strong-gold: 0 0 20px rgba(255, 170, 0, 0.6), 0 0 40px rgba(255, 170, 0, 0.3);
+
+  /* === Typography === */
+  --font-family-base: 'Nunito', 'Microsoft JhengHei', system-ui, sans-serif;
+  --font-family-heading: 'Baloo 2', 'Nunito', 'Microsoft JhengHei', system-ui, sans-serif;
+  --font-family-mono: 'Silkscreen', 'Courier New', monospace;
+
+  /* === Pixel Alt Font (for accents/headlines) === */
+  --font-family-pixel: 'Baloo 2', 'Nunito', system-ui, sans-serif;
+  --font-family-pixel-alt: 'Silkscreen', monospace;
+
+  --font-size-xs: 0.5rem;
+  --font-size-sm: 0.625rem;
+  --font-size-base: 0.75rem;
+  --font-size-lg: 0.875rem;
+  --font-size-xl: 1rem;
+  --font-size-2xl: 1.125rem;
+  --font-size-3xl: 1.375rem;
+  --font-size-4xl: 1.75rem;
+  --font-size-5xl: 2.25rem;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-black: 900;
+
+  --line-height-tight: 1.4;
+  --line-height-normal: 1.6;
+  --line-height-relaxed: 1.8;
+
+  /* === Spacing Scale === */
+  --space-0: 0;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  /* === Shadow System (Unified Kawaii Arcade) === */
+  --shadow-sm: 2px 2px 0 rgba(38, 27, 34, 0.14);
+  --shadow-base: 3px 3px 0 rgba(38, 27, 34, 0.16);
+  --shadow-md: 4px 4px 0 rgba(38, 27, 34, 0.18);
+  --shadow-lg: 6px 6px 0 rgba(38, 27, 34, 0.2);
+  --shadow-xl: 8px 8px 0 rgba(38, 27, 34, 0.22);
+  --shadow-2xl: 12px 12px 0 rgba(38, 27, 34, 0.24);
+  --shadow-card: 4px 4px 0 rgba(38, 27, 34, 0.14), 0 8px 18px rgba(88, 64, 76, 0.08);
+  --shadow-card-hover: 6px 6px 0 rgba(38, 27, 34, 0.18), 0 12px 24px rgba(88, 64, 76, 0.12);
+  --shadow-float: 0 18px 34px rgba(88, 64, 76, 0.18), 6px 6px 0 rgba(38, 27, 34, 0.12);
+
+  /* === Duration Scale === */
+  --duration-instant: 80ms;
+  --duration-fast: 120ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+  --duration-slower: 500ms;
+  --duration-slowest: 1000ms;
+
+  /* === Easing Curves === */
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-elastic: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  /* === Z-Index Scale === */
+  --z-base: 0;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 300;
+  --z-overlay: 400;
+  --z-modal: 500;
+  --z-notification: 600;
+  --z-tooltip: 700;
+  --z-max: 999;
+
+  /* === Stroke === */
+  --stroke-thin: 1px;
+  --stroke-base: 2px;
+  --stroke-thick: 3px;
+  --stroke-bold: 4px;
+
+  /* === Opacity Scale === */
+  --opacity-0: 0;
+  --opacity-10: 0.1;
+  --opacity-20: 0.2;
+  --opacity-30: 0.3;
+  --opacity-40: 0.4;
+  --opacity-50: 0.5;
+  --opacity-60: 0.6;
+  --opacity-70: 0.7;
+  --opacity-80: 0.8;
+  --opacity-90: 0.9;
+  --opacity-100: 1;
+
+  /* === Blur Scale === */
+  --blur-sm: 2px;
+  --blur-base: 4px;
+  --blur-md: 8px;
+  --blur-lg: 12px;
+  --blur-xl: 24px;
+  --blur-2xl: 40px;
+
+  /* === Breakpoints === */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /* === Safe Area Insets === */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+
+  /* === Icon Sizes === */
+  --icon-xs: 12px;
+  --icon-sm: 16px;
+  --icon-base: 20px;
+  --icon-md: 24px;
+  --icon-lg: 32px;
+  --icon-xl: 40px;
+  --icon-2xl: 48px;
+
+  /* === Button Scale === */
+  --button-height-sm: 32px;
+  --button-height-base: 40px;
+  --button-height-md: 44px;
+  --button-height-lg: 48px;
+  --button-height-xl: 52px;
+
+  --button-padding-x-sm: 12px;
+  --button-padding-x-base: 16px;
+  --button-padding-x-md: 20px;
+  --button-padding-x-lg: 24px;
+  --button-padding-x-xl: 28px;
+
+  /* === Input Scale === */
+  --input-height-sm: 32px;
+  --input-height-base: 40px;
+  --input-height-md: 44px;
+  --input-height-lg: 48px;
+
+  --input-padding-x-sm: 12px;
+  --input-padding-x-base: 14px;
+  --input-padding-x-md: 16px;
+  --input-padding-x-lg: 20px;
+
+  /* === Container Max Widths === */
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  --container-2xl: 1536px;
+
+  /* === Lobby-specific tokens === */
+  --lobby-hero-min-height: 380px;
+  --lobby-card-min-height: 320px;
+  --lobby-card-tilt-max: 12deg;
+  --lobby-sparkle-color: var(--color-accent);
+  --lobby-badge-font-size: 10px;
+  --lobby-badge-letter-spacing: 0.1em;
+  --lobby-mascot-size: 80px;
+  --lobby-mascot-bounce-duration: 0.6s;
+  --lobby-float-particle-count: 20;
+  --lobby-float-particle-speed: 0.3;
+  --lobby-hero-padding: var(--space-10) var(--space-8) var(--space-8);
+  --lobby-content-max-width: 90rem;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-instant: 0ms;
+    --duration-fast: 0ms;
+    --duration-normal: 0ms;
+    --duration-slow: 0ms;
+    --duration-slower: 0ms;
+    --duration-slowest: 1000ms;
+  }
+}

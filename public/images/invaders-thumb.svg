@@ -1,0 +1,209 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-label="小蜜蜂 thumbnail">
+  <!-- Background -->
+  <rect width="640" height="360" fill="#0f0f23"/>
+
+  <!-- Pixel stars -->
+  <rect x="50" y="20" width="4" height="4" fill="#ffffff" opacity="0.6"/>
+  <rect x="150" y="40" width="4" height="4" fill="#ffffff" opacity="0.4"/>
+  <rect x="250" y="15" width="4" height="4" fill="#ffff00" opacity="0.5"/>
+  <rect x="350" y="55" width="4" height="4" fill="#ffffff" opacity="0.3"/>
+  <rect x="450" y="25" width="4" height="4" fill="#ffffff" opacity="0.6"/>
+  <rect x="550" y="45" width="4" height="4" fill="#ffff00" opacity="0.4"/>
+  <rect x="80" y="75" width="4" height="4" fill="#ffffff" opacity="0.3"/>
+  <rect x="200" y="85" width="4" height="4" fill="#ffffff" opacity="0.5"/>
+  <rect x="400" y="80" width="4" height="4" fill="#ffff00" opacity="0.4"/>
+  <rect x="520" y="70" width="4" height="4" fill="#ffffff" opacity="0.3"/>
+
+  <!-- === ALIENS - Top Row (Squid type, purple) === -->
+  <!-- Alien 1 -->
+  <g transform="translate(140, 70)">
+    <rect x="8" y="0" width="8" height="8" fill="#aa44ff"/>
+    <rect x="0" y="8" width="32" height="8" fill="#aa44ff"/>
+    <rect x="0" y="16" width="8" height="8" fill="#aa44ff"/>
+    <rect x="24" y="16" width="8" height="8" fill="#aa44ff"/>
+    <rect x="8" y="24" width="16" height="8" fill="#aa44ff"/>
+    <rect x="8" y="12" width="8" height="4" fill="#0f0f23"/>
+    <rect x="20" y="12" width="8" height="4" fill="#0f0f23"/>
+  </g>
+  <!-- Alien 2 -->
+  <g transform="translate(220, 70)">
+    <rect x="8" y="0" width="8" height="8" fill="#aa44ff"/>
+    <rect x="0" y="8" width="32" height="8" fill="#aa44ff"/>
+    <rect x="0" y="16" width="8" height="8" fill="#aa44ff"/>
+    <rect x="24" y="16" width="8" height="8" fill="#aa44ff"/>
+    <rect x="8" y="24" width="16" height="8" fill="#aa44ff"/>
+    <rect x="8" y="12" width="8" height="4" fill="#0f0f23"/>
+    <rect x="20" y="12" width="8" height="4" fill="#0f0f23"/>
+  </g>
+  <!-- Alien 3 -->
+  <g transform="translate(300, 70)">
+    <rect x="8" y="0" width="8" height="8" fill="#aa44ff"/>
+    <rect x="0" y="8" width="32" height="8" fill="#aa44ff"/>
+    <rect x="0" y="16" width="8" height="8" fill="#aa44ff"/>
+    <rect x="24" y="16" width="8" height="8" fill="#aa44ff"/>
+    <rect x="8" y="24" width="16" height="8" fill="#aa44ff"/>
+    <rect x="8" y="12" width="8" height="4" fill="#0f0f23"/>
+    <rect x="20" y="12" width="8" height="4" fill="#0f0f23"/>
+  </g>
+  <!-- Alien 4 -->
+  <g transform="translate(380, 70)">
+    <rect x="8" y="0" width="8" height="8" fill="#aa44ff"/>
+    <rect x="0" y="8" width="32" height="8" fill="#aa44ff"/>
+    <rect x="0" y="16" width="8" height="8" fill="#aa44ff"/>
+    <rect x="24" y="16" width="8" height="8" fill="#aa44ff"/>
+    <rect x="8" y="24" width="16" height="8" fill="#aa44ff"/>
+    <rect x="8" y="12" width="8" height="4" fill="#0f0f23"/>
+    <rect x="20" y="12" width="8" height="4" fill="#0f0f23"/>
+  </g>
+  <!-- Alien 5 -->
+  <g transform="translate(460, 70)">
+    <rect x="8" y="0" width="8" height="8" fill="#aa44ff"/>
+    <rect x="0" y="8" width="32" height="8" fill="#aa44ff"/>
+    <rect x="0" y="16" width="8" height="8" fill="#aa44ff"/>
+    <rect x="24" y="16" width="8" height="8" fill="#aa44ff"/>
+    <rect x="8" y="24" width="16" height="8" fill="#aa44ff"/>
+    <rect x="8" y="12" width="8" height="4" fill="#0f0f23"/>
+    <rect x="20" y="12" width="8" height="4" fill="#0f0f23"/>
+  </g>
+
+  <!-- === ALIENS - Middle Row (Crab type, pink) === -->
+  <g transform="translate(112, 130)">
+    <rect x="4" y="0" width="24" height="8" fill="#ff44aa"/>
+    <rect x="0" y="8" width="32" height="8" fill="#ff44aa"/>
+    <rect x="0" y="16" width="8" height="8" fill="#ff44aa"/>
+    <rect x="12" y="16" width="8" height="8" fill="#ff44aa"/>
+    <rect x="24" y="16" width="8" height="8" fill="#ff44aa"/>
+    <rect x="4" y="24" width="8" height="8" fill="#ff44aa"/>
+    <rect x="24" y="24" width="8" height="8" fill="#ff44aa"/>
+    <rect x="8" y="12" width="4" height="4" fill="#0f0f23"/>
+    <rect x="20" y="12" width="4" height="4" fill="#0f0f23"/>
+  </g>
+  <g transform="translate(192, 130)">
+    <rect x="4" y="0" width="24" height="8" fill="#ff44aa"/>
+    <rect x="0" y="8" width="32" height="8" fill="#ff44aa"/>
+    <rect x="0" y="16" width="8" height="8" fill="#ff44aa"/>
+    <rect x="12" y="16" width="8" height="8" fill="#ff44aa"/>
+    <rect x="24" y="16" width="8" height="8" fill="#ff44aa"/>
+    <rect x="4" y="24" width="8" height="8" fill="#ff44aa"/>
+    <rect x="24" y="24" width="8" height="8" fill="#ff44aa"/>
+    <rect x="8" y="12" width="4" height="4" fill="#0f0f23"/>
+    <rect x="20" y="12" width="4" height="4" fill="#0f0f23"/>
+  </g>
+  <g transform="translate(272, 130)">
+    <rect x="4" y="0" width="24" height="8" fill="#ff44aa"/>
+    <rect x="0" y="8" width="32" height="8" fill="#ff44aa"/>
+    <rect x="0" y="16" width="8" height="8" fill="#ff44aa"/>
+    <rect x="12" y="16" width="8" height="8" fill="#ff44aa"/>
+    <rect x="24" y="16" width="8" height="8" fill="#ff44aa"/>
+    <rect x="4" y="24" width="8" height="8" fill="#ff44aa"/>
+    <rect x="24" y="24" width="8" height="8" fill="#ff44aa"/>
+    <rect x="8" y="12" width="4" height="4" fill="#0f0f23"/>
+    <rect x="20" y="12" width="4" height="4" fill="#0f0f23"/>
+  </g>
+  <g transform="translate(352, 130)">
+    <rect x="4" y="0" width="24" height="8" fill="#ff44aa"/>
+    <rect x="0" y="8" width="32" height="8" fill="#ff44aa"/>
+    <rect x="0" y="16" width="8" height="8" fill="#ff44aa"/>
+    <rect x="12" y="16" width="8" height="8" fill="#ff44aa"/>
+    <rect x="24" y="16" width="8" height="8" fill="#ff44aa"/>
+    <rect x="4" y="24" width="8" height="8" fill="#ff44aa"/>
+    <rect x="24" y="24" width="8" height="8" fill="#ff44aa"/>
+    <rect x="8" y="12" width="4" height="4" fill="#0f0f23"/>
+    <rect x="20" y="12" width="4" height="4" fill="#0f0f23"/>
+  </g>
+  <g transform="translate(432, 130)">
+    <rect x="4" y="0" width="24" height="8" fill="#ff44aa"/>
+    <rect x="0" y="8" width="32" height="8" fill="#ff44aa"/>
+    <rect x="0" y="16" width="8" height="8" fill="#ff44aa"/>
+    <rect x="12" y="16" width="8" height="8" fill="#ff44aa"/>
+    <rect x="24" y="16" width="8" height="8" fill="#ff44aa"/>
+    <rect x="4" y="24" width="8" height="8" fill="#ff44aa"/>
+    <rect x="24" y="24" width="8" height="8" fill="#ff44aa"/>
+    <rect x="8" y="12" width="4" height="4" fill="#0f0f23"/>
+    <rect x="20" y="12" width="4" height="4" fill="#0f0f23"/>
+  </g>
+
+  <!-- === ALIENS - Bottom Row (Octopus type, green) === -->
+  <g transform="translate(128, 190)">
+    <rect x="0" y="0" width="32" height="8" fill="#44ff88"/>
+    <rect x="0" y="8" width="8" height="16" fill="#44ff88"/>
+    <rect x="24" y="8" width="8" height="16" fill="#44ff88"/>
+    <rect x="8" y="24" width="4" height="8" fill="#44ff88"/>
+    <rect x="16" y="24" width="4" height="8" fill="#44ff88"/>
+    <rect x="8" y="4" width="4" height="4" fill="#0f0f23"/>
+    <rect x="20" y="4" width="4" height="4" fill="#0f0f23"/>
+  </g>
+  <g transform="translate(208, 190)">
+    <rect x="0" y="0" width="32" height="8" fill="#44ff88"/>
+    <rect x="0" y="8" width="8" height="16" fill="#44ff88"/>
+    <rect x="24" y="8" width="8" height="16" fill="#44ff88"/>
+    <rect x="8" y="24" width="4" height="8" fill="#44ff88"/>
+    <rect x="16" y="24" width="4" height="8" fill="#44ff88"/>
+    <rect x="8" y="4" width="4" height="4" fill="#0f0f23"/>
+    <rect x="20" y="4" width="4" height="4" fill="#0f0f23"/>
+  </g>
+  <g transform="translate(288, 190)">
+    <rect x="0" y="0" width="32" height="8" fill="#44ff88"/>
+    <rect x="0" y="8" width="8" height="16" fill="#44ff88"/>
+    <rect x="24" y="8" width="8" height="16" fill="#44ff88"/>
+    <rect x="8" y="24" width="4" height="8" fill="#44ff88"/>
+    <rect x="16" y="24" width="4" height="8" fill="#44ff88"/>
+    <rect x="8" y="4" width="4" height="4" fill="#0f0f23"/>
+    <rect x="20" y="4" width="4" height="4" fill="#0f0f23"/>
+  </g>
+  <g transform="translate(368, 190)">
+    <rect x="0" y="0" width="32" height="8" fill="#44ff88"/>
+    <rect x="0" y="8" width="8" height="16" fill="#44ff88"/>
+    <rect x="24" y="8" width="8" height="16" fill="#44ff88"/>
+    <rect x="8" y="24" width="4" height="8" fill="#44ff88"/>
+    <rect x="16" y="24" width="4" height="8" fill="#44ff88"/>
+    <rect x="8" y="4" width="4" height="4" fill="#0f0f23"/>
+    <rect x="20" y="4" width="4" height="4" fill="#0f0f23"/>
+  </g>
+  <g transform="translate(448, 190)">
+    <rect x="0" y="0" width="32" height="8" fill="#44ff88"/>
+    <rect x="0" y="8" width="8" height="16" fill="#44ff88"/>
+    <rect x="24" y="8" width="8" height="16" fill="#44ff88"/>
+    <rect x="8" y="24" width="4" height="8" fill="#44ff88"/>
+    <rect x="16" y="24" width="4" height="8" fill="#44ff88"/>
+    <rect x="8" y="4" width="4" height="4" fill="#0f0f23"/>
+    <rect x="20" y="4" width="4" height="4" fill="#0f0f23"/>
+  </g>
+
+  <!-- === PLAYER SHIP === -->
+  <g transform="translate(280, 300)">
+    <rect x="16" y="0" width="16" height="8" fill="#00d4ff"/>
+    <rect x="8" y="8" width="32" height="8" fill="#00d4ff"/>
+    <rect x="0" y="16" width="48" height="8" fill="#00d4ff"/>
+    <rect x="4" y="24" width="8" height="8" fill="#0099cc"/>
+    <rect x="36" y="24" width="8" height="8" fill="#0099cc"/>
+  </g>
+
+  <!-- === BULLETS === -->
+  <rect x="296" y="260" width="8" height="16" fill="#ffff00"/>
+  <rect x="284" y="240" width="8" height="12" fill="#ffff00"/>
+  <rect x="316" y="270" width="8" height="12" fill="#ffff00"/>
+
+  <!-- === PIXEL EXPLOSIONS === -->
+  <rect x="180" y="170" width="8" height="8" fill="#ff4444"/>
+  <rect x="192" y="164" width="8" height="8" fill="#ffaa00"/>
+  <rect x="172" y="176" width="8" height="8" fill="#ffff00"/>
+  <rect x="480" y="110" width="8" height="8" fill="#ff6644"/>
+  <rect x="472" y="118" width="8" height="8" fill="#ffaa00"/>
+
+  <!-- === TITLE LABEL === -->
+  <rect x="28" y="24" width="180" height="44" fill="#1e2749" stroke="#4a4a8a" stroke-width="2"/>
+  <text x="118" y="55" font-family="'Press Start 2P', monospace" font-size="20" fill="#e0e0ff" text-anchor="middle">小蜜蜂</text>
+
+  <!-- === SCORE === -->
+  <rect x="480" y="24" width="120" height="32" fill="#1e2749" stroke="#4a4a8a" stroke-width="2"/>
+  <text x="540" y="46" font-family="'Press Start 2P', monospace" font-size="14" fill="#ffff00" text-anchor="middle">WAVE: 1</text>
+
+  <!-- Corner decorations -->
+  <rect x="12" y="12" width="4" height="4" fill="#4a4a8a"/>
+  <rect x="16" y="12" width="4" height="4" fill="#4a4a8a"/>
+  <rect x="12" y="16" width="4" height="4" fill="#4a4a8a"/>
+  <rect x="624" y="12" width="4" height="4" fill="#4a4a8a"/>
+  <rect x="620" y="12" width="4" height="4" fill="#4a4a8a"/>
+  <rect x="624" y="16" width="4" height="4" fill="#4a4a8a"/>
+</svg>

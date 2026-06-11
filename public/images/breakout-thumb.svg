@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-label="打磚塊 thumbnail">
+  <!-- Background -->
+  <rect width="640" height="360" fill="#0f0f23"/>
+
+  <!-- Pixel grid (every 40px) -->
+  <g fill="#2a2a4a" opacity="0.12">
+    <rect x="39" y="0" width="1" height="360"/><rect x="79" y="0" width="1" height="360"/>
+    <rect x="119" y="0" width="1" height="360"/><rect x="159" y="0" width="1" height="360"/>
+    <rect x="199" y="0" width="1" height="360"/><rect x="239" y="0" width="1" height="360"/>
+    <rect x="279" y="0" width="1" height="360"/><rect x="319" y="0" width="1" height="360"/>
+    <rect x="359" y="0" width="1" height="360"/><rect x="399" y="0" width="1" height="360"/>
+    <rect x="439" y="0" width="1" height="360"/><rect x="479" y="0" width="1" height="360"/>
+    <rect x="519" y="0" width="1" height="360"/><rect x="559" y="0" width="1" height="360"/>
+    <rect x="0" y="39" width="640" height="1"/><rect x="0" y="79" width="640" height="1"/>
+    <rect x="0" y="119" width="640" height="1"/><rect x="0" y="159" width="640" height="1"/>
+    <rect x="0" y="199" width="640" height="1"/><rect x="0" y="239" width="640" height="1"/>
+    <rect x="0" y="279" width="640" height="1"/><rect x="0" y="319" width="640" height="1"/>
+  </g>
+
+  <!-- Pixel border -->
+  <rect x="4" y="4" width="632" height="352" rx="4" fill="none" stroke="#4a4a8a" stroke-width="4"/>
+
+  <!-- === BRICKS === -->
+  <!-- Row 1: Red -->
+  <rect x="100" y="72" width="52" height="24" fill="#ff4444" stroke="#cc2222" stroke-width="2"/>
+  <rect x="156" y="72" width="52" height="24" fill="#ff4444" stroke="#cc2222" stroke-width="2"/>
+  <rect x="212" y="72" width="52" height="24" fill="#ff4444" stroke="#cc2222" stroke-width="2"/>
+  <rect x="268" y="72" width="52" height="24" fill="#ff4444" stroke="#cc2222" stroke-width="2"/>
+  <rect x="324" y="72" width="52" height="24" fill="#ff4444" stroke="#cc2222" stroke-width="2"/>
+  <rect x="380" y="72" width="52" height="24" fill="#ff4444" stroke="#cc2222" stroke-width="2"/>
+  <rect x="436" y="72" width="52" height="24" fill="#ff4444" stroke="#cc2222" stroke-width="2"/>
+  <!-- Row 2: Orange -->
+  <rect x="100" y="100" width="52" height="24" fill="#ffaa00" stroke="#cc8800" stroke-width="2"/>
+  <rect x="156" y="100" width="52" height="24" fill="#ffaa00" stroke="#cc8800" stroke-width="2"/>
+  <rect x="212" y="100" width="52" height="24" fill="#ffaa00" stroke="#cc8800" stroke-width="2"/>
+  <rect x="268" y="100" width="52" height="24" fill="#ffaa00" stroke="#cc8800" stroke-width="2"/>
+  <rect x="324" y="100" width="52" height="24" fill="#ffaa00" stroke="#cc8800" stroke-width="2"/>
+  <rect x="380" y="100" width="52" height="24" fill="#ffaa00" stroke="#cc8800" stroke-width="2"/>
+  <rect x="436" y="100" width="52" height="24" fill="#ffaa00" stroke="#cc8800" stroke-width="2"/>
+  <!-- Row 3: Yellow -->
+  <rect x="128" y="128" width="52" height="24" fill="#ffff00" stroke="#cccc00" stroke-width="2"/>
+  <rect x="184" y="128" width="52" height="24" fill="#ffff00" stroke="#cccc00" stroke-width="2"/>
+  <rect x="240" y="128" width="52" height="24" fill="#ffff00" stroke="#cccc00" stroke-width="2"/>
+  <rect x="296" y="128" width="52" height="24" fill="#ffff00" stroke="#cccc00" stroke-width="2"/>
+  <rect x="352" y="128" width="52" height="24" fill="#ffff00" stroke="#cccc00" stroke-width="2"/>
+  <rect x="408" y="128" width="52" height="24" fill="#ffff00" stroke="#cccc00" stroke-width="2"/>
+  <!-- Row 4: Green -->
+  <rect x="156" y="156" width="52" height="24" fill="#44ff88" stroke="#22cc66" stroke-width="2"/>
+  <rect x="212" y="156" width="52" height="24" fill="#44ff88" stroke="#22cc66" stroke-width="2"/>
+  <rect x="268" y="156" width="52" height="24" fill="#44ff88" stroke="#22cc66" stroke-width="2"/>
+  <rect x="324" y="156" width="52" height="24" fill="#44ff88" stroke="#22cc66" stroke-width="2"/>
+  <rect x="380" y="156" width="52" height="24" fill="#44ff88" stroke="#22cc66" stroke-width="2"/>
+
+  <!-- === PADDLE === -->
+  <rect x="232" y="292" width="176" height="24" fill="#00d4ff" stroke="#0099cc" stroke-width="2"/>
+  <!-- Paddle highlight -->
+  <rect x="234" y="294" width="172" height="4" fill="#88eeff" opacity="0.6"/>
+
+  <!-- === BALL (pixel square) === -->
+  <rect x="312" y="244" width="16" height="16" fill="#e0e0ff" stroke="#ffffff" stroke-width="2"/>
+
+  <!-- === PIXEL EXPLOSION EFFECT === -->
+  <rect x="260" y="120" width="8" height="8" fill="#ff4444"/>
+  <rect x="272" y="112" width="8" height="8" fill="#ffaa00"/>
+  <rect x="268" y="136" width="8" height="8" fill="#ffff00"/>
+  <rect x="252" y="128" width="8" height="8" fill="#ffffff" opacity="0.8"/>
+  <rect x="280" y="124" width="8" height="8" fill="#44ff88"/>
+
+  <!-- === TITLE LABEL === -->
+  <rect x="28" y="24" width="200" height="44" fill="#1e2749" stroke="#4a4a8a" stroke-width="2"/>
+  <text x="128" y="55" font-family="'Press Start 2P', monospace" font-size="20" fill="#e0e0ff" text-anchor="middle">打磚塊</text>
+
+  <!-- === SCORE DISPLAY === -->
+  <rect x="500" y="24" width="100" height="32" fill="#1e2749" stroke="#4a4a8a" stroke-width="2"/>
+  <text x="550" y="46" font-family="'Press Start 2P', monospace" font-size="14" fill="#ffff00" text-anchor="middle">SCORE: 0</text>
+
+  <!-- Decorative pixel stars -->
+  <rect x="60" y="260" width="6" height="6" fill="#ffdd00" opacity="0.6"/>
+  <rect x="580" y="200" width="6" height="6" fill="#ffdd00" opacity="0.6"/>
+  <rect x="560" y="280" width="4" height="4" fill="#00d4ff" opacity="0.5"/>
+
+  <!-- Corner decorations -->
+  <rect x="12" y="12" width="4" height="4" fill="#4a4a8a"/>
+  <rect x="16" y="12" width="4" height="4" fill="#4a4a8a"/>
+  <rect x="12" y="16" width="4" height="4" fill="#4a4a8a"/>
+  <rect x="624" y="12" width="4" height="4" fill="#4a4a8a"/>
+  <rect x="620" y="12" width="4" height="4" fill="#4a4a8a"/>
+  <rect x="624" y="16" width="4" height="4" fill="#4a4a8a"/>
+  <rect x="12" y="344" width="4" height="4" fill="#4a4a8a"/>
+  <rect x="16" y="344" width="4" height="4" fill="#4a4a8a"/>
+  <rect x="12" y="340" width="4" height="4" fill="#4a4a8a"/>
+  <rect x="624" y="344" width="4" height="4" fill="#4a4a8a"/>
+  <rect x="620" y="344" width="4" height="4" fill="#4a4a8a"/>
+  <rect x="624" y="340" width="4" height="4" fill="#4a4a8a"/>
+</svg>

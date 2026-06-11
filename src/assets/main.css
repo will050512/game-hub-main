@@ -1,0 +1,142 @@
+/* ================================================
+   Game Hub - Base Resets & Fonts
+   ================================================ */
+
+/* === Font Import === */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap');
+
+/* === Base Resets === */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-family-base);
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--color-text);
+  background: var(--color-bg);
+  background-image:
+    linear-gradient(90deg, rgba(38, 27, 34, 0.035) 1px, transparent 1px),
+    linear-gradient(rgba(38, 27, 34, 0.035) 1px, transparent 1px),
+    radial-gradient(ellipse at 20% 50%, rgba(142, 207, 173, 0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 82% 18%, rgba(245, 168, 194, 0.14) 0%, transparent 45%);
+  background-size: 20px 20px, 20px 20px, auto, auto;
+  overflow-x: hidden;
+  padding-top: var(--safe-top, 0px);
+  padding-bottom: var(--safe-bottom, 0px);
+  padding-left: var(--safe-left, 0px);
+  padding-right: var(--safe-right, 0px);
+}
+
+/* ================================================
+   Safe Area Support (iPhone notch, home indicator)
+   ================================================ */
+
+/* Elements that span full viewport can opt-out of safe area padding */
+.safe-area-full-bleed {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  margin-top: calc(-1 * var(--safe-top, 0px));
+  margin-bottom: calc(-1 * var(--safe-bottom, 0px));
+  margin-left: calc(-1 * var(--safe-left, 0px));
+  margin-right: calc(-1 * var(--safe-right, 0px));
+}
+
+/* Content that should respect safe area */
+.safe-area-content {
+  padding-top: max(var(--space-4), var(--safe-top, 0px));
+  padding-bottom: max(var(--space-4), var(--safe-bottom, 0px));
+  padding-left: max(var(--space-4), var(--safe-left, 0px));
+  padding-right: max(var(--space-4), var(--safe-right, 0px));
+}
+
+/* ================================================
+   Responsive Adjustments
+   ================================================ */
+
+@media (max-width: 768px) {
+  .kmg-title {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .kmg-title {
+    font-size: 20px;
+  }
+}
+
+/* ================================================
+   Portrait / Landscape Specific Adjustments
+   ================================================ */
+
+/* Portrait: taller than wide */
+@media (orientation: portrait) {
+  body {
+    /* Ensure content doesn't get clipped by home indicator */
+    padding-bottom: max(var(--space-6), var(--safe-bottom, 0px));
+  }
+}
+
+/* Landscape: wider than tall */
+@media (orientation: landscape) {
+  body {
+    /* Less vertical padding in landscape */
+    padding-top: max(var(--space-2), var(--safe-top, 0px));
+    padding-bottom: max(var(--space-2), var(--safe-bottom, 0px));
+  }
+
+  /* Small screens in landscape (phone rotated) */
+  @media (max-height: 500px) {
+    .kmg-title {
+      font-size: 18px;
+    }
+  }
+}
+
+/* ================================================
+   Tablet Landscape Specific
+   ================================================ */
+
+@media (min-width: 640px) and (max-width: 1023px) and (orientation: landscape) {
+  /* Tablet landscape: optimize side-by-side layouts */
+  .safe-area-content {
+    padding-left: max(var(--space-6), var(--safe-left, 0px));
+    padding-right: max(var(--space-6), var(--safe-right, 0px));
+  }
+}
+
+/* ================================================
+   Deep Mode
+   ================================================ */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+  }
+}
+
+/* ================================================
+   Reduced Motion
+   ================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

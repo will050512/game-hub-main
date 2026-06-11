@@ -1,0 +1,1153 @@
+import { GameEngine } from '@/engine/GameEngine'
+import type { GameInstance, GameHudData } from '@/types'
+import { POWERUP_DEFS } from './data'
+import type { BreakoutPowerUpDef } from './data'
+
+interface Paddle {
+  x: number
+  y: number
+  width: number
+  height: number
+  speed: number
+  radius: number
+}
+
+interface Ball {
+  x: number
+  y: number
+  vx: number
+  vy: number
+  radius: number
+  active: boolean
+}
+
+interface Brick {
+  x: number
+  y: number
+  width: number
+  height: number
+  color: string
+  points: number
+  alive: boolean
+}
+
+interface PowerUpEntity {
+  x: number
+  y: number
+  width: number
+  height: number
+  vy: number
+  def: BreakoutPowerUpDef
+}
+
+interface ActiveEffect {
+  id: string
+  remainingMs: number
+  totalMs: number
+}
+
+interface LaserBullet {
+  x: number
+  y: number
+  vy: number
+  width: number
+  height: number
+}
+
+interface Particle {
+  x: number
+  y: number
+  vx: number
+  vy: number
+  radius: number
+  color: string
+  alpha: number
+  life: number
+  maxLife: number
+}
+
+interface ScreenShake {
+  x: number
+  y: number
+  intensity: number
+  duration: number
+  elapsed: number
+}
+
+interface BallTrail {
+  x: number
+  y: number
+  alpha: number
+}
+
+interface FloatingText {
+  x: number
+  y: number
+  text: string
+  color: string
+  scale: number
+  alpha: number
+  life: number
+  maxLife: number
+}
+
+class BreakoutGame extends GameEngine {
+  private readonly maxLives = 3
+  private readonly maxLevelTextTime = 1400
+  private readonly baseRows = 5
+  private readonly baseCols = 10
+
+  private score = 0
+  private lives = this.maxLives
+  private level = 1
+  private bricksDestroyed = 0
+  private totalBricks = 0
+  private gameTime = 0
+
+  private paddle: Paddle = {
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+    speed: 0,
+    radius: 0,
+  }
+
+  private balls: Ball[] = []
+
+  private bricks: Brick[] = []
+  private bricksRemaining = 0
+
+  private serveTimer = 0
+  private levelTextTimer = this.maxLevelTextTime
+  private gameOver = false
+  private gameOverTriggered = false
+
+  private powerUps: PowerUpEntity[] = []
+  private activeEffects: ActiveEffect[] = []
+  private basePaddleWidth = 0
+  private laserCooldownMs = 0
+  private laserBullets: LaserBullet[] = []
+  private stickyBall: Ball | null = null
+  private stickyActive = false
+  private laserActive = false
+  private dropRateBonus = 0
+
+  private particles: Particle[] = []
+  private screenShake: ScreenShake | null = null
+  private ballTrails: BallTrail[] = []
+  private floatingTexts: FloatingText[] = []
+  private comboCount = 0
+  private comboTimer = 0
+
+  protected init(): void {
+    this.score = 0
+    this.lives = this.maxLives
+    this.level = 1
+    this.bricksDestroyed = 0
+    this.totalBricks = 0
+    this.gameTime = 0
+    this.gameOver = false
+    this.gameOverTriggered = false
+
+    this.powerUps = []
+    this.activeEffects = []
+    this.laserBullets = []
+    this.stickyBall = null
+    this.stickyActive = false
+    this.laserActive = false
+    this.laserCooldownMs = 0
+    this.dropRateBonus = 0
+    this.particles = []
+    this.screenShake = null
+    this.ballTrails = []
+    this.floatingTexts = []
+    this.comboCount = 0
+    this.comboTimer = 0
+
+    this.setupPaddleAndBall()
+    this.createLevelBricks()
+    this.resetBallOnPaddle()
+
+    this.callbacks.onScoreUpdate?.(this.score)
+    this.pushStats()
+  }
+
+  private setupPaddleAndBall(): void {
+    this.paddle = {
+      x: (this.width - this.paddle.width) / 2,
+      y: this.height - Math.max(40 * this.dpr, this.height * 0.1),
+      width: Math.max(70 * this.dpr, this.width * 0.22),
+      height: Math.max(10 * this.dpr, this.width * 0.032),
+      speed: 6.5 * this.dpr,
+      radius: Math.max(5 * this.dpr, this.width * 0.015),
+    }
+    this.balls = [this.createBall()]
+    this.serveTimer = 700
+  }
+
+  private createBall(): Ball {
+    return {
+      x: this.paddle.x + this.paddle.width / 2,
+      y: this.paddle.y - 8 * this.dpr,
+      vx: 0,
+      vy: 0,
+      radius: Math.max(6 * this.dpr, this.width * 0.018),
+      active: true,
+    }
+  }
+
+  private createLevelBricks(): void {
+    this.bricks = []
+    this.totalBricks = 0
+    const cols = Math.floor(this.width / 16 / this.dpr)
+    const rows = 6
+    const padding = 4 * this.dpr
+    const width = Math.min(14 * this.dpr, (this.width - padding * (cols + 1)) / cols)
+    const height = Math.min(8 * this.dpr, this.height * 0.04)
+    const spacing = (this.width - width * cols - padding * (cols - 1)) / 2
+
+    for (let row = 0; row < rows; row += 1) {
+      for (let col = 0; col < cols; col += 1) {
+        if (Math.random() > 0.75) continue
+        this.bricks.push({
+          x: spacing + col * (width + padding),
+          y: this.paddle.y - height * row - padding * (row + 1) - 120 * this.dpr,
+          width,
+          height,
+          color: `hsl(${(row * 60 + col * 30) % 360}, 65%, 55%)`,
+          points: 10 * (rows - row),
+          alive: true,
+        })
+        this.totalBricks += 1
+      }
+    }
+    this.bricksRemaining = this.totalBricks
+  }
+
+  private triggerScreenShake(intensity: number, duration: number) {
+    this.screenShake = { x: 0, y: 0, intensity, duration, elapsed: 0 }
+  }
+
+  private spawnParticles(x: number, y: number, count: number, color: string, speedMult = 1) {
+    for (let i = 0; i < count; i++) {
+      const angle = Math.random() * Math.PI * 2
+      const speed = (2 + Math.random() * 4) * speedMult
+      this.particles.push({
+        x,
+        y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 2,
+        radius: 2 + Math.random() * 4,
+        color,
+        alpha: 1,
+        life: 400 + Math.random() * 200,
+        maxLife: 600,
+      })
+    }
+  }
+
+  private spawnFloatingText(x: number, y: number, text: string, color: string, scale = 1) {
+    this.floatingTexts.push({
+      x,
+      y,
+      text,
+      color,
+      scale,
+      alpha: 1,
+      life: 800,
+      maxLife: 800,
+    })
+  }
+
+  private updateParticles(dt: number) {
+    for (let i = this.particles.length - 1; i >= 0; i--) {
+      const p = this.particles[i]!
+      p.x += p.vx * (dt / 16.667)
+      p.y += p.vy * (dt / 16.667)
+      p.vy += 0.15
+      p.life -= dt
+      p.alpha = Math.max(0, p.life / p.maxLife)
+      if (p.life <= 0) this.particles.splice(i, 1)
+    }
+    if (this.particles.length > 150) this.particles.splice(0, this.particles.length - 150)
+  }
+
+  private updateFloatingTexts(dt: number) {
+    for (let i = this.floatingTexts.length - 1; i >= 0; i--) {
+      const t = this.floatingTexts[i]!
+      t.y -= 1 * (dt / 16.667)
+      t.life -= dt
+      t.alpha = Math.max(0, t.life / t.maxLife)
+      if (t.life <= 0) this.floatingTexts.splice(i, 1)
+    }
+  }
+
+  private updateScreenShake(dt: number) {
+    if (!this.screenShake) return
+    this.screenShake.elapsed += dt
+    if (this.screenShake.elapsed >= this.screenShake.duration) {
+      this.screenShake = null
+      return
+    }
+    const decay = 1 - this.screenShake.elapsed / this.screenShake.duration
+    const shake = this.screenShake.intensity * decay
+    this.screenShake.x = (Math.random() - 0.5) * shake * 2
+    this.screenShake.y = (Math.random() - 0.5) * shake * 2
+  }
+
+  protected update(dt: number): void {
+    this.gameTime += dt
+
+    if (!this.gameOver) {
+if (this.levelTextTimer > 0) {
+        this.levelTextTimer = Math.max(0, this.levelTextTimer - dt)
+      }
+
+      this.resolvePaddleInputX()
+      this.updateBalls(dt)
+      this.updateActiveEffects(dt)
+      this.updatePowerUps(dt)
+      this.updateLasers(dt)
+    this.checkLevelClear()
+    }
+
+    this.updateParticles(dt)
+    this.updateBallTrails(dt)
+    this.updateFloatingTexts(dt)
+this.updateScreenShake(dt)
+  }
+
+  private triggerComboText() {
+    if (this.comboCount >= 3) {
+      const text = this.comboCount >= 5 ? `${this.comboCount}x COMBO!` : `${this.comboCount}x`
+      this.spawnFloatingText(this.width / 2, this.height * 0.3, text, '#fbbf24', 1 + this.comboCount * 0.05)
+    }
+  }
+
+  protected render(ctx: CanvasRenderingContext2D): void {
+    ctx.save()
+
+    if (this.screenShake) {
+      ctx.translate(this.screenShake.x, this.screenShake.y)
+    }
+
+    ctx.clearRect(0, 0, this.width, this.height)
+
+    ctx.fillStyle = 'rgba(2, 4, 12, 0.94)'
+    ctx.fillRect(0, 0, this.width, this.height)
+
+    this.renderBallTrails(ctx)
+    this.renderBricks(ctx)
+    this.renderPaddle(ctx)
+    this.renderBalls(ctx)
+    this.renderPowerUps(ctx)
+    this.renderLasers(ctx)
+    this.renderLives(ctx)
+    this.renderActiveEffects(ctx)
+    this.renderParticles(ctx)
+    this.renderFloatingTexts(ctx)
+    this.renderHudText(ctx)
+    this.renderLevelText(ctx)
+    this.renderComboText(ctx)
+    this.renderGameOver(ctx)
+
+    ctx.restore()
+  }
+
+  private addBallTrail(x: number, y: number) {
+    this.ballTrails.push({ x, y, alpha: 1 })
+    if (this.ballTrails.length > 30) this.ballTrails.shift()
+  }
+
+  private updateBallTrails(dt: number) {
+    for (let i = this.ballTrails.length - 1; i >= 0; i--) {
+      this.ballTrails[i]!.alpha -= dt / 500
+      if (this.ballTrails[i]!.alpha <= 0) this.ballTrails.splice(i, 1)
+    }
+  }
+
+  private renderBallTrails(ctx: CanvasRenderingContext2D) {
+    for (const trail of this.ballTrails) {
+      ctx.globalAlpha = trail.alpha * 0.5
+      ctx.fillStyle = '#ffffff'
+      ctx.beginPath()
+      ctx.arc(trail.x, trail.y, 3 * this.dpr, 0, Math.PI * 2)
+      ctx.fill()
+    }
+    ctx.globalAlpha = 1
+  }
+
+  private renderParticles(ctx: CanvasRenderingContext2D) {
+    for (const p of this.particles) {
+      ctx.globalAlpha = p.alpha
+      ctx.fillStyle = p.color
+      ctx.beginPath()
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2)
+      ctx.fill()
+    }
+    ctx.globalAlpha = 1
+  }
+
+  private renderFloatingTexts(ctx: CanvasRenderingContext2D) {
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    for (const t of this.floatingTexts) {
+      const fontSize = Math.round(14 * t.scale * t.alpha * this.dpr)
+      ctx.globalAlpha = t.alpha
+      ctx.fillStyle = t.color
+      ctx.font = `bold ${fontSize}px sans-serif`
+      ctx.shadowBlur = 8
+      ctx.shadowColor = t.color
+      ctx.fillText(t.text, t.x, t.y)
+      ctx.shadowBlur = 0
+    }
+    ctx.globalAlpha = 1
+  }
+
+  private renderComboText(ctx: CanvasRenderingContext2D) {
+    if (this.comboCount < 2) return
+    const text = this.comboCount >= 5 ? `${this.comboCount}x COMBO!` : `${this.comboCount}x`
+    const scale = Math.min(2, 1 + this.comboCount * 0.08)
+    const fontSize = Math.round(20 * scale * this.dpr)
+    ctx.save()
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.globalAlpha = 0.9
+    ctx.fillStyle = '#fbbf24'
+    ctx.shadowBlur = 15
+    ctx.shadowColor = '#fbbf24'
+    ctx.font = `bold ${fontSize}px sans-serif`
+    ctx.fillText(text, this.width / 2, this.height * 0.2)
+    ctx.restore()
+  }
+
+  private resolvePaddleInputX(): number {
+    let moveX = this.input.moveX
+
+    if (this.input.isJoystickActive && Math.abs(moveX) < 0.2) {
+      const rect = this.canvas.getBoundingClientRect()
+      const touchX = this.input.joystickOrigin.x - rect.left
+      moveX = touchX < rect.width / 2 ? -1 : 1
+    }
+
+    return Math.max(-1, Math.min(1, moveX))
+  }
+
+  private updateBalls(dt: number): void {
+    const dtScale = dt / 16.667
+
+    if (this.serveTimer > 0) {
+      this.serveTimer = Math.max(0, this.serveTimer - dt)
+      if (this.balls.length > 0) {
+        const ball = this.balls[0]!
+        ball.x = this.paddle.x + this.paddle.width / 2
+        ball.y = this.paddle.y - ball.radius - 2 * this.dpr
+      }
+      if (this.serveTimer === 0) {
+        this.launchBall()
+      }
+      return
+    }
+
+    if (this.stickyBall) {
+      this.stickyBall.x = this.paddle.x + this.paddle.width / 2
+      this.stickyBall.y = this.paddle.y - this.stickyBall.radius - 2 * this.dpr
+      if (this.input.isJoystickActive || Math.abs(this.input.moveY) > 0.3) {
+        const speed = Math.hypot(this.stickyBall.vx, this.stickyBall.vy) || this.getLevelBaseBallSpeed()
+        const launchSpread = Math.PI / 3.2
+        const angle = (Math.random() - 0.5) * launchSpread
+        this.stickyBall.vx = speed * Math.sin(angle)
+        this.stickyBall.vy = -Math.abs(speed * Math.cos(angle))
+        this.stickyBall = null
+      }
+    }
+
+    for (const ball of this.balls) {
+      if (ball === this.stickyBall) continue
+
+      ball.x += ball.vx * dtScale
+      ball.y += ball.vy * dtScale
+
+      this.addBallTrail(ball.x, ball.y)
+
+      this.handleWallBounce(ball)
+      this.handlePaddleBounce(ball)
+      this.handleBrickBounce(ball)
+    }
+
+    this.balls = this.balls.filter(b => b.y - b.radius <= this.height)
+
+    if (this.stickyBall && !this.balls.includes(this.stickyBall)) {
+      this.stickyBall = null
+    }
+
+    if (this.balls.length === 0) {
+      this.handleLifeLost()
+    }
+  }
+
+  private launchBall(): void {
+    if (this.balls.length === 0) return
+    const ball = this.balls[0]!
+    const speed = this.getLevelBaseBallSpeed()
+    const launchSpread = Math.PI / 3.2
+    const angle = (Math.random() - 0.5) * launchSpread
+
+    ball.vx = speed * Math.sin(angle)
+    ball.vy = -speed * Math.cos(angle)
+  }
+
+  private getLevelBaseBallSpeed(): number {
+    const scale = this.dpr
+    const levelBoost = 1 + (this.level - 1) * 0.14
+    return 4.6 * scale * levelBoost
+  }
+
+  private handleWallBounce(ball: Ball): void {
+    if (ball.x - ball.radius <= 0) {
+      ball.x = ball.radius
+      ball.vx = Math.abs(ball.vx)
+    } else if (ball.x + ball.radius >= this.width) {
+      ball.x = this.width - ball.radius
+      ball.vx = -Math.abs(ball.vx)
+    }
+
+    if (ball.y - ball.radius <= 0) {
+      ball.y = ball.radius
+      ball.vy = Math.abs(ball.vy)
+    }
+  }
+
+  private handlePaddleBounce(ball: Ball): void {
+    const ballBottom = ball.y + ball.radius
+    const paddleTop = this.paddle.y
+    const paddleBottom = this.paddle.y + this.paddle.height
+    const paddleLeft = this.paddle.x
+    const paddleRight = this.paddle.x + this.paddle.width
+
+    if (
+      ball.vy > 0 &&
+      ballBottom >= paddleTop &&
+      ball.y - ball.radius <= paddleBottom &&
+      ball.x >= paddleLeft &&
+      ball.x <= paddleRight
+    ) {
+      ball.y = paddleTop - ball.radius
+
+      if (this.stickyActive && !this.stickyBall) {
+        ball.vx = 0
+        ball.vy = 0
+        this.stickyBall = ball
+        return
+      }
+
+      const paddleCenter = this.paddle.x + this.paddle.width / 2
+      const offset = (ball.x - paddleCenter) / (this.paddle.width / 2)
+      const clampedOffset = Math.max(-1, Math.min(1, offset))
+      const maxAngle = (65 * Math.PI) / 180
+      const bounceAngle = clampedOffset * maxAngle
+      const newSpeed = Math.hypot(ball.vx, ball.vy) * 1.03
+
+      ball.vx = newSpeed * Math.sin(bounceAngle)
+      ball.vy = -Math.abs(newSpeed * Math.cos(bounceAngle))
+    }
+  }
+
+  private handleBrickBounce(ball: Ball): void {
+    for (const brick of this.bricks) {
+      if (!brick.alive) continue
+      if (!this.ballIntersectsRect(ball, brick)) continue
+
+      brick.alive = false
+      this.bricksRemaining--
+      this.bricksDestroyed++
+      this.addScore(brick.points)
+
+      this.comboCount++
+      this.comboTimer = 1500
+      this.spawnParticles(brick.x + brick.width / 2, brick.y + brick.height / 2, 8, brick.color)
+      this.addBallTrail(ball.x, ball.y)
+
+      if (this.comboCount >= 3) {
+        this.triggerComboText()
+      }
+
+      const overlapLeft = ball.x + ball.radius - brick.x
+      const overlapRight = brick.x + brick.width - (ball.x - ball.radius)
+      const overlapTop = ball.y + ball.radius - brick.y
+      const overlapBottom = brick.y + brick.height - (ball.y - ball.radius)
+      const minHorizontal = Math.min(overlapLeft, overlapRight)
+      const minVertical = Math.min(overlapTop, overlapBottom)
+
+      if (minHorizontal < minVertical) {
+        ball.vx *= -1
+      } else {
+        ball.vy *= -1
+      }
+
+      if (Math.random() < 0.12 + this.dropRateBonus) {
+        this.spawnPowerUp(brick.x + brick.width / 2, brick.y + brick.height / 2)
+      }
+
+      break
+    }
+  }
+
+  private ballIntersectsRect(ball: Ball, rect: { x: number; y: number; width: number; height: number }): boolean {
+    const closestX = Math.max(rect.x, Math.min(ball.x, rect.x + rect.width))
+    const closestY = Math.max(rect.y, Math.min(ball.y, rect.y + rect.height))
+    const dx = ball.x - closestX
+    const dy = ball.y - closestY
+    return dx * dx + dy * dy <= ball.radius * ball.radius
+  }
+
+  private handleLifeLost(): void {
+    this.lives--
+
+    if (this.lives <= 0) {
+      this.lives = 0
+      this.gameOver = true
+      if (!this.gameOverTriggered) {
+        this.gameOverTriggered = true
+        this.callbacks.onGameOver?.(this.score)
+      }
+      return
+    }
+
+    this.resetBallOnPaddle()
+  }
+
+  private checkLevelClear(): void {
+    if (this.bricksRemaining > 0) return
+
+    this.level++
+    this.levelTextTimer = this.maxLevelTextTime
+
+    this.powerUps = []
+    this.laserBullets = []
+    this.stickyBall = null
+    this.stickyActive = false
+    this.laserActive = false
+    this.laserCooldownMs = 0
+    this.clearAllEffects()
+
+    this.createLevelBricks()
+    this.resetBallOnPaddle()
+  }
+
+  private resetBallOnPaddle(): void {
+    this.paddle.x = (this.width - this.paddle.width) / 2
+    this.balls = [this.createBall()]
+    const ball = this.balls[0]!
+    ball.x = this.paddle.x + this.paddle.width / 2
+    ball.y = this.paddle.y - ball.radius - 2 * this.dpr
+    ball.vx = 0
+    ball.vy = 0
+    this.stickyBall = null
+    this.serveTimer = 700
+  }
+
+  private addScore(points: number): void {
+    if (points <= 0) return
+    this.score += points
+    this.callbacks.onScoreUpdate?.(this.score)
+  }
+
+  private pushStats(): void {
+    this.callbacks.onStatsUpdate?.({
+      hp: this.lives,
+      maxHp: this.maxLives,
+      level: this.level,
+      xp: this.bricksDestroyed,
+      xpToNext: this.totalBricks,
+      kills: this.bricksDestroyed,
+      time: Math.floor(this.gameTime / 1000),
+      score: this.score,
+    })
+    this.pushHud()
+  }
+
+  private pushHud(): void {
+    const hudData: GameHudData = {
+      hp: this.lives,
+      maxHp: this.maxLives,
+      level: this.level,
+      xp: this.bricksDestroyed,
+      xpToNext: this.totalBricks,
+      kills: this.bricksDestroyed,
+      time: Math.floor(this.gameTime / 1000),
+      score: this.score,
+      activeBuffs: this.activeEffects.map(e => {
+        const def = POWERUP_DEFS[e.id]
+        return {
+          id: e.id,
+          name: def?.name ?? e.id,
+          icon: def?.icon ?? '❓',
+          remainingMs: e.remainingMs,
+          totalMs: e.totalMs,
+          type: def?.isNegative ? 'special' as const : 'power' as const,
+        }
+      }),
+      itemSlots: [],
+      currency: 0,
+    }
+    this.callbacks.onHudUpdate?.(hudData)
+  }
+
+  private spawnPowerUp(x: number, y: number): void {
+    const defs = Object.values(POWERUP_DEFS).filter(d => {
+      if (d.isNegative && this.level < 5) return false
+      return true
+    })
+    const totalWeight = defs.reduce((sum, d) => sum + d.spawnWeight, 0)
+    if (totalWeight <= 0) return
+    let roll = Math.random() * totalWeight
+    let chosen: BreakoutPowerUpDef = defs[0]!
+
+    for (const def of defs) {
+      roll -= def.spawnWeight
+      if (roll <= 0) {
+        chosen = def
+        break
+      }
+    }
+
+    this.powerUps.push({
+      x: x - (30 * this.dpr) / 2,
+      y,
+      width: 30 * this.dpr,
+      height: 16 * this.dpr,
+      vy: 2 * this.dpr,
+      def: chosen,
+    })
+  }
+
+  private updatePowerUps(dt: number): void {
+    const dtScale = dt / 16.667
+
+    for (let i = this.powerUps.length - 1; i >= 0; i--) {
+      const pu = this.powerUps[i]!
+      pu.y += pu.vy * dtScale
+
+      if (pu.y > this.height) {
+        this.powerUps.splice(i, 1)
+        continue
+      }
+
+      const puRight = pu.x + pu.width
+      const puBottom = pu.y + pu.height
+      const paddleRight = this.paddle.x + this.paddle.width
+      const paddleBottom = this.paddle.y + this.paddle.height
+
+      if (
+        puRight > this.paddle.x &&
+        pu.x < paddleRight &&
+        puBottom > this.paddle.y &&
+        pu.y < paddleBottom
+      ) {
+        this.applyPowerUp(pu.def)
+        this.powerUps.splice(i, 1)
+      }
+    }
+  }
+
+  private applyPowerUp(def: BreakoutPowerUpDef): void {
+    this.callbacks.onItemCollected?.({
+      id: def.id,
+      name: def.name,
+      description: def.description,
+      icon: def.icon,
+      tier: def.isNegative ? 'common' : 'rare',
+      durationMs: def.durationMs,
+      magnitude: 1,
+      spawnWeight: def.spawnWeight,
+      stackable: false,
+    })
+
+    switch (def.id) {
+      case 'wide_paddle': {
+        this.removeEffect('narrow_paddle')
+        this.paddle.width = this.basePaddleWidth * 1.5
+        this.activeEffects.push({ id: 'wide_paddle', remainingMs: def.durationMs, totalMs: def.durationMs })
+        break
+      }
+      case 'multi_ball': {
+        const sourceBall = this.balls.find(b => b !== this.stickyBall) ?? this.balls[0]
+        if (sourceBall) {
+          for (let i = 0; i < 2; i++) {
+            const newBall = this.createBall()
+            newBall.x = sourceBall.x
+            newBall.y = sourceBall.y
+            const speed = Math.hypot(sourceBall.vx, sourceBall.vy) || this.getLevelBaseBallSpeed()
+            const baseAngle = Math.atan2(sourceBall.vx, -sourceBall.vy)
+            const offset = ((i === 0 ? -1 : 1) * 20 * Math.PI) / 180
+            const angle = baseAngle + offset
+            newBall.vx = speed * Math.sin(angle)
+            newBall.vy = -speed * Math.cos(angle)
+            this.balls.push(newBall)
+          }
+        }
+        break
+      }
+      case 'sticky_paddle': {
+        this.stickyActive = true
+        this.activeEffects.push({ id: 'sticky_paddle', remainingMs: def.durationMs, totalMs: def.durationMs })
+        break
+      }
+      case 'laser': {
+        this.laserActive = true
+        this.laserCooldownMs = 0
+        this.activeEffects.push({ id: 'laser', remainingMs: def.durationMs, totalMs: def.durationMs })
+        break
+      }
+      case 'slow_ball': {
+        this.removeEffect('speed_ball')
+        for (const ball of this.balls) {
+          ball.vx *= 0.6
+          ball.vy *= 0.6
+        }
+        this.activeEffects.push({ id: 'slow_ball', remainingMs: def.durationMs, totalMs: def.durationMs })
+        break
+      }
+      case 'extra_life': {
+        this.lives = Math.min(this.lives + 1, this.maxLives + 2)
+        break
+      }
+      case 'narrow_paddle': {
+        this.removeEffect('wide_paddle')
+        this.paddle.width = this.basePaddleWidth * 0.7
+        this.activeEffects.push({ id: 'narrow_paddle', remainingMs: def.durationMs, totalMs: def.durationMs })
+        break
+      }
+      case 'speed_ball': {
+        this.removeEffect('slow_ball')
+        for (const ball of this.balls) {
+          ball.vx *= 1.5
+          ball.vy *= 1.5
+        }
+        this.activeEffects.push({ id: 'speed_ball', remainingMs: def.durationMs, totalMs: def.durationMs })
+        break
+      }
+    }
+  }
+
+  private removeEffect(id: string): void {
+    const idx = this.activeEffects.findIndex(e => e.id === id)
+    if (idx === -1) return
+    this.revertEffect(id)
+    this.activeEffects.splice(idx, 1)
+  }
+
+  private revertEffect(id: string): void {
+    switch (id) {
+      case 'wide_paddle':
+      case 'narrow_paddle':
+        this.paddle.width = this.basePaddleWidth
+        break
+      case 'slow_ball':
+        for (const ball of this.balls) {
+          ball.vx /= 0.6
+          ball.vy /= 0.6
+        }
+        break
+      case 'speed_ball':
+        for (const ball of this.balls) {
+          ball.vx /= 1.5
+          ball.vy /= 1.5
+        }
+        break
+      case 'sticky_paddle':
+        this.stickyActive = false
+        if (this.stickyBall) {
+          const speed = this.getLevelBaseBallSpeed()
+          const angle = (Math.random() - 0.5) * (Math.PI / 3.2)
+          this.stickyBall.vx = speed * Math.sin(angle)
+          this.stickyBall.vy = -Math.abs(speed * Math.cos(angle))
+          this.stickyBall = null
+        }
+        break
+      case 'laser':
+        this.laserActive = false
+        break
+    }
+  }
+
+  private updateActiveEffects(dt: number): void {
+    for (let i = this.activeEffects.length - 1; i >= 0; i--) {
+      const effect = this.activeEffects[i]!
+      effect.remainingMs -= dt
+
+      if (effect.remainingMs <= 0) {
+        this.revertEffect(effect.id)
+        this.activeEffects.splice(i, 1)
+      }
+    }
+  }
+
+  private clearAllEffects(): void {
+    for (const effect of this.activeEffects) {
+      this.revertEffect(effect.id)
+    }
+    this.activeEffects = []
+  }
+
+  private updateLasers(dt: number): void {
+    if (this.laserActive) {
+      this.laserCooldownMs -= dt
+      if (this.laserCooldownMs <= 0) {
+        this.laserCooldownMs = 300
+        const bulletW = 3 * this.dpr
+        const bulletH = 10 * this.dpr
+        this.laserBullets.push({
+          x: this.paddle.x + 4 * this.dpr - bulletW / 2,
+          y: this.paddle.y - bulletH,
+          vy: -0.8 * this.dpr,
+          width: bulletW,
+          height: bulletH,
+        })
+        this.laserBullets.push({
+          x: this.paddle.x + this.paddle.width - 4 * this.dpr - bulletW / 2,
+          y: this.paddle.y - bulletH,
+          vy: -0.8 * this.dpr,
+          width: bulletW,
+          height: bulletH,
+        })
+      }
+    }
+
+    for (let i = this.laserBullets.length - 1; i >= 0; i--) {
+      const bullet = this.laserBullets[i]!
+      bullet.y += bullet.vy * dt
+
+      if (bullet.y + bullet.height < 0) {
+        this.laserBullets.splice(i, 1)
+        continue
+      }
+
+      let hit = false
+      for (const brick of this.bricks) {
+        if (!brick.alive) continue
+        if (
+          bullet.x + bullet.width > brick.x &&
+          bullet.x < brick.x + brick.width &&
+          bullet.y + bullet.height > brick.y &&
+          bullet.y < brick.y + brick.height
+        ) {
+          brick.alive = false
+          this.bricksRemaining--
+          this.bricksDestroyed++
+          this.addScore(brick.points)
+
+          if (Math.random() < 0.12 + this.dropRateBonus) {
+            this.spawnPowerUp(brick.x + brick.width / 2, brick.y + brick.height / 2)
+          }
+
+          hit = true
+          break
+        }
+      }
+
+      if (hit) {
+        this.laserBullets.splice(i, 1)
+      }
+    }
+  }
+
+  private renderBricks(ctx: CanvasRenderingContext2D): void {
+    for (const brick of this.bricks) {
+      if (!brick.alive) continue
+      const r = Math.min(4 * this.dpr, brick.height * 0.35)
+      ctx.fillStyle = brick.color
+      this.roundRectPath(ctx, brick.x, brick.y, brick.width, brick.height, r)
+      ctx.fill()
+    }
+  }
+
+  private renderPaddle(ctx: CanvasRenderingContext2D): void {
+    const gradient = ctx.createLinearGradient(this.paddle.x, this.paddle.y, this.paddle.x, this.paddle.y + this.paddle.height)
+
+    if (this.stickyActive) {
+      gradient.addColorStop(0, '#e9d5ff')
+      gradient.addColorStop(1, '#a855f7')
+    } else if (this.laserActive) {
+      gradient.addColorStop(0, '#fecaca')
+      gradient.addColorStop(1, '#ef4444')
+    } else {
+      gradient.addColorStop(0, '#faf5ff')
+      gradient.addColorStop(1, '#d8b4fe')
+    }
+
+    ctx.fillStyle = gradient
+    this.roundRectPath(
+      ctx,
+      this.paddle.x,
+      this.paddle.y,
+      this.paddle.width,
+      this.paddle.height,
+      this.paddle.radius,
+    )
+    ctx.fill()
+  }
+
+  private renderBalls(ctx: CanvasRenderingContext2D): void {
+    ctx.save()
+    ctx.shadowBlur = 16 * this.dpr
+    ctx.shadowColor = 'rgba(255,255,255,0.75)'
+    ctx.fillStyle = '#ffffff'
+
+    for (const ball of this.balls) {
+      ctx.beginPath()
+      ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2)
+      ctx.fill()
+    }
+
+    ctx.restore()
+  }
+
+  private renderPowerUps(ctx: CanvasRenderingContext2D): void {
+    for (const pu of this.powerUps) {
+      const r = Math.min(pu.height / 2, 6 * this.dpr)
+
+      ctx.fillStyle = pu.def.color
+      ctx.globalAlpha = 0.9
+      this.roundRectPath(ctx, pu.x, pu.y, pu.width, pu.height, r)
+      ctx.fill()
+      ctx.globalAlpha = 1
+
+      ctx.fillStyle = '#ffffff'
+      ctx.font = `${Math.round(10 * this.dpr)}px sans-serif`
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.fillText(pu.def.icon, pu.x + pu.width / 2, pu.y + pu.height / 2)
+    }
+
+    ctx.textBaseline = 'alphabetic'
+  }
+
+  private renderLasers(ctx: CanvasRenderingContext2D): void {
+    if (this.laserBullets.length === 0) return
+
+    ctx.fillStyle = '#ef4444'
+    ctx.shadowBlur = 6 * this.dpr
+    ctx.shadowColor = '#ef4444'
+
+    for (const bullet of this.laserBullets) {
+      ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height)
+    }
+
+    ctx.shadowBlur = 0
+    ctx.shadowColor = 'transparent'
+  }
+
+  private renderActiveEffects(ctx: CanvasRenderingContext2D): void {
+    if (this.activeEffects.length === 0) return
+
+    const dotRadius = 4 * this.dpr
+    const spacing = 12 * this.dpr
+    const startX = 20 * this.dpr
+    const y = 34 * this.dpr
+
+    for (let i = 0; i < this.activeEffects.length; i++) {
+      const effect = this.activeEffects[i]!
+      const def = POWERUP_DEFS[effect.id]
+      if (!def) continue
+
+      const x = startX + i * spacing
+      const progress = effect.remainingMs / effect.totalMs
+
+      ctx.globalAlpha = 0.3
+      ctx.fillStyle = def.color
+      ctx.beginPath()
+      ctx.arc(x, y, dotRadius, 0, Math.PI * 2)
+      ctx.fill()
+
+      ctx.globalAlpha = 0.9
+      ctx.fillStyle = def.color
+      ctx.beginPath()
+      ctx.moveTo(x, y)
+      ctx.arc(x, y, dotRadius, -Math.PI / 2, -Math.PI / 2 + progress * Math.PI * 2)
+      ctx.closePath()
+      ctx.fill()
+
+      ctx.globalAlpha = 1
+    }
+  }
+
+  private renderLives(ctx: CanvasRenderingContext2D): void {
+    const radius = 5 * this.dpr
+    const spacing = 16 * this.dpr
+    const xStart = 20 * this.dpr
+    const y = 20 * this.dpr
+
+    const displayMax = Math.max(this.maxLives, this.lives)
+    for (let i = 0; i < displayMax; i++) {
+      const x = xStart + i * spacing
+      ctx.globalAlpha = i < this.lives ? 1 : 0.25
+      ctx.fillStyle = '#f8fafc'
+      ctx.beginPath()
+      ctx.arc(x, y, radius, 0, Math.PI * 2)
+      ctx.fill()
+    }
+
+    ctx.globalAlpha = 1
+  }
+
+  private renderHudText(ctx: CanvasRenderingContext2D): void {
+    ctx.fillStyle = 'rgba(248, 250, 252, 0.92)'
+    ctx.font = `${12 * this.dpr}px sans-serif`
+    ctx.textAlign = 'right'
+    ctx.fillText(`分數 ${this.score}`, this.width - 14 * this.dpr, 24 * this.dpr)
+  }
+
+  private renderLevelText(ctx: CanvasRenderingContext2D): void {
+    if (this.levelTextTimer <= 0) return
+
+    const alpha = Math.min(1, this.levelTextTimer / this.maxLevelTextTime)
+    ctx.globalAlpha = alpha
+    ctx.fillStyle = '#e2e8f0'
+    ctx.font = `bold ${28 * this.dpr}px sans-serif`
+    ctx.textAlign = 'center'
+    ctx.fillText(`第 ${this.level} 關`, this.width / 2, this.height * 0.55)
+    ctx.globalAlpha = 1
+  }
+
+  private renderGameOver(ctx: CanvasRenderingContext2D): void {
+    if (!this.gameOver) return
+
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.58)'
+    ctx.fillRect(0, 0, this.width, this.height)
+    ctx.fillStyle = '#f8fafc'
+    ctx.textAlign = 'center'
+    ctx.font = `bold ${32 * this.dpr}px sans-serif`
+    ctx.fillText('遊戲結束', this.width / 2, this.height * 0.48)
+    ctx.font = `${16 * this.dpr}px sans-serif`
+    ctx.fillText(`最終分數 ${this.score}`, this.width / 2, this.height * 0.54)
+  }
+
+  private roundRectPath(
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    radius: number,
+  ): void {
+    const r = Math.max(0, Math.min(radius, Math.min(width, height) / 2))
+    ctx.beginPath()
+    ctx.moveTo(x + r, y)
+    ctx.lineTo(x + width - r, y)
+    ctx.quadraticCurveTo(x + width, y, x + width, y + r)
+    ctx.lineTo(x + width, y + height - r)
+    ctx.quadraticCurveTo(x + width, y + height, x + width - r, y + height)
+    ctx.lineTo(x + r, y + height)
+    ctx.quadraticCurveTo(x, y + height, x, y + height - r)
+    ctx.lineTo(x, y + r)
+    ctx.quadraticCurveTo(x, y, x + r, y)
+    ctx.closePath()
+  }
+}
+
+export function createBreakoutGame(): GameInstance {
+  return new BreakoutGame()
+}

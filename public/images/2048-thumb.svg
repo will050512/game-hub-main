@@ -1,0 +1,219 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-label="2048 thumbnail">
+  <!-- Background -->
+  <rect width="640" height="360" fill="#0f0f23"/>
+
+  <!-- Background pixel grid (every 40px) -->
+  <g fill="#2a2a4a" opacity="0.1">
+    <!-- Vertical lines -->
+    <rect x="39" y="0" width="1" height="360"/>
+    <rect x="79" y="0" width="1" height="360"/>
+    <rect x="119" y="0" width="1" height="360"/>
+    <rect x="159" y="0" width="1" height="360"/>
+    <rect x="199" y="0" width="1" height="360"/>
+    <rect x="239" y="0" width="1" height="360"/>
+    <rect x="279" y="0" width="1" height="360"/>
+    <rect x="319" y="0" width="1" height="360"/>
+    <rect x="359" y="0" width="1" height="360"/>
+    <rect x="399" y="0" width="1" height="360"/>
+    <rect x="439" y="0" width="1" height="360"/>
+    <rect x="479" y="0" width="1" height="360"/>
+    <rect x="519" y="0" width="1" height="360"/>
+    <rect x="559" y="0" width="1" height="360"/>
+    <rect x="599" y="0" width="1" height="360"/>
+    <!-- Horizontal lines -->
+    <rect x="0" y="39" width="640" height="1"/>
+    <rect x="0" y="79" width="640" height="1"/>
+    <rect x="0" y="119" width="640" height="1"/>
+    <rect x="0" y="159" width="640" height="1"/>
+    <rect x="0" y="199" width="640" height="1"/>
+    <rect x="0" y="239" width="640" height="1"/>
+    <rect x="0" y="279" width="640" height="1"/>
+    <rect x="0" y="319" width="640" height="1"/>
+  </g>
+
+  <!-- Pixel sparkles (upper right) -->
+  <g fill="#ffcc44">
+    <rect x="580" y="84" width="4" height="4"/>
+    <rect x="576" y="76" width="4" height="4"/>
+    <rect x="588" y="76" width="4" height="4"/>
+    <rect x="576" y="92" width="4" height="4"/>
+    <rect x="588" y="92" width="4" height="4"/>
+    <rect x="584" y="76" width="4" height="4"/>
+    <rect x="584" y="92" width="4" height="4"/>
+    <rect x="578" y="80" width="4" height="4"/>
+    <rect x="586" y="80" width="4" height="4"/>
+    <rect x="578" y="88" width="4" height="4"/>
+    <rect x="586" y="88" width="4" height="4"/>
+  </g>
+
+  <!-- Small pixel sparkle (lower right) -->
+  <g fill="#ff66aa">
+    <rect x="560" y="220" width="4" height="4"/>
+    <rect x="556" y="212" width="4" height="4"/>
+    <rect x="564" y="212" width="4" height="4"/>
+    <rect x="556" y="228" width="4" height="4"/>
+    <rect x="564" y="228" width="4" height="4"/>
+  </g>
+
+  <!-- MERGE! text -->
+  <text x="530" y="118" font-family="'Press Start 2P', monospace" font-size="13" fill="#ff44aa" transform="rotate(-12, 530, 118)">MERGE!</text>
+
+  <!-- COMBO! 2x text -->
+  <text x="108" y="148" font-family="'Press Start 2P', monospace" font-size="9" fill="#44ff88" transform="rotate(8, 108, 148)">COMBO! 2x</text>
+
+  <!-- Small pixel heart (top right) -->
+  <g fill="#ff4488">
+    <rect x="590" y="60" width="4" height="4"/>
+    <rect x="600" y="60" width="4" height="4"/>
+    <rect x="586" y="66" width="4" height="4"/>
+    <rect x="596" y="66" width="4" height="4"/>
+    <rect x="590" y="72" width="10" height="4"/>
+    <rect x="590" y="78" width="4" height="4"/>
+    <rect x="596" y="78" width="4" height="4"/>
+    <rect x="594" y="82" width="4" height="4"/>
+  </g>
+
+  <!-- ==================== GAME BOARD ==================== -->
+  <!-- Board background -->
+  <rect x="180" y="40" width="280" height="280" fill="#1e2749" rx="2"/>
+
+  <!-- Board border (2px, using rects for pixel style) -->
+  <rect x="178" y="38" width="284" height="2" fill="#4a4a8a"/>
+  <rect x="178" y="318" width="284" height="2" fill="#4a4a8a"/>
+  <rect x="178" y="40" width="2" height="280" fill="#4a4a8a"/>
+  <rect x="458" y="40" width="2" height="280" fill="#4a4a8a"/>
+
+  <!-- Inner board rim light -->
+  <rect x="181" y="41" width="278" height="1" fill="#2a3a6a"/>
+  <rect x="181" y="318" width="278" height="1" fill="#2a3a6a"/>
+  <rect x="181" y="41" width="1" height="278" fill="#2a3a6a"/>
+  <rect x="458" y="41" width="1" height="278" fill="#2a3a6a"/>
+
+  <!-- Grid lines -->
+  <g fill="#2a2a5a">
+    <rect x="249" y="40" width="2" height="280"/>
+    <rect x="321" y="40" width="2" height="280"/>
+    <rect x="393" y="40" width="2" height="280"/>
+    <rect x="180" y="109" width="280" height="2"/>
+    <rect x="180" y="181" width="280" height="2"/>
+    <rect x="180" y="253" width="280" height="2"/>
+  </g>
+
+  <!-- ==================== TILES ==================== -->
+
+  <!-- ROW 0 -->
+
+  <!-- Tile 2 (181,41) -->
+  <rect x="181" y="41" width="68" height="68" fill="#2a2a5a" rx="1"/>
+  <text x="215" y="75" text-anchor="middle" dominant-baseline="central" font-family="'Press Start 2P', monospace" font-size="28" fill="#e0e0ff">2</text>
+
+  <!-- Tile 4 (251,41) -->
+  <rect x="251" y="41" width="68" height="68" fill="#3a3a6a" rx="1"/>
+  <text x="285" y="75" text-anchor="middle" dominant-baseline="central" font-family="'Press Start 2P', monospace" font-size="28" fill="#e0e0ff">4</text>
+
+  <!-- Tile 8 (321,41) -->
+  <rect x="321" y="41" width="68" height="68" fill="#4a3a6a" rx="1"/>
+  <text x="355" y="75" text-anchor="middle" dominant-baseline="central" font-family="'Press Start 2P', monospace" font-size="28" fill="#e0e0ff">8</text>
+
+  <!-- Tile 16 (391,41) -->
+  <rect x="391" y="41" width="68" height="68" fill="#5a3a5a" rx="1"/>
+  <text x="425" y="75" text-anchor="middle" dominant-baseline="central" font-family="'Press Start 2P', monospace" font-size="20" fill="#d0d0d0">16</text>
+
+  <!-- ROW 1 -->
+
+  <!-- Tile 32 (181,111) -->
+  <rect x="181" y="111" width="68" height="68" fill="#4a2a4a" rx="1"/>
+  <text x="215" y="145" text-anchor="middle" dominant-baseline="central" font-family="'Press Start 2P', monospace" font-size="20" fill="#c0c0c0">32</text>
+
+  <!-- Tile 64 (251,111) -->
+  <rect x="251" y="111" width="68" height="68" fill="#3a2a3a" rx="1"/>
+  <text x="285" y="145" text-anchor="middle" dominant-baseline="central" font-family="'Press Start 2P', monospace" font-size="20" fill="#ff8866">64</text>
+
+  <!-- Empty cell (321,111) - just leave as board bg -->
+
+  <!-- Tile 256 (391,111) - with 3D pixel bevel -->
+  <rect x="391" y="111" width="68" height="68" fill="#1a2a3a" rx="1"/>
+  <rect x="391" y="111" width="68" height="1" fill="#2a3a4a"/>
+  <rect x="391" y="111" width="1" height="68" fill="#2a3a4a"/>
+  <rect x="391" y="177" width="68" height="1" fill="#0a1a2a"/>
+  <rect x="457" y="111" width="1" height="68" fill="#0a1a2a"/>
+  <text x="425" y="145" text-anchor="middle" dominant-baseline="central" font-family="'Press Start 2P', monospace" font-size="15" fill="#00d4ff">256</text>
+
+  <!-- ROW 2 -->
+
+  <!-- Tile 128 (181,181) - with 3D pixel bevel -->
+  <rect x="181" y="181" width="68" height="68" fill="#1e2749" rx="1"/>
+  <rect x="181" y="181" width="68" height="1" fill="#2a3a5a"/>
+  <rect x="181" y="181" width="1" height="68" fill="#2a3a5a"/>
+  <rect x="181" y="247" width="68" height="1" fill="#122030"/>
+  <rect x="247" y="181" width="1" height="68" fill="#122030"/>
+  <text x="215" y="215" text-anchor="middle" dominant-baseline="central" font-family="'Press Start 2P', monospace" font-size="15" fill="#44ff88">128</text>
+
+  <!-- Empty cell (251,181) -->
+
+  <!-- Tile 512 (321,181) - with 3D pixel bevel -->
+  <rect x="321" y="181" width="68" height="68" fill="#2a1a3a" rx="1"/>
+  <rect x="321" y="181" width="68" height="1" fill="#3a2a4a"/>
+  <rect x="321" y="181" width="1" height="68" fill="#3a2a4a"/>
+  <rect x="321" y="247" width="68" height="1" fill="#1a0a2a"/>
+  <rect x="387" y="181" width="1" height="68" fill="#1a0a2a"/>
+  <text x="355" y="215" text-anchor="middle" dominant-baseline="central" font-family="'Press Start 2P', monospace" font-size="15" fill="#ff44aa">512</text>
+
+  <!-- Tile 1024 (391,181) -->
+  <rect x="391" y="181" width="68" height="68" fill="#1a1a2a" rx="1"/>
+  <text x="425" y="215" text-anchor="middle" dominant-baseline="central" font-family="'Press Start 2P', monospace" font-size="13" fill="#ffff00">1024</text>
+
+  <!-- ROW 3 -->
+
+  <!-- Empty cell (181,251) -->
+
+  <!-- Tile 2048 (251,251) - SPECIAL: yellow border + glow -->
+  <rect x="251" y="251" width="68" height="68" fill="#2a2a1a" rx="1"/>
+  <!-- Yellow border using rects -->
+  <rect x="251" y="251" width="68" height="2" fill="#ffff00"/>
+  <rect x="251" y="316" width="68" height="2" fill="#ffff00"/>
+  <rect x="251" y="251" width="2" height="68" fill="#ffff00"/>
+  <rect x="315" y="251" width="2" height="68" fill="#ffff00"/>
+  <!-- Inner glow -->
+  <rect x="255" y="255" width="60" height="60" fill="#3a3a2a" rx="1"/>
+  <text x="285" y="285" text-anchor="middle" dominant-baseline="central" font-family="'Press Start 2P', monospace" font-size="16" fill="#ffff00">2048</text>
+
+  <!-- Pixel crown above 2048 -->
+  <g fill="#ffff00">
+    <rect x="279" y="237" width="12" height="4"/>
+    <rect x="275" y="231" width="20" height="4"/>
+    <rect x="279" y="225" width="12" height="4"/>
+    <rect x="279" y="219" width="4" height="4"/>
+    <rect x="288" y="219" width="4" height="4"/>
+  </g>
+  <!-- Crown gems -->
+  <g fill="#ff4488">
+    <rect x="279" y="229" width="4" height="4"/>
+    <rect x="286" y="229" width="4" height="4"/>
+    <rect x="293" y="229" width="4" height="4"/>
+  </g>
+
+  <!-- Tile 64 (321,251) -->
+  <rect x="321" y="251" width="68" height="68" fill="#3a2a3a" rx="1"/>
+  <text x="355" y="285" text-anchor="middle" dominant-baseline="central" font-family="'Press Start 2P', monospace" font-size="20" fill="#ff8866">64</text>
+
+  <!-- Tile 32 (391,251) -->
+  <rect x="391" y="251" width="68" height="68" fill="#4a2a4a" rx="1"/>
+  <text x="425" y="285" text-anchor="middle" dominant-baseline="central" font-family="'Press Start 2P', monospace" font-size="20" fill="#c0c0c0">32</text>
+
+  <!-- ==================== TITLE LABEL ==================== -->
+  <rect x="240" y="332" width="160" height="24" fill="#1e2749"/>
+  <rect x="238" y="330" width="2" height="28" fill="#4a4a8a"/>
+  <rect x="398" y="330" width="2" height="28" fill="#4a4a8a"/>
+  <rect x="240" y="330" width="160" height="2" fill="#4a4a8a"/>
+  <rect x="240" y="354" width="160" height="2" fill="#4a4a8a"/>
+  <text x="320" y="347" text-anchor="middle" dominant-baseline="central" font-family="'Press Start 2P', monospace" font-size="20" fill="#e0e0ff">2048</text>
+
+  <!-- Small pixel sparkle near title -->
+  <g fill="#ffcc44">
+    <rect x="230" y="342" width="2" height="2"/>
+    <rect x="400" y="340" width="2" height="2"/>
+    <rect x="408" y="348" width="2" height="2"/>
+    <rect x="222" y="350" width="2" height="2"/>
+  </g>
+</svg>

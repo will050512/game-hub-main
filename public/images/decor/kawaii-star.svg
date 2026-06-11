@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Kawaii star decoration">
+  <path d="M64 10l13 34 36 2-28 22 9 36-30-20-30 20 9-36-28-22 36-2z" fill="#fbbf24" stroke="#171717" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M45 58q8-8 16 0" fill="none" stroke="#171717" stroke-width="5" stroke-linecap="round"/>
+  <path d="M67 58q8-8 16 0" fill="none" stroke="#171717" stroke-width="5" stroke-linecap="round"/>
+  <path d="M51 72q13 12 26 0" fill="none" stroke="#171717" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="39" cy="70" r="6" fill="#f87171" opacity=".7"/>
+  <circle cx="89" cy="70" r="6" fill="#f87171" opacity=".7"/>
+</svg>

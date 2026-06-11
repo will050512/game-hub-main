@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Game Hub 統一美術與音效方向</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Inter, "Noto Sans TC", system-ui, sans-serif;
+      background: #f4f0ea;
+      color: #271f24;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; background: #f4f0ea; }
+    main { width: min(1180px, calc(100vw - 32px)); margin: 0 auto; padding: 32px 0 48px; }
+    h1 { margin: 0 0 8px; font-size: clamp(28px, 4vw, 44px); letter-spacing: 0; }
+    .intro { margin: 0 0 28px; color: #675d63; line-height: 1.7; max-width: 820px; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+    .direction {
+      min-height: 620px;
+      border: 2px solid #2a2027;
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fffaf4;
+      box-shadow: 8px 8px 0 rgba(42, 32, 39, 0.16);
+    }
+    .screen { min-height: 420px; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 900; }
+    .mark { width: 34px; height: 34px; border: 2px solid currentColor; border-radius: 8px; display: grid; place-items: center; }
+    .chip-row, .audio-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .chip { border: 1.5px solid currentColor; border-radius: 999px; padding: 6px 10px; font-size: 12px; font-weight: 800; }
+    .hero { border: 2px solid currentColor; border-radius: 8px; padding: 16px; min-height: 128px; display: grid; align-content: center; gap: 10px; }
+    .hero h2 { margin: 0; font-size: 22px; letter-spacing: 0; }
+    .hero p { margin: 0; line-height: 1.5; font-size: 13px; }
+    .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .game-card { border: 2px solid currentColor; border-radius: 8px; padding: 12px; min-height: 104px; display: flex; flex-direction: column; justify-content: space-between; }
+    .thumb { height: 42px; border-radius: 6px; border: 1.5px solid currentColor; position: relative; overflow: hidden; }
+    .thumb::before, .thumb::after { content: ""; position: absolute; border: 1.5px solid currentColor; }
+    .thumb::before { width: 24px; height: 24px; left: 10px; top: 8px; border-radius: 50%; }
+    .thumb::after { width: 42px; height: 16px; right: 8px; bottom: 8px; border-radius: 5px; }
+    .game-card strong { font-size: 13px; }
+    .audio-panel { margin-top: auto; border: 2px solid currentColor; border-radius: 8px; padding: 12px; }
+    .audio-title { font-weight: 900; margin-bottom: 10px; }
+    .slider { display: grid; grid-template-columns: 52px 1fr 36px; align-items: center; gap: 8px; font-size: 12px; font-weight: 800; }
+    .track { height: 8px; border: 1.5px solid currentColor; border-radius: 999px; overflow: hidden; background: rgba(255,255,255,0.5); }
+    .fill { height: 100%; width: 70%; background: currentColor; }
+    .body { padding: 18px; border-top: 2px solid #2a2027; }
+    .body h3 { margin: 0 0 8px; font-size: 18px; }
+    .body p { margin: 0 0 12px; color: #5f565b; line-height: 1.6; font-size: 14px; }
+    .body ul { margin: 0; padding-left: 18px; color: #5f565b; line-height: 1.7; font-size: 14px; }
+
+    .a .screen { background: linear-gradient(180deg, #fff8ed, #fce8ef); color: #2b2027; }
+    .a .hero { background: #fffdf8; }
+    .a .game-card { background: #fffdf8; }
+    .a .audio-panel { background: #e7f6ed; }
+    .a .mark { background: #f6bfd7; }
+    .a .chip:nth-child(2) { background: #dcefe4; }
+    .a .chip:nth-child(3) { background: #ffe2a8; }
+
+    .b .screen { background: #111226; color: #e7f9ff; }
+    .b .hero { background: #19224b; box-shadow: 0 0 24px rgba(0, 212, 255, 0.22); }
+    .b .game-card { background: #1d2753; color: #e7f9ff; }
+    .b .audio-panel { background: #171a39; color: #ffd35a; }
+    .b .mark { background: #00d4ff; color: #111226; }
+    .b .chip:nth-child(2) { color: #ff66bb; }
+    .b .chip:nth-child(3) { color: #44ff88; }
+
+    .c .screen { background: linear-gradient(180deg, #fbf7f0, #eff7f6); color: #24302f; }
+    .c .hero { background: #ffffff; border-color: #305b55; }
+    .c .game-card { background: #ffffff; border-color: #305b55; }
+    .c .audio-panel { background: #263d3a; color: #f7e9bd; }
+    .c .mark { background: #f2c66d; color: #24302f; border-radius: 50%; }
+    .c .chip { border-radius: 6px; }
+
+    .question {
+      margin-top: 24px;
+      padding: 18px;
+      border: 2px solid #2a2027;
+      border-radius: 8px;
+      background: #fffaf4;
+      box-shadow: 6px 6px 0 rgba(42, 32, 39, 0.14);
+    }
+    .question strong { display: block; margin-bottom: 6px; }
+    @media (max-width: 980px) {
+      .grid { grid-template-columns: 1fr; }
+      .direction { min-height: 0; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Game Hub 統一美術、UI/UX、音效方向</h1>
+    <p class="intro">這張圖不是最終實作，而是用目前專案的「大廳、遊戲卡、遊戲中 HUD、音量控制」抽象成三個可落地的方向。請先選整體氣質，之後我再把它轉成具體設計規格與實作。</p>
+
+    <section class="grid">
+      <article class="direction a">
+        <div class="screen">
+          <div class="topbar">
+            <div class="brand"><div class="mark">G</div><span>Game Hub</span></div>
+            <div class="chip">Lv.12</div>
+          </div>
+          <div class="chip-row">
+            <span class="chip">每日任務</span><span class="chip">收藏</span><span class="chip">商店</span>
+          </div>
+          <div class="hero">
+            <h2>暖色手繪遊戲盒</h2>
+            <p>保留可愛手繪資產，把 pixel 與霓虹降到輔助層，UI 更像精緻的玩具盒。</p>
+          </div>
+          <div class="cards">
+            <div class="game-card"><div class="thumb"></div><strong>貪吃蛇</strong></div>
+            <div class="game-card"><div class="thumb"></div><strong>打磚塊</strong></div>
+          </div>
+          <div class="audio-panel">
+            <div class="audio-title">音效設定</div>
+            <div class="audio-row">
+              <div class="slider"><span>音效</span><div class="track"><div class="fill"></div></div><span>70%</span></div>
+              <div class="slider"><span>音樂</span><div class="track"><div class="fill" style="width:45%"></div></div><span>45%</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="body">
+          <h3>A. Kawaii Arcade</h3>
+          <p>推薦方向。最符合目前 SVG/Canvas 美術累積，統一成本最低，手機也最友善。</p>
+          <ul>
+            <li>圓角 8px 內、手繪描邊、暖紙色背景</li>
+            <li>每款遊戲保留主色，但共用卡片/HUD/彈窗語彙</li>
+            <li>音效走柔和合成音：點擊、得分、受傷、勝利、失敗</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="direction b">
+        <div class="screen">
+          <div class="topbar">
+            <div class="brand"><div class="mark">G</div><span>Game Hub</span></div>
+            <div class="chip">Lv.12</div>
+          </div>
+          <div class="chip-row">
+            <span class="chip">每日任務</span><span class="chip">收藏</span><span class="chip">商店</span>
+          </div>
+          <div class="hero">
+            <h2>霓虹像素遊樂場</h2>
+            <p>強化目前 token 的 neon pixel 方向，介面更街機、更刺激，但要重修可愛資產。</p>
+          </div>
+          <div class="cards">
+            <div class="game-card"><div class="thumb"></div><strong>小蜜蜂</strong></div>
+            <div class="game-card"><div class="thumb"></div><strong>俄羅斯方塊</strong></div>
+          </div>
+          <div class="audio-panel">
+            <div class="audio-title">Audio Mixer</div>
+            <div class="audio-row">
+              <div class="slider"><span>SFX</span><div class="track"><div class="fill"></div></div><span>70%</span></div>
+              <div class="slider"><span>BGM</span><div class="track"><div class="fill" style="width:45%"></div></div><span>45%</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="body">
+          <h3>B. Neon Pixel</h3>
+          <p>視覺衝擊強，但會和現有手繪美術拉扯，統一工作量最大。</p>
+          <ul>
+            <li>低圓角、硬陰影、深色背景、霓虹描邊</li>
+            <li>適合街機遊戲，但益智/商店頁可能較壓迫</li>
+            <li>音效走 8-bit/方波，需控制尖銳度與疲勞感</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="direction c">
+        <div class="screen">
+          <div class="topbar">
+            <div class="brand"><div class="mark">G</div><span>Game Hub</span></div>
+            <div class="chip">Lv.12</div>
+          </div>
+          <div class="chip-row">
+            <span class="chip">任務</span><span class="chip">收藏</span><span class="chip">音訊</span>
+          </div>
+          <div class="hero">
+            <h2>清爽任務型平台</h2>
+            <p>把 Game Hub 當成重複遊玩的工具平台，降低裝飾，強化資訊層級和可讀性。</p>
+          </div>
+          <div class="cards">
+            <div class="game-card"><div class="thumb"></div><strong>數獨</strong></div>
+            <div class="game-card"><div class="thumb"></div><strong>記憶翻牌</strong></div>
+          </div>
+          <div class="audio-panel">
+            <div class="audio-title">音量混音</div>
+            <div class="audio-row">
+              <div class="slider"><span>效果</span><div class="track"><div class="fill"></div></div><span>70%</span></div>
+              <div class="slider"><span>背景</span><div class="track"><div class="fill" style="width:45%"></div></div><span>45%</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="body">
+          <h3>C. Cozy Platform</h3>
+          <p>最成熟、最耐看，但遊戲感較弱，需要用角色與動效補足趣味。</p>
+          <ul>
+            <li>安靜版面、少裝飾、清楚分區</li>
+            <li>適合多平台與長時間使用</li>
+            <li>音效偏輕提示音，背景音樂可選低存在感</li>
+          </ul>
+        </div>
+      </article>
+    </section>
+
+    <section class="question">
+      <strong>請先選一個主要方向：A、B 或 C。</strong>
+      <span>你也可以回覆例如「A 但少一點可愛」、「B 的深色加 A 的手繪」、「C 但保留遊戲感」。</span>
+    </section>
+  </main>
+</body>
+</html>

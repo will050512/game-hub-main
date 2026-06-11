@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-label="Smiling ghost decoration">
+  <path d="M28 116c0-48 17-82 53-82 33 0 51 27 51 70v30c0 9-10 13-17 7l-8-7-10 11c-5 5-13 5-18 0l-10-11-10 11c-5 5-13 5-18 0l-13-13z" fill="#fffdf7" stroke="#171717" stroke-width="8" stroke-linejoin="round"/>
+  <ellipse cx="61" cy="78" rx="9" ry="13" fill="#171717"/>
+  <ellipse cx="101" cy="78" rx="9" ry="13" fill="#171717"/>
+  <path d="M58 102c13 14 35 14 48 0" fill="none" stroke="#171717" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="64" cy="74" r="3" fill="#fff"/>
+  <circle cx="104" cy="74" r="3" fill="#fff"/>
+</svg>
