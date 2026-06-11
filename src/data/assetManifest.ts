@@ -1,5 +1,7 @@
 import type { GameId } from '@/types'
 
+const BASE = import.meta.env.BASE_URL
+
 export type AssetCategory = 'thumbnails' | 'ui' | 'mascot' | 'audio' | 'icons'
 
 export interface ImageAsset {
@@ -22,9 +24,13 @@ export interface AssetRegistry {
   audio: Record<string, AudioAsset>
 }
 
-const FALLBACK_THUMBNAIL = '/images/fallback-thumb.png'
-const FALLBACK_ICON = '/icons/fallback.svg'
-const FALLBACK_MASCOT = '/images/mascot/fallback.png'
+function resolve(path: string): string {
+  return path.startsWith('/') ? `${BASE}${path.slice(1)}` : path
+}
+
+const FALLBACK_THUMBNAIL = resolve('/images/fallback-thumb.png')
+const FALLBACK_ICON = resolve('/icons/fallback.svg')
+const FALLBACK_MASCOT = resolve('/images/mascot/fallback.png')
 
 
 export const gameThumbnails: Record<GameId, ImageAsset> = {
@@ -369,12 +375,12 @@ export function getAssetPath(assetKey: string, type: 'images' | 'audio' = 'image
     console.warn(`[AssetManifest] Asset not found: ${assetKey}`)
     return type === 'images' ? FALLBACK_THUMBNAIL : ''
   }
-  return asset.path
+  return resolve(asset.path)
 }
 
 export function getGameThumbnail(gameId: GameId): string {
   const thumbnail = gameThumbnails[gameId]
-  return thumbnail?.path || FALLBACK_THUMBNAIL
+  return resolve(thumbnail?.path || FALLBACK_THUMBNAIL)
 }
 
 export function getGameAudio(gameId: GameId, audioKey: string): string {
