@@ -498,7 +498,38 @@ onUnmounted(() => {
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+@media (max-width: 480px) {
+  .lobby-game-card {
+    min-height: 240px;
+  }
+
+  .card-thumbnail {
+    aspect-ratio: 16 / 10;
+  }
+
+  .card-body {
+    padding: var(--space-2) var(--space-3) var(--space-1);
+  }
+
+  .game-name {
+    font-size: 0.9rem;
+  }
+
+  .game-desc {
+    font-size: 0.75rem;
+    -webkit-line-clamp: 1;
+  }
+
+  .card-footer {
+    padding: var(--space-1) var(--space-3) var(--space-2);
+  }
+
+  .flip-hint {
+    display: none;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
   .lobby-game-card {
     min-height: 280px;
   }

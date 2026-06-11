@@ -208,11 +208,38 @@ onUnmounted(() => {
   background: var(--color-gradient-hero);
   box-shadow: var(--shadow-card);
   overflow: hidden;
-  min-height: 380px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-6);
+}
+
+/* Allow hero to shrink on short screens instead of forcing overflow */
+@media (max-height: 500px) {
+  .hero-section {
+    margin-bottom: var(--space-6);
+    padding: var(--space-6) var(--space-4) var(--space-4);
+    gap: var(--space-4);
+  }
+
+  .title-main {
+    font-size: var(--font-size-2xl) !important;
+  }
+
+  .hero-stats {
+    gap: var(--space-2);
+  }
+
+  .stat-card {
+    padding: var(--space-2);
+    gap: var(--space-2);
+  }
+
+  .stat-icon {
+    width: 32px;
+    height: 32px;
+    padding: 5px;
+  }
 }
 
 /* ==================== Hero Content ==================== */
@@ -634,6 +661,67 @@ onUnmounted(() => {
 }
 
 /* ==================== Responsive ==================== */
+
+/* Landscape phones / short viewports - reduce hero to fit */
+@media (max-height: 480px) {
+  .hero-section {
+    min-height: auto !important;
+    padding: var(--space-4) var(--space-4) var(--space-3);
+    margin-bottom: var(--space-6);
+    gap: var(--space-3);
+  }
+
+  .mascot-area {
+    margin-bottom: 0;
+  }
+
+  .mascot-bubble {
+    width: 56px !important;
+    height: 56px !important;
+  }
+
+  .title-area {
+    gap: var(--space-1);
+  }
+
+  .hero-title {
+    font-size: var(--font-size-2xl) !important;
+  }
+
+  .title-line {
+    font-size: var(--font-size-sm) !important;
+  }
+
+  .hero-subtitle {
+    font-size: var(--font-size-sm) !important;
+  }
+
+  .hero-stats {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-2);
+  }
+
+  .stat-card {
+    padding: var(--space-2) var(--space-2);
+    gap: var(--space-2);
+  }
+
+  .stat-icon {
+    width: 28px !important;
+    height: 28px !important;
+    padding: 4px !important;
+  }
+
+  .stat-value {
+    font-size: var(--font-size-base) !important;
+  }
+
+  .stat-label,
+  .stat-title {
+    font-size: var(--font-size-xs) !important;
+  }
+}
+
 @media (max-width: 768px) {
   .hero-section {
     padding: var(--space-6) var(--space-4) var(--space-6);

@@ -115,7 +115,7 @@ function playStatsFeedback(next: PlayerStats) {
 
 function setupTouchTracking(canvas: HTMLCanvasElement) {
   const onTouchStart = (e: TouchEvent) => {
-    const touch = e.touches[0]
+    const touch = e.changedTouches[0]
     if (!touch) return
     const rect = canvas.getBoundingClientRect()
     const x = touch.clientX - rect.left

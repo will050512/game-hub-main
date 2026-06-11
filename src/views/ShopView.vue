@@ -117,7 +117,7 @@ onMounted(async () => {
 .sv-empty { grid-column:1 / -1; }
 @media (max-width:768px) {
   .sv-body { grid-template-columns:1fr; width:min(100% - 20px,1180px); }
-  .shop-side-panel { position:static; order:-1; }
+  .shop-side-panel { position:static; order:99; margin-top: 16px; }
   .sv-grid,.sv-coll-grid { grid-template-columns:1fr; }
 }
 @media (min-width:1200px) { .sv-grid { grid-template-columns:repeat(4,1fr); gap:1.75rem; } }

@@ -284,8 +284,8 @@ watch(
 }
 
 .pause-btn {
-  width: 38px;
-  height: 38px;
+  width: 44px;
+  height: 44px;
   border-radius: var(--radius-lg);
   background: linear-gradient(180deg, var(--color-kawaii-butter-main), var(--color-accent));
   color: var(--color-kawaii-ink);
@@ -369,6 +369,6 @@ watch(
   .hud-top { padding: 12px; }
   .hp-bar, .xp-bar { height: 18px; }
   .stat-pill { font-size: var(--font-size-base); padding: 4px 10px; }
-  .pause-btn { width: 36px; height: 36px; }
+  .pause-btn { width: 48px; height: 48px; }
 }
 </style>

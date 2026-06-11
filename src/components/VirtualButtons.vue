@@ -19,7 +19,7 @@ const props = withDefaults(defineProps<{
   hapticEnabled?: boolean
 }>(), {
   position: 'bottom-right',
-  size: 64,
+  size: 72,
   hapticEnabled: true,
 })
 
