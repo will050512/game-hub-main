@@ -56,10 +56,10 @@ export const gameIconMap: Record<string, KawaiiIconId> = {
   game2048: 'puzzle',
   flappy: 'sparkle',
   invaders: 'action',
-  'fruit-catch': 'heart',
+  'fruit-catch': 'basket',
   'tower-defense': 'strategy',
   'tic-tac-toe': 'board',
-  memory: 'sparkle',
+  memory: 'cards',
   sudoku: 'puzzle',
 }
 

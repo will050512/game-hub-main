@@ -186,13 +186,14 @@ function isActiveGame(gameId: string, query: string): boolean {
   position: relative;
 }
 
-.games-container.view-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+/* Grid: TransitionGroup wrapper IS the grid container */
+.games-container.view-grid > .games-list {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
   gap: var(--space-6);
 }
 
-.games-container.view-list {
+.games-container.view-list > .games-list {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
@@ -200,7 +201,7 @@ function isActiveGame(gameId: string, query: string): boolean {
   margin: 0 auto;
 }
 
-.games-container.has-search .grid-item.search-matched {
+.games-container.has-search > .games-list > .grid-item.search-matched {
   animation: search-pulse 1.5s ease-in-out 2;
 }
 
@@ -212,12 +213,12 @@ function isActiveGame(gameId: string, query: string): boolean {
   will-change: transform, opacity;
 }
 
-.games-container.view-list .grid-item {
+.games-container.view-list > .games-list > .grid-item {
   animation: list-enter 0.4s var(--ease-out) backwards;
   animation-delay: var(--anim-delay, 0s);
 }
 
-.games-container.view-list .lobby-game-card-wrapper {
+.games-container.view-list > .games-list > .grid-item > .lobby-game-card-wrapper {
   border-radius: var(--radius-lg);
 }
 
@@ -227,7 +228,8 @@ function isActiveGame(gameId: string, query: string): boolean {
 }
 
 /* Empty State */
-.empty-state {
+.games-container.view-grid > .games-list + .empty-state,
+.games-container.view-grid > .empty-state {
   grid-column: 1 / -1;
   display: flex;
   flex-direction: column;
@@ -339,12 +341,42 @@ function isActiveGame(gameId: string, query: string): boolean {
 }
 
 /* Responsive */
-@media (max-width: 768px) {
-  .games-container.view-grid {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+@media (max-width: 480px) {
+  .games-container.view-grid > .games-list {
+    grid-template-columns: 1fr !important;
     gap: var(--space-4);
   }
+}
 
+@media (min-width: 481px) and (max-width: 768px) {
+  .games-container.view-grid > .games-list {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: var(--space-4);
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .games-container.view-grid > .games-list {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: var(--space-5);
+  }
+}
+
+@media (min-width: 1025px) and (max-width: 1399px) {
+  .games-container.view-grid > .games-list {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: var(--space-6);
+  }
+}
+
+@media (min-width: 1400px) {
+  .games-container.view-grid > .games-list {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: var(--space-7);
+  }
+}
+
+@media (max-width: 768px) {
   .grid-toolbar {
     flex-wrap: wrap;
     gap: var(--space-2);
@@ -352,13 +384,6 @@ function isActiveGame(gameId: string, query: string): boolean {
 
   .game-count {
     font-size: var(--font-size-xs);
-  }
-}
-
-@media (min-width: 1200px) {
-  .games-container.view-grid {
-    grid-template-columns: repeat(4, 1fr);
-    gap: var(--space-7);
   }
 }
 </style>

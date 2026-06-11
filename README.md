@@ -4,7 +4,7 @@
 
 ![Game Hub Banner](https://raw.githubusercontent.com/will050512/game-hub-main/main/public/images/fallback-thumb.png)
 
-**12 款遊戲 · PWA 離線遊玩 · 跨平台支援 · 成就系統**
+**12 款遊戲 · PWA 離線遊玩 · 跨平台支援 · 成就系統 · 響應式卡片排版**
 
 [![Vue 3](https://img.shields.io/badge/Vue-3.5-42b883?logo=vue.js)](https://vuejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178c6?logo=typescript)](https://www.typescriptlang.org/)
@@ -200,6 +200,19 @@ npm run test:e2e:smoke
 # 完整 CI 流程
 npm run ci
 ```
+
+---
+
+## 🔄 近期更新
+
+### v1.1.0 (2026-06-11)
+- **響應式卡片排版** - 桌面端遊戲卡片改為多欄網格布局（4欄→3欄→2欄→1欄響應式）
+- **遊戲縮圖優化** - SVG 縮圖壓縮 60-84%，總大小從 170KB 降至 115KB
+  - 接水果：44.6KB → 7.1KB（壓縮 84%）
+  - 數獨：32.7KB → 5.6KB（壓縮 83%）
+  - 暗夜倖存者：34.4KB → 17.0KB（壓縮 51%）
+- **新手教學暫停** - 遊戲在新手教學期間自動暫停，教學結束後才開始
+- **遊戲圖示統一** - 接水果使用籃子圖示、記憶翻牌使用卡牌圖示，一致化所有遊戲圖示
 
 ---
 

@@ -559,7 +559,7 @@ const gameInfoById: Record<GameId, GameInfo> = {
     category: 'casual',
     thumbnail: resolveAsset('/images/fruit-catch-thumb.svg'),
     color: '#ef4444',
-    icon: 'heart',
+    icon: 'basket',
     instructions: [
       '左右移動籃子接住掉落的',
       '不同水果分數不同：蘋果10、橘子15、葡萄20、西瓜30、金星50',
@@ -621,7 +621,7 @@ const gameInfoById: Record<GameId, GameInfo> = {
     category: 'puzzle',
     thumbnail: resolveAsset('/images/memory-thumb.svg'),
     color: '#ec4899',
-    icon: 'board',
+    icon: 'cards',
     difficulty: 'easy',
     tags: ['記憶', '配對', '連擊', '益智'],
     instructions: [

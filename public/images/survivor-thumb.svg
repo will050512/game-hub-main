@@ -1,609 +1,225 @@
+<!-- Game Hub: 暗夜倖存者 (Survivor) — Optimized Thumbnail (~10KB) -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" role="img" aria-label="暗夜倖存者 thumbnail">
+  <defs>
+    <linearGradient id="vignette" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0f0f23" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#0f0f23" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#0f0f23" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#0f0f23" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
   <!-- Background -->
   <rect width="640" height="360" fill="#0f0f23"/>
 
-  <!-- Subtle pixel grid overlay -->
-  <g fill="#ffffff" opacity="0.03">
-    <rect x="0" y="0" width="640" height="1"/><rect x="0" y="30" width="640" height="1"/><rect x="0" y="60" width="640" height="1"/><rect x="0" y="90" width="640" height="1"/><rect x="0" y="120" width="640" height="1"/><rect x="0" y="150" width="640" height="1"/><rect x="0" y="180" width="640" height="1"/><rect x="0" y="210" width="640" height="1"/><rect x="0" y="240" width="640" height="1"/><rect x="0" y="270" width="640" height="1"/><rect x="0" y="300" width="640" height="1"/><rect x="0" y="330" width="640" height="1"/>
-    <rect x="0" y="0" width="1" height="360"/><rect x="30" y="0" width="1" height="360"/><rect x="60" y="0" width="1" height="360"/><rect x="90" y="0" width="1" height="360"/><rect x="120" y="0" width="1" height="360"/><rect x="150" y="0" width="1" height="360"/><rect x="180" y="0" width="1" height="360"/><rect x="210" y="0" width="1" height="360"/><rect x="240" y="0" width="1" height="360"/><rect x="270" y="0" width="1" height="360"/><rect x="300" y="0" width="1" height="360"/><rect x="330" y="0" width="1" height="360"/><rect x="360" y="0" width="1" height="360"/><rect x="390" y="0" width="1" height="360"/><rect x="420" y="0" width="1" height="360"/><rect x="450" y="0" width="1" height="360"/><rect x="480" y="0" width="1" height="360"/><rect x="510" y="0" width="1" height="360"/><rect x="540" y="0" width="1" height="360"/><rect x="570" y="0" width="1" height="360"/><rect x="600" y="0" width="1" height="360"/>
+  <!-- Stars -->
+  <g fill="#fff">
+    <circle cx="52" cy="32" r="2" opacity="0.8"/><circle cx="56" cy="36" r="1.5" opacity="0.6"/>
+    <circle cx="92" cy="12" r="2" opacity="0.7"/><circle cx="122" cy="52" r="2" opacity="0.5"/>
+    <circle cx="162" cy="22" r="2" opacity="0.9"/><circle cx="166" cy="26" r="1.5" opacity="0.6"/>
+    <circle cx="202" cy="62" r="2" opacity="0.4"/><circle cx="252" cy="17" r="2" opacity="0.7"/>
+    <circle cx="302" cy="72" r="2" opacity="0.5"/><circle cx="352" cy="27" r="2" opacity="0.8"/>
+    <circle cx="382" cy="52" r="2" opacity="0.3"/><circle cx="422" cy="12" r="2" opacity="0.6"/>
+    <circle cx="462" cy="57" r="2" opacity="0.7"/><circle cx="502" cy="37" r="2" opacity="0.5"/>
+    <circle cx="542" cy="17" r="2" opacity="0.8"/><circle cx="582" cy="47" r="2" opacity="0.4"/>
+    <circle cx="602" cy="72" r="2" opacity="0.6"/><circle cx="82" cy="92" r="2" opacity="0.5"/>
+    <circle cx="112" cy="112" r="2" opacity="0.7"/><circle cx="192" cy="82" r="2" opacity="0.4"/>
+    <circle cx="272" cy="57" r="2" opacity="0.6"/><circle cx="332" cy="82" r="2" opacity="0.5"/>
+    <circle cx="412" cy="47" r="2" opacity="0.7"/><circle cx="482" cy="77" r="2" opacity="0.4"/>
+    <circle cx="552" cy="62" r="2" opacity="0.6"/><circle cx="612" cy="22" r="2" opacity="0.8"/>
+    <circle cx="32" cy="142" r="2" opacity="0.5"/><circle cx="432" cy="132" r="2" opacity="0.6"/>
+    <circle cx="152" cy="172" r="2" opacity="0.4"/><circle cx="572" cy="162" r="2" opacity="0.5"/>
+    <circle cx="82" cy="182" r="2" opacity="0.6"/><circle cx="222" cy="152" r="2" opacity="0.7"/>
+    <circle cx="502" cy="202" r="2" opacity="0.4"/><circle cx="552" cy="182" r="2" opacity="0.5"/>
+    <circle cx="22" cy="222" r="2" opacity="0.6"/><circle cx="612" cy="222" r="2" opacity="0.5"/>
+    <circle cx="62" cy="252" r="2" opacity="0.4"/><circle cx="132" cy="232" r="2" opacity="0.6"/>
+    <circle cx="202" cy="262" r="2" opacity="0.5"/><circle cx="562" cy="252" r="2" opacity="0.7"/>
+    <circle cx="602" cy="282" r="2" opacity="0.5"/><circle cx="32" cy="302" r="2" opacity="0.6"/>
+    <circle cx="102" cy="292" r="2" opacity="0.4"/><circle cx="582" cy="302" r="2" opacity="0.5"/>
+    <circle cx="352" cy="272" r="2" opacity="0.6"/><circle cx="452" cy="282" r="2" opacity="0.5"/>
+    <circle cx="502" cy="312" r="2" opacity="0.4"/><circle cx="152" cy="322" r="2" opacity="0.6"/>
+    <circle cx="482" cy="332" r="2" opacity="0.5"/><circle cx="252" cy="312" r="2" opacity="0.4"/>
+    <circle cx="522" cy="342" r="2" opacity="0.5"/><circle cx="352" cy="332" r="2" opacity="0.6"/>
+    <circle cx="422" cy="322" r="2" opacity="0.4"/><circle cx="422" cy="252" r="2" opacity="0.5"/>
+    <circle cx="102" cy="162" r="2" opacity="0.6"/><circle cx="592" cy="102" r="2" opacity="0.4"/>
+    <circle cx="282" cy="32" r="2" opacity="0.7"/><circle cx="372" cy="62" r="2" opacity="0.5"/>
+    <circle cx="22" cy="102" r="2" opacity="0.6"/><circle cx="622" cy="132" r="2" opacity="0.5"/>
+    <circle cx="402" cy="92" r="2" opacity="0.7"/><circle cx="402" cy="162" r="2" opacity="0.4"/>
+    <circle cx="222" cy="32" r="2" opacity="0.6"/><circle cx="362" cy="102" r="2" opacity="0.5"/>
+  </g>
+  <g fill="#fff" opacity="0.35">
+    <circle cx="72" cy="47" r="2"/><circle cx="142" cy="97" r="2"/><circle cx="182" cy="42" r="2"/>
+    <circle cx="262" cy="92" r="2"/><circle cx="342" cy="42" r="2"/><circle cx="442" cy="72" r="2"/>
+    <circle cx="512" cy="52" r="2"/><circle cx="572" cy="97" r="2"/><circle cx="32" cy="72" r="2"/>
+    <circle cx="632" cy="92" r="2"/><circle cx="172" cy="132" r="2"/><circle cx="242" cy="112" r="2"/>
+    <circle cx="472" cy="112" r="2"/><circle cx="532" cy="122" r="2"/><circle cx="252" cy="172" r="2"/>
+    <circle cx="382" cy="162" r="2"/><circle cx="442" cy="182" r="2"/><circle cx="522" cy="272" r="2"/>
+    <circle cx="122" cy="272" r="2"/><circle cx="472" cy="232" r="2"/><circle cx="582" cy="242" r="2"/>
+    <circle cx="62" cy="332" r="2"/><circle cx="282" cy="352" r="2"/><circle cx="452" cy="342" r="2"/>
+    <circle cx="382" cy="292" r="2"/><circle cx="302" cy="142" r="2"/><circle cx="452" cy="142" r="2"/>
+    <circle cx="102" cy="212" r="2"/><circle cx="552" cy="142" r="2"/><circle cx="322" cy="212" r="2"/>
+    <circle cx="482" cy="12" r="2"/><circle cx="622" cy="172" r="2"/><circle cx="42" cy="272" r="2"/>
+    <circle cx="602" cy="342" r="2"/><circle cx="562" cy="282" r="2"/><circle cx="22" cy="152" r="2"/>
+    <circle cx="162" cy="342" r="2"/><circle cx="402" cy="302" r="2"/><circle cx="452" cy="32" r="2"/>
   </g>
 
-  <!-- Floating platforms (background decoration) -->
-  <g>
-    <!-- Platform 1 -->
-    <rect x="100" y="280" width="40" height="4" fill="#2a2a5a"/>
-    <rect x="104" y="284" width="32" height="4" fill="#2a2a5a"/>
-    <rect x="108" y="288" width="24" height="4" fill="#1e2749"/>
-    <!-- Platform 2 -->
-    <rect x="500" y="260" width="32" height="4" fill="#2a2a5a"/>
-    <rect x="504" y="264" width="24" height="4" fill="#2a2a5a"/>
-    <rect x="508" y="268" width="16" height="4" fill="#1e2749"/>
-    <!-- Platform 3 -->
-    <rect x="160" y="100" width="48" height="4" fill="#2a2a5a"/>
-    <rect x="164" y="104" width="40" height="4" fill="#1e2749"/>
-    <!-- Platform 4 -->
-    <rect x="460" y="120" width="40" height="4" fill="#2a2a5a"/>
-    <rect x="464" y="124" width="32" height="4" fill="#1e2749"/>
+  <!-- Grid lines -->
+  <g stroke="#fff" stroke-width="0.5" opacity="0.03">
+    <line x1="0" y1="30" x2="640" y2="30"/><line x1="0" y1="60" x2="640" y2="60"/>
+    <line x1="0" y1="90" x2="640" y2="90"/><line x1="0" y1="120" x2="640" y2="120"/>
+    <line x1="0" y1="150" x2="640" y2="150"/><line x1="0" y1="180" x2="640" y2="180"/>
+    <line x1="0" y1="210" x2="640" y2="210"/><line x1="0" y1="240" x2="640" y2="240"/>
+    <line x1="0" y1="270" x2="640" y2="270"/><line x1="0" y1="300" x2="640" y2="300"/>
+    <line x1="0" y1="330" x2="640" y2="330"/>
+    <line x1="30" y1="0" x2="30" y2="360"/><line x1="60" y1="0" x2="60" y2="360"/>
+    <line x1="90" y1="0" x2="90" y2="360"/><line x1="120" y1="0" x2="120" y2="360"/>
+    <line x1="150" y1="0" x2="150" y2="360"/><line x1="180" y1="0" x2="180" y2="360"/>
+    <line x1="210" y1="0" x2="210" y2="360"/><line x1="240" y1="0" x2="240" y2="360"/>
+    <line x1="270" y1="0" x2="270" y2="360"/><line x1="300" y1="0" x2="300" y2="360"/>
+    <line x1="330" y1="0" x2="330" y2="360"/><line x1="360" y1="0" x2="360" y2="360"/>
+    <line x1="390" y1="0" x2="390" y2="360"/><line x1="420" y1="0" x2="420" y2="360"/>
+    <line x1="450" y1="0" x2="450" y2="360"/><line x1="480" y1="0" x2="480" y2="360"/>
+    <line x1="510" y1="0" x2="510" y2="360"/><line x1="540" y1="0" x2="540" y2="360"/>
+    <line x1="570" y1="0" x2="570" y2="360"/><line x1="600" y1="0" x2="600" y2="360"/>
   </g>
 
-  <!-- Ambient sparkle particles -->
-  <g>
-    <rect x="130" y="60" width="4" height="4" fill="#00ff88" opacity="0.6"/>
-    <rect x="130" y="68" width="4" height="4" fill="#00ff88" opacity="0.4"/>
-    <rect x="138" y="64" width="4" height="4" fill="#00ff88" opacity="0.5"/>
-    <rect x="520" y="80" width="4" height="4" fill="#00d4ff" opacity="0.6"/>
-    <rect x="520" y="88" width="4" height="4" fill="#00d4ff" opacity="0.4"/>
-    <rect x="528" y="84" width="4" height="4" fill="#00d4ff" opacity="0.5"/>
-    <rect x="150" y="200" width="4" height="4" fill="#8b5cf6" opacity="0.5"/>
-    <rect x="150" y="208" width="4" height="4" fill="#8b5cf6" opacity="0.3"/>
-    <rect x="490" y="190" width="4" height="4" fill="#00ff88" opacity="0.4"/>
-    <rect x="498" y="194" width="4" height="4" fill="#00d4ff" opacity="0.6"/>
-    <rect x="200" y="70" width="4" height="4" fill="#00d4ff" opacity="0.3"/>
-    <rect x="440" y="210" width="4" height="4" fill="#8b5cf6" opacity="0.5"/>
-    <rect x="318" y="40" width="4" height="4" fill="#00ff88" opacity="0.4"/>
-    <rect x="318" y="48" width="4" height="4" fill="#00ff88" opacity="0.3"/>
-    <rect x="326" y="44" width="4" height="4" fill="#00ff88" opacity="0.5"/>
-  </g>
+  <!-- Vignette -->
+  <rect width="640" height="360" fill="url(#vignette)"/>
 
-  <!-- Vignette effect -->
-  <g>
-    <rect width="640" height="360" fill="#0f0f23" opacity="0.15"/>
-    <rect x="0" y="0" width="8" height="360" fill="#0f0f23" opacity="0.3"/>
-    <rect x="632" y="0" width="8" height="360" fill="#0f0f23" opacity="0.3"/>
-    <rect x="0" y="352" width="640" height="8" fill="#0f0f23" opacity="0.4"/>
-  </g>
+  <!-- Platforms -->
+  <rect x="100" y="280" width="40" height="4" fill="#2a2a5a"/>
+  <rect x="104" y="284" width="32" height="4" fill="#2a2a5a"/>
+  <rect x="108" y="288" width="24" height="4" fill="#1e2749"/>
+  <rect x="500" y="260" width="32" height="4" fill="#2a2a5a"/>
+  <rect x="504" y="264" width="24" height="4" fill="#2a2a5a"/>
+  <rect x="508" y="268" width="16" height="4" fill="#1e2749"/>
+  <rect x="160" y="100" width="48" height="4" fill="#2a2a5a"/>
+  <rect x="164" y="104" width="40" height="4" fill="#1e2749"/>
+  <rect x="460" y="120" width="40" height="4" fill="#2a2a5a"/>
+  <rect x="464" y="124" width="32" height="4" fill="#1e2749"/>
 
-  <!-- Character sprite - centered at x=268, y=80 -->
+  <!-- Sparkles -->
+  <circle cx="132" cy="62" r="2" fill="#00ff88" opacity="0.6"/>
+  <circle cx="132" cy="70" r="2" fill="#00ff88" opacity="0.4"/>
+  <circle cx="140" cy="66" r="2" fill="#00ff88" opacity="0.5"/>
+  <circle cx="522" cy="82" r="2" fill="#00d4ff" opacity="0.6"/>
+  <circle cx="522" cy="90" r="2" fill="#00d4ff" opacity="0.4"/>
+  <circle cx="530" cy="86" r="2" fill="#00d4ff" opacity="0.5"/>
+  <circle cx="152" cy="202" r="2" fill="#8b5cf6" opacity="0.5"/>
+  <circle cx="152" cy="210" r="2" fill="#8b5cf6" opacity="0.3"/>
+  <circle cx="492" cy="192" r="2" fill="#00ff88" opacity="0.4"/>
+  <circle cx="500" cy="196" r="2" fill="#00d4ff" opacity="0.6"/>
+  <circle cx="202" cy="72" r="2" fill="#00d4ff" opacity="0.3"/>
+  <circle cx="442" cy="212" r="2" fill="#8b5cf6" opacity="0.5"/>
+  <circle cx="320" cy="42" r="2" fill="#00ff88" opacity="0.4"/>
+  <circle cx="320" cy="50" r="2" fill="#00ff88" opacity="0.3"/>
+  <circle cx="328" cy="46" r="2" fill="#00ff88" opacity="0.5"/>
 
-  <!-- HEAD -->
-  <g>
-    <rect x="292" y="80" width="12" height="4" fill="#6b6b80"/>
-    <rect x="300" y="80" width="4" height="4" fill="#6b6b80"/>
-    <rect x="288" y="84" width="24" height="4" fill="#6b6b80"/>
-    <rect x="288" y="88" width="4" height="4" fill="#4a4a60"/>
-    <rect x="292" y="88" width="12" height="4" fill="#2d2d40"/>
-    <rect x="304" y="88" width="4" height="4" fill="#4a4a60"/>
-    <rect x="288" y="92" width="4" height="4" fill="#4a4a60"/>
-    <rect x="292" y="92" width="4" height="4" fill="#3a3a50"/>
-    <rect x="296" y="92" width="4" height="4" fill="#00ff88"/>
-    <rect x="300" y="92" width="4" height="4" fill="#00ff88"/>
-    <rect x="304" y="92" width="4" height="4" fill="#3a3a50"/>
-    <rect x="288" y="96" width="4" height="4" fill="#4a4a60"/>
-    <rect x="292" y="96" width="4" height="4" fill="#3a3a50"/>
-    <rect x="296" y="96" width="4" height="4" fill="#00ff88"/>
-    <rect x="300" y="96" width="4" height="4" fill="#00ff88"/>
-    <rect x="304" y="96" width="4" height="4" fill="#3a3a50"/>
-    <rect x="288" y="100" width="24" height="4" fill="#6b6b80"/>
-    <rect x="288" y="104" width="4" height="4" fill="#4a4a60"/>
-    <rect x="292" y="104" width="4" height="4" fill="#5b5b70"/>
-    <rect x="296" y="104" width="4" height="4" fill="#4a4a60"/>
-    <rect x="300" y="104" width="4" height="4" fill="#4a4a60"/>
-    <rect x="304" y="104" width="4" height="4" fill="#4a4a60"/>
-  </g>
-
-  <!-- BODY -->
-  <g>
-    <rect x="288" y="108" width="28" height="4" fill="#6b6b80"/>
-    <rect x="288" y="112" width="4" height="4" fill="#5b5b70"/>
-    <rect x="292" y="112" width="20" height="4" fill="#8b5cf6"/>
-    <rect x="312" y="112" width="4" height="4" fill="#5b5b70"/>
-    <rect x="288" y="116" width="4" height="4" fill="#5b5b70"/>
-    <rect x="292" y="116" width="4" height="4" fill="#9b6cf6"/>
-    <rect x="296" y="116" width="4" height="4" fill="#7b4cf6"/>
-    <rect x="300" y="116" width="4" height="4" fill="#7b4cf6"/>
-    <rect x="304" y="116" width="4" height="4" fill="#9b6cf6"/>
-    <rect x="308" y="116" width="4" height="4" fill="#5b5b70"/>
-    <rect x="288" y="120" width="4" height="4" fill="#5b5b70"/>
-    <rect x="292" y="120" width="4" height="4" fill="#8b5cf6"/>
-    <rect x="296" y="120" width="4" height="4" fill="#a06cf6"/>
-    <rect x="300" y="120" width="4" height="4" fill="#8b5cf6"/>
-    <rect x="304" y="120" width="4" height="4" fill="#a06cf6"/>
-    <rect x="308" y="120" width="4" height="4" fill="#5b5b70"/>
-    <rect x="288" y="124" width="4" height="4" fill="#5b5b70"/>
-    <rect x="292" y="124" width="4" height="4" fill="#8b5cf6"/>
-    <rect x="296" y="124" width="4" height="4" fill="#6b4cf6"/>
-    <rect x="300" y="124" width="4" height="4" fill="#6b4cf6"/>
-    <rect x="304" y="124" width="4" height="4" fill="#6b4cf6"/>
-    <rect x="308" y="124" width="4" height="4" fill="#5b5b70"/>
-    <rect x="288" y="128" width="4" height="4" fill="#5b5b70"/>
-    <rect x="292" y="128" width="4" height="4" fill="#8b5cf6"/>
-    <rect x="296" y="128" width="4" height="4" fill="#8b5cf6"/>
-    <rect x="300" y="128" width="4" height="4" fill="#8b5cf6"/>
-    <rect x="304" y="128" width="4" height="4" fill="#8b5cf6"/>
-    <rect x="308" y="128" width="4" height="4" fill="#5b5b70"/>
-    <rect x="288" y="132" width="4" height="4" fill="#4a4a60"/>
-    <rect x="292" y="132" width="4" height="4" fill="#8b5cf6"/>
-    <rect x="296" y="132" width="4" height="4" fill="#9b6cf6"/>
-    <rect x="300" y="132" width="4" height="4" fill="#9b6cf6"/>
-    <rect x="304" y="132" width="4" height="4" fill="#8b5cf6"/>
-    <rect x="308" y="132" width="4" height="4" fill="#4a4a60"/>
-    <rect x="288" y="136" width="4" height="4" fill="#4a4a60"/>
-    <rect x="292" y="136" width="4" height="4" fill="#8b5cf6"/>
-    <rect x="296" y="136" width="4" height="4" fill="#8b5cf6"/>
-    <rect x="300" y="136" width="4" height="4" fill="#8b5cf6"/>
-    <rect x="304" y="136" width="4" height="4" fill="#8b5cf6"/>
-    <rect x="308" y="136" width="4" height="4" fill="#4a4a60"/>
-    <rect x="288" y="140" width="4" height="4" fill="#4a4a60"/>
-    <rect x="292" y="140" width="4" height="4" fill="#7a4cf6"/>
-    <rect x="296" y="140" width="4" height="4" fill="#7a4cf6"/>
-    <rect x="300" y="140" width="4" height="4" fill="#7a4cf6"/>
-    <rect x="304" y="140" width="4" height="4" fill="#7a4cf6"/>
-    <rect x="308" y="140" width="4" height="4" fill="#4a4a60"/>
-    <rect x="288" y="144" width="4" height="4" fill="#4a4a60"/>
-    <rect x="292" y="144" width="4" height="4" fill="#7a4cf6"/>
-    <rect x="296" y="144" width="4" height="4" fill="#7a4cf6"/>
-    <rect x="300" y="144" width="4" height="4" fill="#7a4cf6"/>
-    <rect x="304" y="144" width="4" height="4" fill="#7a4cf6"/>
-    <rect x="308" y="144" width="4" height="4" fill="#4a4a60"/>
-    <rect x="288" y="148" width="4" height="4" fill="#4a4a60"/>
-    <rect x="292" y="148" width="4" height="4" fill="#6a4cf6"/>
-    <rect x="296" y="148" width="4" height="4" fill="#5a3cf6"/>
-    <rect x="300" y="148" width="4" height="4" fill="#5a3cf6"/>
-    <rect x="304" y="148" width="4" height="4" fill="#6a4cf6"/>
-    <rect x="308" y="148" width="4" height="4" fill="#4a4a60"/>
-    <rect x="288" y="152" width="28" height="4" fill="#6b6b80"/>
-  </g>
-
-  <!-- LEFT ARM -->
-  <g>
-    <rect x="268" y="112" width="4" height="4" fill="#5b5b70"/>
-    <rect x="268" y="116" width="4" height="4" fill="#5b5b70"/>
-    <rect x="268" y="120" width="4" height="4" fill="#8b5cf6"/>
-    <rect x="268" y="124" width="4" height="4" fill="#8b5cf6"/>
-    <rect x="268" y="128" width="4" height="4" fill="#8b5cf6"/>
-    <rect x="268" y="132" width="4" height="4" fill="#4a4a60"/>
-    <rect x="268" y="136" width="4" height="4" fill="#5b5b70"/>
-    <rect x="268" y="140" width="4" height="4" fill="#5b5b70"/>
-  </g>
-
-  <!-- RIGHT ARM + SWORD (sword behind arm) -->
-  <g>
-    <rect x="320" y="116" width="4" height="4" fill="#8b5cf6"/>
-    <rect x="320" y="120" width="4" height="4" fill="#8b5cf6"/>
-    <rect x="320" y="124" width="4" height="4" fill="#8b5cf6"/>
-    <rect x="320" y="128" width="4" height="4" fill="#8b5cf6"/>
-    <rect x="320" y="132" width="4" height="4" fill="#fbbf24"/>
-    <rect x="320" y="136" width="4" height="4" fill="#fbbf24"/>
-    <rect x="320" y="140" width="4" height="4" fill="#7a4cf6"/>
-    <rect x="320" y="144" width="4" height="4" fill="#7a4cf6"/>
-    <rect x="320" y="148" width="4" height="4" fill="#fbbf24"/>
-  </g>
-
-  <!-- SWORD -->
-  <g>
-    <rect x="332" y="80" width="4" height="4" fill="#6ee7b7"/>
-    <rect x="332" y="84" width="4" height="4" fill="#34d399"/>
-    <rect x="332" y="88" width="4" height="4" fill="#34d399"/>
-    <rect x="332" y="92" width="4" height="4" fill="#6ee7b7"/>
-    <rect x="332" y="96" width="4" height="4" fill="#34d399"/>
-    <rect x="332" y="100" width="4" height="4" fill="#34d399"/>
-    <rect x="332" y="104" width="4" height="4" fill="#34d399"/>
-    <rect x="332" y="108" width="4" height="4" fill="#6ee7b7"/>
-    <rect x="332" y="112" width="4" height="4" fill="#34d399"/>
-    <rect x="332" y="116" width="4" height="4" fill="#34d399"/>
-    <rect x="332" y="120" width="4" height="4" fill="#f59e0b"/>
-    <rect x="332" y="124" width="4" height="4" fill="#d97706"/>
-    <rect x="332" y="128" width="4" height="4" fill="#92400e"/>
-    <rect x="332" y="132" width="4" height="4" fill="#92400e"/>
-    <rect x="332" y="136" width="4" height="4" fill="#92400e"/>
-    <rect x="332" y="140" width="4" height="4" fill="#92400e"/>
-  </g>
-
-  <!-- SHIELD -->
-  <g>
-    <rect x="232" y="116" width="4" height="4" fill="#4a3a2a"/>
-    <rect x="236" y="116" width="4" height="4" fill="#4a3a2a"/>
-    <rect x="240" y="116" width="4" height="4" fill="#4a3a2a"/>
-    <rect x="232" y="120" width="20" height="4" fill="#4a3a2a"/>
-    <rect x="232" y="124" width="20" height="4" fill="#4a3a2a"/>
-    <rect x="232" y="128" width="20" height="4" fill="#4a3a2a"/>
-    <rect x="232" y="132" width="20" height="4" fill="#4a3a2a"/>
-    <rect x="232" y="136" width="20" height="4" fill="#4a3a2a"/>
-    <rect x="236" y="140" width="12" height="4" fill="#4a3a2a"/>
-    <rect x="236" y="144" width="12" height="4" fill="#4a3a2a"/>
-    <rect x="236" y="148" width="12" height="4" fill="#4a3a2a"/>
-    <!-- Shield inner -->
-    <rect x="236" y="120" width="4" height="4" fill="#c49a6c"/>
-    <rect x="240" y="120" width="4" height="4" fill="#c49a6c"/>
-    <rect x="236" y="124" width="12" height="4" fill="#c49a6c"/>
-    <rect x="236" y="128" width="12" height="4" fill="#c49a6c"/>
-    <rect x="236" y="132" width="12" height="4" fill="#c49a6c"/>
-    <rect x="236" y="136" width="12" height="4" fill="#c49a6c"/>
-    <rect x="240" y="140" width="4" height="4" fill="#c49a6c"/>
-    <rect x="240" y="144" width="4" height="4" fill="#c49a6c"/>
-    <rect x="240" y="148" width="4" height="4" fill="#c49a6c"/>
-    <!-- Shield emblem -->
-    <rect x="240" y="124" width="4" height="4" fill="#8b5cf6"/>
-    <rect x="240" y="128" width="4" height="4" fill="#8b5cf6"/>
-  </g>
-
-  <!-- LEFT LEG -->
-  <g>
-    <rect x="292" y="152" width="4" height="4" fill="#7a4cf6"/>
-    <rect x="292" y="156" width="4" height="4" fill="#7a4cf6"/>
-    <rect x="292" y="160" width="4" height="4" fill="#6a4cf6"/>
-    <rect x="292" y="164" width="4" height="4" fill="#6a4cf6"/>
-    <rect x="292" y="168" width="4" height="4" fill="#5b3a30"/>
-    <rect x="292" y="172" width="4" height="4" fill="#5b3a30"/>
-    <rect x="292" y="176" width="4" height="4" fill="#3d2818"/>
-    <rect x="292" y="180" width="4" height="4" fill="#3d2818"/>
-    <rect x="292" y="184" width="4" height="4" fill="#3d2818"/>
-    <rect x="292" y="188" width="4" height="4" fill="#3d2818"/>
-  </g>
-
-  <!-- RIGHT LEG -->
-  <g>
-    <rect x="304" y="152" width="4" height="4" fill="#7a4cf6"/>
-    <rect x="304" y="156" width="4" height="4" fill="#7a4cf6"/>
-    <rect x="304" y="160" width="4" height="4" fill="#6a4cf6"/>
-    <rect x="304" y="164" width="4" height="4" fill="#6a4cf6"/>
-    <rect x="304" y="168" width="4" height="4" fill="#5b3a30"/>
-    <rect x="304" y="172" width="4" height="4" fill="#5b3a30"/>
-    <rect x="304" y="176" width="4" height="4" fill="#3d2818"/>
-    <rect x="304" y="180" width="4" height="4" fill="#3d2818"/>
-    <rect x="304" y="184" width="4" height="4" fill="#3d2818"/>
-    <rect x="304" y="188" width="4" height="4" fill="#3d2818"/>
-  </g>
-
-  <!-- Ground line -->
+  <!-- Ground -->
   <rect x="200" y="192" width="240" height="4" fill="#1e2749"/>
   <rect x="220" y="196" width="200" height="4" fill="#151d35"/>
   <rect x="260" y="200" width="120" height="4" fill="#0f1525"/>
 
-  <!-- Stars background -->
-  <g>
-    <rect x="50" y="30" width="4" height="4" fill="#ffffff" opacity="0.8"/>
-    <rect x="54" y="34" width="4" height="4" fill="#ffffff" opacity="0.6"/>
-    <rect x="90" y="10" width="4" height="4" fill="#ffffff" opacity="0.7"/>
-    <rect x="120" y="50" width="4" height="4" fill="#ffffff" opacity="0.5"/>
-    <rect x="160" y="20" width="4" height="4" fill="#ffffff" opacity="0.9"/>
-    <rect x="164" y="24" width="4" height="4" fill="#ffffff" opacity="0.6"/>
-    <rect x="200" y="60" width="4" height="4" fill="#ffffff" opacity="0.4"/>
-    <rect x="250" y="15" width="4" height="4" fill="#ffffff" opacity="0.7"/>
-    <rect x="300" y="70" width="4" height="4" fill="#ffffff" opacity="0.5"/>
-    <rect x="350" y="25" width="4" height="4" fill="#ffffff" opacity="0.8"/>
-    <rect x="380" y="50" width="4" height="4" fill="#ffffff" opacity="0.3"/>
-    <rect x="420" y="10" width="4" height="4" fill="#ffffff" opacity="0.6"/>
-    <rect x="460" y="55" width="4" height="4" fill="#ffffff" opacity="0.7"/>
-    <rect x="500" y="35" width="4" height="4" fill="#ffffff" opacity="0.5"/>
-    <rect x="540" y="15" width="4" height="4" fill="#ffffff" opacity="0.8"/>
-    <rect x="580" y="45" width="4" height="4" fill="#ffffff" opacity="0.4"/>
-    <rect x="600" y="70" width="4" height="4" fill="#ffffff" opacity="0.6"/>
-    <rect x="80" y="90" width="4" height="4" fill="#ffffff" opacity="0.5"/>
-    <rect x="110" y="110" width="4" height="4" fill="#ffffff" opacity="0.7"/>
-    <rect x="190" y="80" width="4" height="4" fill="#ffffff" opacity="0.4"/>
-    <rect x="270" y="55" width="4" height="4" fill="#ffffff" opacity="0.6"/>
-    <rect x="330" y="80" width="4" height="4" fill="#ffffff" opacity="0.5"/>
-    <rect x="410" y="45" width="4" height="4" fill="#ffffff" opacity="0.7"/>
-    <rect x="480" y="75" width="4" height="4" fill="#ffffff" opacity="0.4"/>
-    <rect x="550" y="60" width="4" height="4" fill="#ffffff" opacity="0.6"/>
-    <rect x="610" y="20" width="4" height="4" fill="#ffffff" opacity="0.8"/>
-    <rect x="30" y="140" width="4" height="4" fill="#ffffff" opacity="0.5"/>
-    <rect x="430" y="130" width="4" height="4" fill="#ffffff" opacity="0.6"/>
-    <rect x="150" y="170" width="4" height="4" fill="#ffffff" opacity="0.4"/>
-    <rect x="570" y="160" width="4" height="4" fill="#ffffff" opacity="0.5"/>
-    <rect x="80" y="180" width="4" height="4" fill="#ffffff" opacity="0.6"/>
-    <rect x="220" y="150" width="4" height="4" fill="#ffffff" opacity="0.7"/>
-    <rect x="500" y="200" width="4" height="4" fill="#ffffff" opacity="0.4"/>
-    <rect x="550" y="180" width="4" height="4" fill="#ffffff" opacity="0.5"/>
-    <rect x="20" y="220" width="4" height="4" fill="#ffffff" opacity="0.6"/>
-    <rect x="610" y="220" width="4" height="4" fill="#ffffff" opacity="0.5"/>
-    <rect x="60" y="250" width="4" height="4" fill="#ffffff" opacity="0.4"/>
-    <rect x="130" y="230" width="4" height="4" fill="#ffffff" opacity="0.6"/>
-    <rect x="200" y="260" width="4" height="4" fill="#ffffff" opacity="0.5"/>
-    <rect x="560" y="250" width="4" height="4" fill="#ffffff" opacity="0.7"/>
-    <rect x="600" y="280" width="4" height="4" fill="#ffffff" opacity="0.5"/>
-    <rect x="30" y="300" width="4" height="4" fill="#ffffff" opacity="0.6"/>
-    <rect x="100" y="290" width="4" height="4" fill="#ffffff" opacity="0.4"/>
-    <rect x="580" y="300" width="4" height="4" fill="#ffffff" opacity="0.5"/>
-    <rect x="350" y="270" width="4" height="4" fill="#ffffff" opacity="0.6"/>
-    <rect x="450" y="280" width="4" height="4" fill="#ffffff" opacity="0.5"/>
-    <rect x="500" y="310" width="4" height="4" fill="#ffffff" opacity="0.4"/>
-    <rect x="150" y="320" width="4" height="4" fill="#ffffff" opacity="0.6"/>
-    <rect x="480" y="330" width="4" height="4" fill="#ffffff" opacity="0.5"/>
-    <rect x="250" y="310" width="4" height="4" fill="#ffffff" opacity="0.4"/>
-    <rect x="520" y="340" width="4" height="4" fill="#ffffff" opacity="0.5"/>
-    <rect x="350" y="330" width="4" height="4" fill="#ffffff" opacity="0.6"/>
-    <rect x="420" y="320" width="4" height="4" fill="#ffffff" opacity="0.4"/>
-    <rect x="420" y="250" width="4" height="4" fill="#ffffff" opacity="0.5"/>
-    <rect x="100" y="160" width="4" height="4" fill="#ffffff" opacity="0.6"/>
-    <rect x="590" y="100" width="4" height="4" fill="#ffffff" opacity="0.4"/>
-    <rect x="280" y="30" width="4" height="4" fill="#ffffff" opacity="0.7"/>
-    <rect x="370" y="60" width="4" height="4" fill="#ffffff" opacity="0.5"/>
-    <rect x="20" y="100" width="4" height="4" fill="#ffffff" opacity="0.6"/>
-    <rect x="620" y="130" width="4" height="4" fill="#ffffff" opacity="0.5"/>
-    <rect x="400" y="90" width="4" height="4" fill="#ffffff" opacity="0.7"/>
-    <rect x="400" y="160" width="4" height="4" fill="#ffffff" opacity="0.4"/>
-    <rect x="220" y="30" width="4" height="4" fill="#ffffff" opacity="0.6"/>
-    <rect x="360" y="100" width="4" height="4" fill="#ffffff" opacity="0.5"/>
+  <!-- ===== CHARACTER ===== -->
+  <!-- Head -->
+  <rect x="288" y="80" width="28" height="24" fill="#6b6b80"/>
+  <rect x="292" y="88" width="20" height="12" fill="#4a4a60"/>
+  <rect x="296" y="92" width="8" height="8" fill="#2d2d40"/>
+  <rect x="296" y="92" width="4" height="4" fill="#00ff88"/>
+  <rect x="300" y="92" width="4" height="4" fill="#00ff88"/>
+  <rect x="296" y="96" width="4" height="4" fill="#00ff88"/>
+  <rect x="300" y="96" width="4" height="4" fill="#00ff88"/>
+
+  <!-- Body -->
+  <rect x="288" y="108" width="28" height="4" fill="#6b6b80"/>
+  <rect x="288" y="112" width="28" height="4" fill="#5b5b70"/>
+  <rect x="292" y="112" width="20" height="28" fill="#8b5cf6"/>
+  <rect x="292" y="132" width="20" height="4" fill="#7a4cf6"/>
+  <rect x="292" y="136" width="20" height="4" fill="#7a4cf6"/>
+  <rect x="292" y="140" width="20" height="4" fill="#7a4cf6"/>
+  <rect x="292" y="144" width="20" height="4" fill="#6a4cf6"/>
+  <rect x="288" y="152" width="28" height="4" fill="#6b6b80"/>
+
+  <!-- Left arm -->
+  <rect x="268" y="112" width="4" height="4" fill="#5b5b70"/>
+  <rect x="268" y="116" width="4" height="4" fill="#5b5b70"/>
+  <rect x="268" y="120" width="4" height="12" fill="#8b5cf6"/>
+  <rect x="268" y="132" width="4" height="4" fill="#4a4a60"/>
+  <rect x="268" y="136" width="4" height="8" fill="#5b5b70"/>
+
+  <!-- Right arm -->
+  <rect x="320" y="116" width="4" height="16" fill="#8b5cf6"/>
+  <rect x="320" y="132" width="4" height="8" fill="#fbbf24"/>
+  <rect x="320" y="140" width="4" height="12" fill="#7a4cf6"/>
+  <rect x="320" y="148" width="4" height="4" fill="#fbbf24"/>
+
+  <!-- Shield -->
+  <rect x="232" y="116" width="20" height="36" fill="#4a3a2a"/>
+  <rect x="236" y="120" width="12" height="28" fill="#c49a6c"/>
+  <rect x="240" y="124" width="4" height="8" fill="#8b5cf6"/>
+
+  <!-- Sword -->
+  <rect x="332" y="80" width="4" height="28" fill="#6ee7b7"/>
+  <rect x="332" y="84" width="4" height="20" fill="#34d399"/>
+  <rect x="332" y="108" width="4" height="4" fill="#6ee7b7"/>
+  <rect x="332" y="120" width="4" height="4" fill="#f59e0b"/>
+  <rect x="332" y="124" width="4" height="16" fill="#92400e"/>
+  <rect x="328" y="80" width="12" height="40" fill="#00ff88" opacity="0.15"/>
+
+  <!-- Legs -->
+  <rect x="292" y="156" width="4" height="12" fill="#7a4cf6"/>
+  <rect x="292" y="168" width="4" height="4" fill="#5b3a30"/>
+  <rect x="292" y="172" width="4" height="16" fill="#3d2818"/>
+  <rect x="304" y="156" width="4" height="12" fill="#7a4cf6"/>
+  <rect x="304" y="168" width="4" height="4" fill="#5b3a30"/>
+  <rect x="304" y="172" width="4" height="16" fill="#3d2818"/>
+
+  <!-- UI -->
+  <text x="26" y="26" font-size="10" fill="#e0e0ff" opacity="0.6">HP</text>
+  <rect x="20" y="32" width="100" height="8" rx="1" fill="#1e2749" stroke="#4a4a8a" stroke-width="1"/>
+  <rect x="22" y="34" width="96" height="4" fill="#00ff88"/>
+
+  <text x="506" y="26" font-size="10" fill="#e0e0ff" opacity="0.6">XP</text>
+  <rect x="520" y="32" width="100" height="8" rx="1" fill="#1e2749" stroke="#4a4a8a" stroke-width="1"/>
+  <rect x="522" y="34" width="66" height="4" fill="#00d4ff"/>
+
+  <!-- Score -->
+  <text x="536" y="58" font-size="10" fill="#e0e0ff" opacity="0.5">SCORE</text>
+  <rect x="540" y="64" width="80" height="16" rx="1" fill="#1e2749" stroke="#4a4a8a" stroke-width="1"/>
+  <text x="580" y="76" font-family="'Press Start 2P', monospace" font-size="11" fill="#fbbf24" text-anchor="middle">1,337</text>
+
+  <!-- Level badge -->
+  <rect x="20" y="56" width="24" height="16" rx="2" fill="#1e2749" stroke="#4a4a8a" stroke-width="1"/>
+  <text x="32" y="68" font-family="'Press Start 2P', monospace" font-size="9" fill="#00d4ff" text-anchor="middle">LV</text>
+  <text x="40" y="68" font-family="'Press Start 2P', monospace" font-size="8" fill="#00d4ff" text-anchor="middle">42</text>
+
+  <!-- Heart -->
+  <circle cx="130" cy="34" r="4" fill="#ef4444"/>
+  <circle cx="126" cy="34" r="4" fill="#ef4444"/>
+  <circle cx="134" cy="34" r="4" fill="#ef4444"/>
+
+  <!-- Title -->
+  <rect x="200" y="300" width="240" height="40" rx="2" fill="#1e2749" stroke="#4a4a8a" stroke-width="2"/>
+  <rect x="200" y="300" width="6" height="2" fill="#00ff88"/>
+  <rect x="200" y="300" width="2" height="6" fill="#00ff88"/>
+  <rect x="438" y="300" width="6" height="2" fill="#00ff88"/>
+  <rect x="434" y="300" width="2" height="6" fill="#00ff88"/>
+  <rect x="200" y="338" width="6" height="2" fill="#00ff88"/>
+  <rect x="200" y="334" width="2" height="6" fill="#00ff88"/>
+  <rect x="438" y="338" width="6" height="2" fill="#00ff88"/>
+  <rect x="434" y="334" width="2" height="6" fill="#00ff88"/>
+  <text x="320" y="326" font-family="'Microsoft JhengHei', 'PingFang TC', sans-serif" font-size="18" fill="#e0e0ff" text-anchor="middle" font-weight="bold">暗夜倖存者</text>
+  <rect x="220" y="340" width="140" height="2" fill="#4a4a8a"/>
+  <rect x="260" y="340" width="60" height="2" fill="#00ff88"/>
+
+  <!-- Corners -->
+  <g fill="#4a4a8a" opacity="0.4">
+    <rect x="12" y="16" width="4" height="4"/><rect x="8" y="18" width="4" height="4"/><rect x="16" y="18" width="4" height="4"/>
+    <rect x="624" y="16" width="4" height="4"/><rect x="620" y="18" width="4" height="4"/><rect x="632" y="18" width="4" height="4"/>
+    <rect x="12" y="340" width="4" height="4"/><rect x="8" y="342" width="4" height="4"/><rect x="16" y="342" width="4" height="4"/>
+    <rect x="624" y="340" width="4" height="4"/><rect x="620" y="342" width="4" height="4"/><rect x="632" y="342" width="4" height="4"/>
   </g>
 
-  <!-- More star field (smaller single-pixel stars) -->
-  <g opacity="0.4">
-    <rect x="70" y="45" width="4" height="4" fill="#ffffff"/>
-    <rect x="140" y="95" width="4" height="4" fill="#ffffff"/>
-    <rect x="180" y="40" width="4" height="4" fill="#ffffff"/>
-    <rect x="260" y="90" width="4" height="4" fill="#ffffff"/>
-    <rect x="340" y="40" width="4" height="4" fill="#ffffff"/>
-    <rect x="440" y="70" width="4" height="4" fill="#ffffff"/>
-    <rect x="510" y="50" width="4" height="4" fill="#ffffff"/>
-    <rect x="570" y="95" width="4" height="4" fill="#ffffff"/>
-    <rect x="30" y="70" width="4" height="4" fill="#ffffff"/>
-    <rect x="630" y="90" width="4" height="4" fill="#ffffff"/>
-    <rect x="170" y="130" width="4" height="4" fill="#ffffff"/>
-    <rect x="240" y="110" width="4" height="4" fill="#ffffff"/>
-    <rect x="470" y="110" width="4" height="4" fill="#ffffff"/>
-    <rect x="530" y="120" width="4" height="4" fill="#ffffff"/>
-    <rect x="250" y="170" width="4" height="4" fill="#ffffff"/>
-    <rect x="380" y="160" width="4" height="4" fill="#ffffff"/>
-    <rect x="440" y="180" width="4" height="4" fill="#ffffff"/>
-    <rect x="520" y="270" width="4" height="4" fill="#ffffff"/>
-    <rect x="120" y="270" width="4" height="4" fill="#ffffff"/>
-    <rect x="470" y="230" width="4" height="4" fill="#ffffff"/>
-    <rect x="580" y="240" width="4" height="4" fill="#ffffff"/>
-    <rect x="60" y="330" width="4" height="4" fill="#ffffff"/>
-    <rect x="280" y="350" width="4" height="4" fill="#ffffff"/>
-    <rect x="450" y="340" width="4" height="4" fill="#ffffff"/>
-    <rect x="380" y="290" width="4" height="4" fill="#ffffff"/>
-    <rect x="300" y="140" width="4" height="4" fill="#ffffff"/>
-    <rect x="450" y="140" width="4" height="4" fill="#ffffff"/>
-    <rect x="100" y="210" width="4" height="4" fill="#ffffff"/>
-    <rect x="550" y="140" width="4" height="4" fill="#ffffff"/>
-    <rect x="320" y="210" width="4" height="4" fill="#ffffff"/>
-    <rect x="480" y="10" width="4" height="4" fill="#ffffff"/>
-    <rect x="620" y="170" width="4" height="4" fill="#ffffff"/>
-    <rect x="40" y="270" width="4" height="4" fill="#ffffff"/>
-    <rect x="600" y="340" width="4" height="4" fill="#ffffff"/>
-    <rect x="560" y="280" width="4" height="4" fill="#ffffff"/>
-    <rect x="20" y="150" width="4" height="4" fill="#ffffff"/>
-    <rect x="160" y="340" width="4" height="4" fill="#ffffff"/>
-    <rect x="400" y="300" width="4" height="4" fill="#ffffff"/>
-    <rect x="450" y="30" width="4" height="4" fill="#ffffff"/>
-  </g>
-
-  <!-- Sword glow effect -->
-  <g opacity="0.15">
-    <rect x="328" y="76" width="12" height="4" fill="#00ff88"/>
-    <rect x="328" y="80" width="12" height="4" fill="#00ff88"/>
-    <rect x="328" y="84" width="12" height="4" fill="#00ff88"/>
-    <rect x="328" y="88" width="12" height="4" fill="#00ff88"/>
-    <rect x="328" y="92" width="12" height="4" fill="#00ff88"/>
-    <rect x="328" y="96" width="12" height="4" fill="#00ff88"/>
-    <rect x="328" y="100" width="12" height="4" fill="#00ff88"/>
-    <rect x="328" y="104" width="12" height="4" fill="#00ff88"/>
-    <rect x="328" y="108" width="12" height="4" fill="#00ff88"/>
-    <rect x="328" y="112" width="12" height="4" fill="#00ff88"/>
-    <rect x="328" y="116" width="12" height="4" fill="#00ff88"/>
-    <rect x="328" y="120" width="12" height="4" fill="#00ff88"/>
-    <rect x="328" y="124" width="12" height="4" fill="#00ff88"/>
-    <rect x="328" y="128" width="12" height="4" fill="#00ff88"/>
-    <rect x="328" y="132" width="12" height="4" fill="#00ff88"/>
-  </g>
-
-  <!-- UI: Health bar (top-left) -->
-  <g>
-    <!-- HP label -->
-    <rect x="20" y="20" width="20" height="4" fill="#e0e0ff" opacity="0.6"/>
-    <rect x="24" y="24" width="12" height="4" fill="#e0e0ff" opacity="0.8"/>
-    <!-- HP background -->
-    <rect x="20" y="32" width="100" height="8" fill="#1e2749"/>
-    <rect x="20" y="32" width="100" height="1" fill="#4a4a8a"/>
-    <rect x="20" y="40" width="100" height="1" fill="#4a4a8a"/>
-    <rect x="20" y="32" width="1" height="8" fill="#4a4a8a"/>
-    <rect x="119" y="32" width="1" height="8" fill="#4a4a8a"/>
-    <!-- HP fill (full) -->
-    <rect x="22" y="34" width="96" height="4" fill="#00ff88"/>
-    <!-- HP accent stripe -->
-    <rect x="22" y="34" width="8" height="4" fill="#00ff88" opacity="0.7"/>
-    <rect x="34" y="34" width="8" height="4" fill="#00ff88" opacity="0.7"/>
-    <rect x="46" y="34" width="8" height="4" fill="#00ff88" opacity="0.7"/>
-    <rect x="58" y="34" width="8" height="4" fill="#00ff88" opacity="0.7"/>
-    <rect x="70" y="34" width="8" height="4" fill="#00ff88" opacity="0.7"/>
-    <rect x="82" y="34" width="8" height="4" fill="#00ff88" opacity="0.7"/>
-    <rect x="94" y="34" width="4" height="4" fill="#00ff88" opacity="0.7"/>
-    <!-- Heart icon -->
-    <rect x="126" y="30" width="8" height="8" fill="#ef4444"/>
-    <rect x="122" y="34" width="16" height="4" fill="#ef4444"/>
-    <rect x="126" y="38" width="8" height="4" fill="#dc2626"/>
-    <rect x="130" y="42" width="4" height="4" fill="#dc2626"/>
-  </g>
-
-  <!-- UI: XP bar (top-right) -->
-  <g>
-    <!-- XP label -->
-    <rect x="500" y="20" width="20" height="4" fill="#e0e0ff" opacity="0.6"/>
-    <rect x="504" y="24" width="12" height="4" fill="#e0e0ff" opacity="0.8"/>
-    <!-- XP background -->
-    <rect x="520" y="32" width="100" height="8" fill="#1e2749"/>
-    <rect x="520" y="32" width="100" height="1" fill="#4a4a8a"/>
-    <rect x="520" y="40" width="100" height="1" fill="#4a4a8a"/>
-    <rect x="520" y="32" width="1" height="8" fill="#4a4a8a"/>
-    <rect x="619" y="32" width="1" height="8" fill="#4a4a8a"/>
-    <!-- XP fill (70%) -->
-    <rect x="522" y="34" width="66" height="4" fill="#00d4ff"/>
-    <!-- XP accent stripe -->
-    <rect x="522" y="34" width="8" height="4" fill="#00d4ff" opacity="0.7"/>
-    <rect x="534" y="34" width="8" height="4" fill="#00d4ff" opacity="0.7"/>
-    <rect x="546" y="34" width="8" height="4" fill="#00d4ff" opacity="0.7"/>
-    <rect x="558" y="34" width="8" height="4" fill="#00d4ff" opacity="0.7"/>
-    <rect x="570" y="34" width="8" height="4" fill="#00d4ff" opacity="0.7"/>
-    <rect x="582" y="34" width="4" height="4" fill="#00d4ff" opacity="0.7"/>
-  </g>
-
-  <!-- Score counter (top-right area) -->
-  <g>
-    <!-- Score label -->
-    <rect x="530" y="52" width="40" height="4" fill="#e0e0ff" opacity="0.5"/>
-    <rect x="534" y="56" width="32" height="4" fill="#e0e0ff" opacity="0.8"/>
-    <!-- Score value -->
-    <rect x="540" y="64" width="80" height="16" fill="#1e2749"/>
-    <rect x="540" y="64" width="80" height="1" fill="#4a4a8a"/>
-    <rect x="540" y="79" width="80" height="1" fill="#4a4a8a"/>
-    <rect x="540" y="64" width="1" height="16" fill="#4a4a8a"/>
-    <rect x="619" y="64" width="1" height="16" fill="#4a4a8a"/>
-    <!-- Score number: "1,337" in pixel block style -->
-    <rect x="552" y="68" width="4" height="8" fill="#fbbf24"/>
-    <rect x="556" y="68" width="4" height="8" fill="#fbbf24"/>
-    <rect x="560" y="68" width="4" height="8" fill="#fbbf24"/>
-    <rect x="564" y="68" width="4" height="4" fill="#fbbf24"/>
-    <rect x="568" y="72" width="4" height="4" fill="#fbbf24"/>
-    <rect x="552" y="76" width="12" height="4" fill="#fbbf24"/>
-    <rect x="556" y="76" width="4" height="4" fill="#1e2749"/>
-    <!-- Comma -->
-    <rect x="572" y="70" width="4" height="4" fill="#fbbf24"/>
-    <rect x="572" y="76" width="4" height="4" fill="#fbbf24"/>
-    <!-- "1" -->
-    <rect x="580" y="68" width="4" height="12" fill="#fbbf24"/>
-    <!-- "3" -->
-    <rect x="588" y="68" width="12" height="4" fill="#fbbf24"/>
-    <rect x="588" y="72" width="4" height="4" fill="#fbbf24"/>
-    <rect x="596" y="72" width="4" height="4" fill="#fbbf24"/>
-    <rect x="588" y="76" width="4" height="4" fill="#fbbf24"/>
-    <rect x="596" y="76" width="4" height="4" fill="#fbbf24"/>
-    <!-- "3" -->
-    <rect x="604" y="68" width="12" height="4" fill="#fbbf24"/>
-    <rect x="604" y="72" width="4" height="4" fill="#fbbf24"/>
-    <rect x="612" y="72" width="4" height="4" fill="#fbbf24"/>
-    <rect x="604" y="76" width="4" height="4" fill="#fbbf24"/>
-    <rect x="612" y="76" width="4" height="4" fill="#fbbf24"/>
-  </g>
-
-  <!-- Level badge (top-left area) -->
-  <g>
-    <rect x="20" y="56" width="24" height="16" fill="#1e2749"/>
-    <rect x="20" y="56" width="24" height="1" fill="#4a4a8a"/>
-    <rect x="20" y="71" width="24" height="1" fill="#4a4a8a"/>
-    <rect x="20" y="56" width="1" height="16" fill="#4a4a8a"/>
-    <rect x="43" y="56" width="1" height="16" fill="#4a4a8a"/>
-    <!-- "LV 42" in pixel style -->
-    <rect x="24" y="60" width="8" height="4" fill="#00d4ff"/>
-    <rect x="24" y="64" width="8" height="4" fill="#00d4ff"/>
-    <rect x="32" y="60" width="8" height="4" fill="#00d4ff"/>
-    <rect x="32" y="64" width="8" height="4" fill="#00d4ff"/>
-    <rect x="40" y="60" width="4" height="4" fill="#00d4ff"/>
-    <rect x="40" y="64" width="4" height="4" fill="#00d4ff"/>
-    <!-- Star decoration -->
-    <rect x="28" y="58" width="4" height="4" fill="#fbbf24"/>
-  </g>
-
-  <!-- Decorative pixel crosses in corners -->
-  <g>
-    <!-- Top-left cross -->
-    <rect x="12" y="16" width="4" height="4" fill="#4a4a8a" opacity="0.4"/>
-    <rect x="8" y="18" width="4" height="4" fill="#4a4a8a" opacity="0.4"/>
-    <rect x="16" y="18" width="4" height="4" fill="#4a4a8a" opacity="0.4"/>
-    <!-- Top-right cross -->
-    <rect x="624" y="16" width="4" height="4" fill="#4a4a8a" opacity="0.4"/>
-    <rect x="620" y="18" width="4" height="4" fill="#4a4a8a" opacity="0.4"/>
-    <rect x="632" y="18" width="4" height="4" fill="#4a4a8a" opacity="0.4"/>
-    <!-- Bottom-left cross -->
-    <rect x="12" y="340" width="4" height="4" fill="#4a4a8a" opacity="0.4"/>
-    <rect x="8" y="342" width="4" height="4" fill="#4a4a8a" opacity="0.4"/>
-    <rect x="16" y="342" width="4" height="4" fill="#4a4a8a" opacity="0.4"/>
-    <!-- Bottom-right cross -->
-    <rect x="624" y="340" width="4" height="4" fill="#4a4a8a" opacity="0.4"/>
-    <rect x="620" y="342" width="4" height="4" fill="#4a4a8a" opacity="0.4"/>
-    <rect x="632" y="342" width="4" height="4" fill="#4a4a8a" opacity="0.4"/>
-  </g>
-
-  <!-- Game title label (bottom) -->
-  <g>
-    <!-- Label background -->
-    <rect x="200" y="300" width="240" height="40" fill="#1e2749"/>
-    <!-- Label border -->
-    <rect x="200" y="300" width="240" height="2" fill="#4a4a8a"/>
-    <rect x="200" y="338" width="240" height="2" fill="#4a4a8a"/>
-    <rect x="200" y="300" width="2" height="40" fill="#4a4a8a"/>
-    <rect x="438" y="300" width="2" height="40" fill="#4a4a8a"/>
-    <!-- Corner accents -->
-    <rect x="200" y="300" width="6" height="2" fill="#00ff88"/>
-    <rect x="200" y="300" width="2" height="6" fill="#00ff88"/>
-    <rect x="438" y="300" width="6" height="2" fill="#00ff88"/>
-    <rect x="434" y="300" width="2" height="6" fill="#00ff88"/>
-    <rect x="200" y="338" width="6" height="2" fill="#00ff88"/>
-    <rect x="200" y="334" width="2" height="6" fill="#00ff88"/>
-    <rect x="438" y="338" width="6" height="2" fill="#00ff88"/>
-    <rect x="434" y="334" width="2" height="6" fill="#00ff88"/>
-    <!-- Title text: 暗夜倖存者 in pixel art style block letters -->
-    <!-- Each character built from individual 4x4 pixel rects -->
-
-    <!-- 暗 (dark) - starts at x=220 -->
-    <!-- 日 (sun) part -->
-    <rect x="220" y="312" width="12" height="4" fill="#e0e0ff"/>
-    <rect x="220" y="316" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="228" y="316" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="220" y="320" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="228" y="320" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="220" y="324" width="12" height="4" fill="#e0e0ff"/>
-    <!-- 音 (sound) top part -->
-    <rect x="236" y="312" width="12" height="4" fill="#e0e0ff"/>
-    <rect x="236" y="316" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="244" y="316" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="236" y="320" width="12" height="4" fill="#e0e0ff"/>
-    <!-- 音 bottom -->
-    <rect x="236" y="324" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="244" y="324" width="4" height="4" fill="#e0e0ff"/>
-
-    <!-- 夜 (night) - starts at x=256 -->
-    <rect x="256" y="312" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="260" y="312" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="264" y="312" width="8" height="4" fill="#e0e0ff"/>
-    <rect x="256" y="316" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="260" y="316" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="264" y="316" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="268" y="316" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="260" y="320" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="264" y="320" width="8" height="4" fill="#e0e0ff"/>
-    <rect x="260" y="324" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="268" y="324" width="4" height="4" fill="#e0e0ff"/>
-
-    <!-- 倖 (survive) - starts at x=280 -->
-    <rect x="280" y="312" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="284" y="312" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="288" y="312" width="8" height="4" fill="#e0e0ff"/>
-    <rect x="280" y="316" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="284" y="316" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="288" y="316" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="292" y="316" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="288" y="320" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="292" y="320" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="284" y="324" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="288" y="324" width="12" height="4" fill="#e0e0ff"/>
-
-    <!-- 存 (save) - starts at x=304 -->
-    <rect x="308" y="312" width="12" height="4" fill="#e0e0ff"/>
-    <rect x="308" y="316" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="316" y="316" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="304" y="320" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="308" y="320" width="12" height="4" fill="#e0e0ff"/>
-    <rect x="304" y="324" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="312" y="324" width="8" height="4" fill="#e0e0ff"/>
-
-    <!-- 存 (second 存) - starts at x=324 -->
-    <rect x="328" y="312" width="12" height="4" fill="#e0e0ff"/>
-    <rect x="328" y="316" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="336" y="316" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="324" y="320" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="328" y="320" width="12" height="4" fill="#e0e0ff"/>
-    <rect x="324" y="324" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="332" y="324" width="8" height="4" fill="#e0e0ff"/>
-
-    <!-- 者 (one who) - starts at x=344 -->
-    <rect x="344" y="312" width="8" height="4" fill="#e0e0ff"/>
-    <rect x="344" y="316" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="348" y="316" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="352" y="316" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="348" y="320" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="352" y="320" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="344" y="324" width="4" height="4" fill="#e0e0ff"/>
-    <rect x="352" y="324" width="4" height="4" fill="#e0e0ff"/>
-
-    <!-- Decorative underline under title -->
-    <rect x="220" y="340" width="140" height="2" fill="#4a4a8a"/>
-    <rect x="260" y="340" width="60" height="2" fill="#00ff88"/>
-  </g>
-
-  <!-- Outer frame/border -->
+  <!-- Frame -->
   <rect width="640" height="360" fill="none" stroke="#2a2a5a" stroke-width="4"/>
-
 </svg>

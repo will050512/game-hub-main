@@ -167,16 +167,20 @@ onMounted(async () => {
     const factory = await resolveGameFactoryById(props.id)
     gameEngine = factory()
 
-    // Show tutorial overlay after game initializes
-    if (game.value?.instructions && game.value.instructions.length > 0) {
+    await soundManager.preloadGame(gameId.value)
+
+    // Fade out the starting overlay
+    setTimeout(() => {
+      showStartingOverlay.value = false
+    }, 600)
+
+    // Show tutorial before game starts; game runs paused during tutorial
+    const needsTutorial = !!(game.value?.instructions && game.value.instructions.length > 0)
+    if (needsTutorial) {
       setTimeout(() => {
         showTutorial.value = true
-        // Pause game during tutorial
-        try { gameEngine?.pause() } catch {}
-      }, 800)
+      }, 900)
     }
-
-    await soundManager.preloadGame(gameId.value)
 
     gameEngine.start(canvas, {
       onScoreUpdate: (score) => {
@@ -257,10 +261,10 @@ onMounted(async () => {
       },
     })
 
-    // Fade out the starting overlay after the game is ready
-    setTimeout(() => {
-      showStartingOverlay.value = false
-    }, 800)
+    // Pause game during tutorial — resume when tutorial closes
+    if (needsTutorial) {
+      try { gameEngine?.pause() } catch {}
+    }
   } catch (error) {
     const reason = error instanceof Error ? error.message : String(error)
     shellError.value = `遊戲載入失敗：${reason}`
@@ -327,7 +331,7 @@ function formatTime(seconds: number): string {
 
 function onTutorialEnd() {
   showTutorial.value = false
-  // Resume game after tutorial
+  // Resume game after tutorial closes
   try { gameEngine?.resume() } catch {}
 }
 </script>
