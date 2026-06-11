@@ -171,6 +171,8 @@ onMounted(async () => {
     if (game.value?.instructions && game.value.instructions.length > 0) {
       setTimeout(() => {
         showTutorial.value = true
+        // Pause game during tutorial
+        try { gameEngine?.pause() } catch {}
       }, 800)
     }
 
@@ -218,6 +220,8 @@ onMounted(async () => {
         showUpgrade.value = true
         upgradeOptions.value = options
         upgradeResolver = resolve
+        // Pause game during upgrade selection
+        try { gameEngine?.pause() } catch {}
       },
       onPause: () => {
         soundManager.pause()
@@ -311,12 +315,20 @@ function selectUpgrade(upgrade: UpgradeOption) {
   showUpgrade.value = false
   upgradeResolver?.(upgrade)
   upgradeResolver = null
+  // Resume game after upgrade selection
+  try { gameEngine?.resume() } catch {}
 }
 
 function formatTime(seconds: number): string {
   const m = Math.floor(seconds / 60)
   const s = seconds % 60
   return `${m}:${s.toString().padStart(2, '0')}`
+}
+
+function onTutorialEnd() {
+  showTutorial.value = false
+  // Resume game after tutorial
+  try { gameEngine?.resume() } catch {}
 }
 </script>
 
@@ -380,8 +392,8 @@ function formatTime(seconds: number): string {
       :instructions="game.instructions"
       :auto-advance-ms="5000"
       :animation-duration="400"
-      @close="showTutorial = false"
-      @complete="showTutorial = false"
+      @close="onTutorialEnd"
+      @complete="onTutorialEnd"
     />
 
     <Transition name="fade">
