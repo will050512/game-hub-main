@@ -145,8 +145,9 @@ function handleTouchCancel(e: TouchEvent, action: string) {
   transition:
     transform var(--duration-fast, 120ms) var(--ease-out, cubic-bezier(0, 0, 0.2, 1)),
     background var(--duration-fast, 120ms) var(--ease-out, cubic-bezier(0, 0, 0.2, 1)),
-    box-shadow var(--duration-fast, 120ms) var(--ease-out, cubic-bezier(0, 0, 0.2, 1));
-  opacity: 0.78;
+    box-shadow var(--duration-fast, 120ms) var(--ease-out, cubic-bezier(0, 0, 0.2, 1)),
+    opacity 150ms ease;
+  opacity: 0;
   user-select: none;
   -webkit-user-select: none;
 }
@@ -154,7 +155,7 @@ function handleTouchCancel(e: TouchEvent, action: string) {
 .virtual-button:active,
 .virtual-button.pressed {
   transform: scale(0.88);
-  opacity: 1;
+  opacity: 0.85;
   box-shadow:
     0 2px 6px rgba(38, 27, 34, 0.18),
     inset 0 2px 4px rgba(38, 27, 34, 0.12);

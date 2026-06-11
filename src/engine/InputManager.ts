@@ -9,8 +9,8 @@ export class InputManager {
   firePressed = false
   actionPressed = false
 
-  private readonly JOYSTICK_DEADZONE = 20
-  private readonly MAX_JOYSTICK_DIST = 80
+  private readonly JOYSTICK_DEADZONE = 10
+  private readonly MAX_JOYSTICK_DIST = 60
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas

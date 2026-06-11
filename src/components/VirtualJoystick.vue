@@ -14,8 +14,8 @@ const props = withDefaults(defineProps<{
   position: 'left',
   size: 'md',
   color: '',
-  deadzone: 20,
-  maxDistance: 80,
+  deadzone: 10,
+  maxDistance: 60,
 })
 
 const emit = defineEmits<{
@@ -199,12 +199,12 @@ onUnmounted(() => {
   position: absolute;
   z-index: 10;
   touch-action: none;
-  opacity: 0.6;
-  transition: opacity var(--duration-fast, 120ms) var(--ease-out, cubic-bezier(0, 0, 0.2, 1));
+  opacity: 0;
+  transition: opacity 150ms ease;
 }
 
 .virtual-joystick.active {
-  opacity: 0.95;
+  opacity: 0.85;
 }
 
 .joystick-base {
@@ -248,21 +248,9 @@ onUnmounted(() => {
   pointer-events: none;
 }
 
-@keyframes joystick-pulse {
-  0%, 100% { transform: scale(1); opacity: 0.5; }
-  50% { transform: scale(1.06); opacity: 0.7; }
-}
-
-.virtual-joystick:not(.active) .joystick-base {
-  animation: joystick-pulse 2s ease-in-out infinite;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .virtual-joystick:not(.active) .joystick-base {
-    animation: none;
-  }
-  .joystick-thumb {
-    transition: none !important;
+  .virtual-joystick {
+    transition: none;
   }
 }
 </style>

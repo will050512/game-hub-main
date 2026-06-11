@@ -80,7 +80,7 @@ const actionButtons = computed<VirtualButtonConfig[]>(() => {
 
 <template>
   <div v-if="showTouchControls || showKeyboardHint" class="input-affordances">
-    <!-- Virtual Joystick (handheld/tablet only) -->
+    <!-- Virtual Joystick (handheld/tablet only) — only visible when actively touching -->
     <VirtualJoystick
       v-if="showVirtualJoystick"
       position="bottom-left"
@@ -98,29 +98,6 @@ const actionButtons = computed<VirtualButtonConfig[]>(() => {
       @press="(action: string) => emit('button-press', action)"
       @release="(action: string) => emit('button-release', action)"
     />
-
-    <!-- Legacy Joystick Indicator (when touch tracking origin is available) -->
-    <div
-      v-if="!showVisualControls && showTouchControls && showVirtualJoystick && isJoystickActive"
-      class="joystick-indicator"
-      :style="{
-        left: `${joystickOrigin.x}px`,
-        top: `${joystickOrigin.y}px`,
-      }"
-    >
-      <div class="joystick-base">
-        <div class="joystick-ripple"></div>
-        <div class="joystick-core"></div>
-      </div>
-    </div>
-
-    <!-- Legacy Fire Button Shell -->
-    <div
-      v-if="!showVisualControls && showTouchControls && profile?.touchPattern.showActionButton"
-      class="fire-button-shell"
-    >
-      <KawaiiIcon :name="profile?.featuredIcon ?? 'action'" size="xl" class="fire-button-hint" />
-    </div>
 
     <!-- Input Companion (hint bar) -->
     <div class="input-companion" aria-hidden="true">
@@ -142,68 +119,6 @@ const actionButtons = computed<VirtualButtonConfig[]>(() => {
   inset: 0;
   pointer-events: none;
   z-index: 5;
-}
-
-.joystick-indicator {
-  position: absolute;
-  pointer-events: none;
-  transform: translate(-50%, -50%);
-}
-
-.joystick-base {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  position: relative;
-  background: radial-gradient(circle, rgba(247, 231, 255, 0.7) 0%, rgba(230, 255, 248, 0.18) 100%);
-  border: 3px solid var(--color-kawaii-ink);
-  box-shadow:
-    0 12px 24px rgba(32, 24, 31, 0.18),
-    inset 0 0 0 5px rgba(255, 255, 255, 0.18);
-  animation: pulse 1.5s ease-in-out infinite;
-}
-
-.joystick-ripple,
-.joystick-core {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-}
-
-.joystick-ripple {
-  inset: 12px;
-  border: 2px dashed rgba(32, 24, 31, 0.22);
-}
-
-.joystick-core {
-  inset: 24px;
-  background: linear-gradient(180deg, rgba(248, 183, 212, 0.95), rgba(166, 218, 216, 0.95));
-  border: 3px solid var(--color-kawaii-ink);
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 0.6; }
-  50% { transform: scale(1.1); opacity: 0.8; }
-}
-
-.fire-button-shell {
-  position: absolute;
-  bottom: 20%;
-  right: 15%;
-  width: 84px;
-  height: 84px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  border: 3px solid var(--color-kawaii-ink);
-  background: linear-gradient(180deg, rgba(255, 250, 248, 0.72), rgba(252, 225, 242, 0.36));
-  box-shadow: 0 14px 30px rgba(32, 24, 31, 0.18);
-  animation: fadeInOut 2s ease-in-out infinite;
-}
-
-.fire-button-hint {
-  font-size: 2.5rem;
-  opacity: 0.72;
 }
 
 .input-companion {
@@ -261,11 +176,6 @@ const actionButtons = computed<VirtualButtonConfig[]>(() => {
   line-height: 1.1;
 }
 
-@keyframes fadeInOut {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.6; }
-}
-
 @media (min-width: 640px) {
   .input-companion {
     top: 82px;
@@ -286,8 +196,7 @@ const actionButtons = computed<VirtualButtonConfig[]>(() => {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .joystick-base,
-  .fire-button-shell {
+  * {
     animation: none;
   }
 }
