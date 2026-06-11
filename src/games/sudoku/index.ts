@@ -241,7 +241,7 @@ class SudokuGame extends GameEngine {
       radius: Math.floor(20 * scale),
     })
 
-    ctx.fillStyle = '#fff'
+    ctx.fillStyle = '#0f172a'
     ctx.font = `bold ${Math.floor(32 * scale)}px sans-serif`
     ctx.fillText('數獨', this.width / 2, this.height * 0.15)
 
@@ -386,9 +386,9 @@ class SudokuGame extends GameEngine {
           } else if (isError) {
             ctx.fillStyle = 'rgba(239, 68, 68, 0.2)'
           } else if (isGiven) {
-            ctx.fillStyle = 'rgba(255,255,255,0.03)'
+            ctx.fillStyle = 'rgba(255,255,255,0.12)'
           } else {
-            ctx.fillStyle = 'rgba(255,255,255,0.06)'
+            ctx.fillStyle = 'rgba(255,255,255,0.18)'
           }
           ctx.fillRect(x, y, this.cellSize, this.cellSize)
         }
@@ -418,8 +418,8 @@ class SudokuGame extends GameEngine {
           const key = `${r},${c}`
           const notes = this.cellNotes.get(key)
           if (notes && notes.size > 0) {
-            ctx.fillStyle = '#64748b'
-            ctx.font = `${Math.floor(this.cellSize * 0.22)}px sans-serif`
+            ctx.fillStyle = '#94a3b8'
+            ctx.font = `${Math.floor(this.cellSize * 0.24)}px sans-serif`
             const noteArr = Array.from(notes).sort()
             noteArr.forEach((n, idx) => {
               const nx = x + ((idx % 3) + 0.5) * (this.cellSize / 3)
@@ -441,33 +441,6 @@ class SudokuGame extends GameEngine {
 
     // Action buttons
     this.renderActionButtons(ctx)
-
-    // Game over overlay
-    if (this.phase === 'gameover') {
-      ctx.fillStyle = 'rgba(0,0,0,0.7)'
-      ctx.fillRect(0, 0, this.width, this.height)
-
-      const isWin = this.errors < this.maxErrors
-      ctx.fillStyle = isWin ? '#22c55e' : '#ef4444'
-      ctx.font = `bold ${Math.floor(28 * scale)}px sans-serif`
-      ctx.fillText(isWin ? 'Complete!' : 'Game Over', this.width / 2, this.height * 0.4)
-
-      ctx.fillStyle = '#e2e8f0'
-      ctx.font = `${Math.floor(16 * scale)}px sans-serif`
-      ctx.fillText(`Score: ${this.score}`, this.width / 2, this.height * 0.47)
-
-      const btnW = Math.floor(this.width * 0.5)
-      const btnH = Math.floor(44 * scale)
-      const btnY = this.height * 0.55
-      const btnX = (this.width - btnW) / 2
-      ctx.fillStyle = '#14b8a6'
-      ctx.beginPath()
-      this.roundRect(ctx, btnX, btnY, btnW, btnH, Math.floor(12 * scale))
-      ctx.fill()
-      ctx.fillStyle = '#fff'
-      ctx.font = `bold ${Math.floor(15 * scale)}px sans-serif`
-      ctx.fillText('Play Again', this.width / 2, btnY + btnH / 2)
-    }
 
     this.effects.render(ctx)
   }

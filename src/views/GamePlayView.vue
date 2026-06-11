@@ -147,9 +147,86 @@ function setupTouchTracking(canvas: HTMLCanvasElement) {
 
 let touchCleanup: (() => void) | null = null
 
-onMounted(async () => {
-  shellError.value = null
+const gameCallbacks = {
+  onScoreUpdate: (score: number) => {
+    stats.value.score = score
+    playScoreFeedback(score)
+  },
+  onStatsUpdate: (s: PlayerStats) => {
+    playStatsFeedback(s)
+    stats.value.hp = s.hp
+    stats.value.maxHp = s.maxHp
+    stats.value.level = s.level
+    stats.value.xp = s.xp
+    stats.value.xpToNext = s.xpToNext
+    stats.value.kills = s.kills
+    stats.value.time = s.time
+    stats.value.score = s.score
+  },
+  onHudUpdate: (data: GameHudData) => {
+    playStatsFeedback(data)
+    stats.value = {
+      hp: data.hp,
+      maxHp: data.maxHp,
+      level: data.level,
+      xp: data.xp,
+      xpToNext: data.xpToNext,
+      kills: data.kills,
+      time: data.time,
+      score: data.score,
+    }
+    activeBuffs.value = data.activeBuffs
+    itemSlots.value = data.itemSlots
+  },
+  onItemCollected: () => {
+    void soundManager.playGameSfx('powerUp')
+  },
+  onCurrencyEarned: () => {
+    void soundManager.playShellSfx('coinCollect')
+  },
+  onLevelUp: (options: UpgradeOption[], resolve: (opt: UpgradeOption) => void) => {
+    void soundManager.playShellSfx('levelUp')
+    showUpgrade.value = true
+    upgradeOptions.value = options
+    upgradeResolver = resolve
+    try { gameEngine?.pause() } catch {}
+  },
+  onPause: () => {
+    soundManager.pause()
+  },
+  onResume: () => {
+    soundManager.resume()
+  },
+  onRewardEvent: (event: any) => {
+    void soundManager.playShellSfx('coinCollect')
+    currencyStore.emitRewardEvent(event)
+  },
+  onGameOver: async (data: any) => {
+    void soundManager.playShellSfx('gameOver')
+    soundManager.pause()
+    isGameOver.value = true
+    const score = typeof data === 'number' ? data : data.score
+    finalScore.value = score
+    const resultPayload: Partial<ResultPayloadContract> = {
+      score,
+      kills: typeof data === 'object' ? data.kills : stats.value.kills,
+      time: typeof data === 'object' ? data.time : stats.value.time,
+      level: typeof data === 'object' ? data.level : stats.value.level,
+    }
+    const pendingRewardEvent = currencyStore.pendingRewardEvent
+    const canUsePendingRewardEvent =
+      pendingRewardEvent?.gameId === gameId.value && pendingRewardEvent.score === score
+    if (!canUsePendingRewardEvent) {
+      currencyStore.earnFromGame(gameId.value, resultPayload)
+    }
+    const settled = await currencyStore.settlePending(gameId.value)
+    coinsEarned.value = settled
+    await playerStore.incrementGamesPlayed()
+  },
+}
 
+async function initGame() {
+  shellError.value = null
   try {
     if (!game.value || !manifest.value) {
       throw new Error(`找不到 gameId: ${props.id}`)
@@ -166,111 +243,33 @@ onMounted(async () => {
 
     const factory = await resolveGameFactoryById(props.id)
     gameEngine = factory()
-
     await soundManager.preloadGame(gameId.value)
-
-    // Fade out the starting overlay
-    setTimeout(() => {
-      showStartingOverlay.value = false
-    }, 600)
-
-    // Show tutorial before game starts; game runs paused during tutorial
-    const needsTutorial = !!(game.value?.instructions && game.value.instructions.length > 0)
-    if (needsTutorial) {
-      setTimeout(() => {
-        showTutorial.value = true
-      }, 900)
-    }
-
-    gameEngine.start(canvas, {
-      onScoreUpdate: (score) => {
-        stats.value.score = score
-        playScoreFeedback(score)
-      },
-      onStatsUpdate: (s) => {
-        playStatsFeedback(s)
-        stats.value.hp = s.hp
-        stats.value.maxHp = s.maxHp
-        stats.value.level = s.level
-        stats.value.xp = s.xp
-        stats.value.xpToNext = s.xpToNext
-        stats.value.kills = s.kills
-        stats.value.time = s.time
-        stats.value.score = s.score
-      },
-      onHudUpdate: (data) => {
-        playStatsFeedback(data)
-        stats.value = {
-          hp: data.hp,
-          maxHp: data.maxHp,
-          level: data.level,
-          xp: data.xp,
-          xpToNext: data.xpToNext,
-          kills: data.kills,
-          time: data.time,
-          score: data.score,
-        }
-        activeBuffs.value = data.activeBuffs
-        itemSlots.value = data.itemSlots
-      },
-      onItemCollected: () => {
-        void soundManager.playGameSfx('powerUp')
-      },
-      onCurrencyEarned: () => {
-        void soundManager.playShellSfx('coinCollect')
-      },
-      onLevelUp: (options, resolve) => {
-        void soundManager.playShellSfx('levelUp')
-        showUpgrade.value = true
-        upgradeOptions.value = options
-        upgradeResolver = resolve
-        // Pause game during upgrade selection
-        try { gameEngine?.pause() } catch {}
-      },
-      onPause: () => {
-        soundManager.pause()
-      },
-      onResume: () => {
-        soundManager.resume()
-      },
-      onRewardEvent: (event) => {
-        void soundManager.playShellSfx('coinCollect')
-        currencyStore.emitRewardEvent(event)
-      },
-      onGameOver: async (data) => {
-        void soundManager.playShellSfx('gameOver')
-        soundManager.pause()
-        isGameOver.value = true
-        const score = typeof data === 'number' ? data : data.score
-        finalScore.value = score
-        const resultPayload: Partial<ResultPayloadContract> = {
-          score,
-          kills: typeof data === 'object' ? data.kills : stats.value.kills,
-          time: typeof data === 'object' ? data.time : stats.value.time,
-          level: typeof data === 'object' ? data.level : stats.value.level,
-        }
-        const pendingRewardEvent = currencyStore.pendingRewardEvent
-        const canUsePendingRewardEvent =
-          pendingRewardEvent?.gameId === gameId.value && pendingRewardEvent.score === score
-        if (!canUsePendingRewardEvent) {
-          currencyStore.earnFromGame(gameId.value, resultPayload)
-        }
-        const settled = await currencyStore.settlePending(gameId.value)
-        coinsEarned.value = settled
-        await playerStore.incrementGamesPlayed()
-      },
-    })
-
-    // Pause game during tutorial — resume when tutorial closes
-    if (needsTutorial) {
-      try { gameEngine?.pause() } catch {}
-    }
+    gameEngine.start(canvas, gameCallbacks)
   } catch (error) {
     const reason = error instanceof Error ? error.message : String(error)
     shellError.value = `遊戲載入失敗：${reason}`
     console.error('[GameShell] Adapter resolution failed', { gameId: props.id, reason, error })
     soundManager.stopAll()
     gameEngine = null
+  }
+}
+
+onMounted(async () => {
+  await initGame()
+
+  // Fade out the starting overlay
+  setTimeout(() => {
+    showStartingOverlay.value = false
+  }, 600)
+
+  // Show tutorial before game starts; game runs paused during tutorial
+  const needsTutorial = !!(game.value?.instructions && game.value.instructions.length > 0)
+  if (needsTutorial) {
+    setTimeout(() => {
+      showTutorial.value = true
+    }, 900)
+    // Pause game during tutorial
+    try { gameEngine?.pause() } catch {}
   }
 })
 
@@ -298,6 +297,19 @@ function togglePause() {
   } catch (error) {
     console.error('[GameShell] Error toggling pause', { gameId: props.id, isPaused: isPaused.value, error })
   }
+}
+
+function restartGame() {
+  void soundManager.playShellSfx('buttonClick')
+  isGameOver.value = false
+  isPaused.value = false
+  coinsEarned.value = 0
+  try {
+    gameEngine?.stop()
+  } catch {}
+  gameEngine = null
+  // Re-initialize the game
+  initGame()
 }
 
 function goToResult() {
@@ -422,7 +434,8 @@ function onTutorialEnd() {
             <template v-if="stats.level > 1"> | Lv.{{ stats.level }}</template>
           </p>
           <div v-if="coinsEarned > 0" class="coins-earned"><KawaiiIcon name="coin" size="sm" /> +{{ coinsEarned }}</div>
-          <button class="btn btn-primary" @click="goToResult">查看結果</button>
+           <button class="btn btn-primary" @click="restartGame">再玩一次</button>
+          <button class="btn btn-secondary" @click="goToResult">查看結果</button>
         </DoodleCard>
       </div>
     </Transition>
