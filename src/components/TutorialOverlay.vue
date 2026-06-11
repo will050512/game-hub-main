@@ -229,16 +229,16 @@ onBeforeUnmount(() => {
   padding: 4px 10px;
   border-radius: 999px;
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: 1rem;
   box-shadow: 0 4px 12px rgba(167, 139, 250, 0.3);
 }
 
 .step-number {
-  font-size: 0.95rem;
+  font-size: 1.1rem;
 }
 
 .step-total {
-  font-size: 0.7rem;
+  font-size: 0.8rem;
   opacity: 0.8;
 }
 
@@ -254,7 +254,7 @@ onBeforeUnmount(() => {
 }
 
 .tutorial-instruction {
-  font-size: 1rem;
+  font-size: 1.15rem;
   line-height: 1.6;
   color: var(--color-kawaii-ink);
   text-align: center;
@@ -296,7 +296,7 @@ onBeforeUnmount(() => {
   border-radius: 999px;
   background: rgba(255, 252, 247, 0.8);
   color: var(--color-kawaii-ink);
-  font-size: 0.75rem;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -313,7 +313,7 @@ onBeforeUnmount(() => {
 
 /* === Navigation Hint === */
 .tutorial-hint {
-  font-size: 0.7rem;
+  font-size: 0.85rem;
   color: rgba(255, 255, 255, 0.5);
   letter-spacing: 0.05em;
   animation: hint-blink 2s ease-in-out infinite;
@@ -377,7 +377,7 @@ onBeforeUnmount(() => {
   }
 
   .tutorial-instruction {
-    font-size: 1.1rem;
+    font-size: 1.3rem;
   }
 }
 </style>

@@ -23,14 +23,14 @@ export interface HudConfig {
  */
 export function renderGameHud(ctx: CanvasRenderingContext2D, config: HudConfig): void {
   const { score, level, lives, maxLives, time, gameColor, dpr, width, height } = config
-  const fontSize = 12 * dpr
+  const fontSize = 16 * dpr
   const hudY = height * 0.04
   const hMargin = width * 0.05
 
   // Hearts (top left, 5% from left edge)
   for (let i = 0; i < maxLives; i++) {
     ctx.globalAlpha = i < lives ? 1 : 0.25
-    drawKawaiiItem(ctx, hMargin + i * 22 * dpr, hudY + 6 * dpr, 12 * dpr, 'heart')
+    drawKawaiiItem(ctx, hMargin + i * 24 * dpr, hudY + 6 * dpr, 16 * dpr, 'heart')
   }
   ctx.globalAlpha = 1
 
@@ -60,7 +60,7 @@ export function renderGameHud(ctx: CanvasRenderingContext2D, config: HudConfig):
     text: timeStr,
     iconKind: 'timer',
     color: 'rgba(248, 250, 252, 0.65)',
-    fontSize: 10 * dpr,
+    fontSize: 14 * dpr,
     align: 'right',
   })
 }
