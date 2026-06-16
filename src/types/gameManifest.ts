@@ -15,6 +15,7 @@ export const GAME_IDS = [
 
 export type GameId = (typeof GAME_IDS)[number]
 export type GameInputMode = 'touch' | 'keyboard' | 'mouse'
+export type GameCategory = 'action' | 'puzzle' | 'strategy' | 'casual' | 'board'
 
 export interface GameRouteIdentity {
   param: 'id'
@@ -79,12 +80,20 @@ export interface GameAdapterLifecycleRules {
 export interface CanonicalGameManifest {
   gameId: GameId
   title: string
+  description: string
+  category: GameCategory
+  color: string
+  icon: string
   route: GameRouteIdentity
   assets: GameAssetRefs
   capabilities: GameCapabilityFlags
   inputModes: GameInputMode[]
   persistence: GamePersistenceHooks
   resultFields: ResultPayloadField[]
+  instructions: string[]
+  controls: string
+  difficulty?: 'easy' | 'medium' | 'hard' | 'extreme'
+  tags?: string[]
   adapter: {
     factory: GameFactoryResolution
     lifecycle: GameAdapterLifecycleRules

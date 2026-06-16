@@ -182,6 +182,8 @@ export interface PermanentUpgrade {
   costs: number[]
   effects: UpgradeEffect[]
   rarity: 'common' | 'rare' | 'epic' | 'legendary'
+  /** Game categories this upgrade applies to. Undefined = applies to all categories (backward-compatible). */
+  applicableCategories?: string[]
 }
 
 export interface PlayerProfile {

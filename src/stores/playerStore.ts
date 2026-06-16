@@ -98,9 +98,15 @@ export const usePlayerStore = defineStore('player', () => {
     return `Lv${total}`
   })
 
-  function getEffectiveStats(): Record<string, number> {
+  function getEffectiveStats(category?: string): Record<string, number> {
     const stats: Record<string, number> = {}
     for (const upgrade of permanentUpgrades) {
+      // Skip if category is specified and upgrade has explicit applicableCategories that don't include it
+      if (category && upgrade.applicableCategories && upgrade.applicableCategories.length > 0) {
+        if (!upgrade.applicableCategories.includes(category)) {
+          continue
+        }
+      }
       const level = getUpgradeLevel(upgrade.id)
       if (level === 0) continue
       for (const effect of upgrade.effects) {

@@ -2,20 +2,20 @@ import type { ShopCollectionItem } from '@/types'
 import { avatarFrameDefs, badgeDefs } from '@/data/collections'
 
 const badgeCosts: Record<string, number> = {
-  first_game: 180,
-  master_gamer: 1200,
-  legendary_scorer: 1500,
-  tycoon: 1800,
-  all_rounder: 2600,
-  perfect_memory: 2400,
-  hardcore: 1600,
+  first_game: 50,
+  master_gamer: 300,
+  legendary_scorer: 400,
+  tycoon: 500,
+  all_rounder: 650,
+  perfect_memory: 600,
+  hardcore: 400,
 }
 
 const frameCosts: Record<string, number> = {
-  frame_bronze: 240,
-  frame_silver: 720,
-  frame_gold: 1600,
-  frame_diamond: 3200,
+  frame_bronze: 60,
+  frame_silver: 180,
+  frame_gold: 400,
+  frame_diamond: 800,
 }
 
 export const shopBadgeItems: ShopCollectionItem[] = badgeDefs.map((badge) => ({

@@ -12,6 +12,7 @@ import {
   type RewardSettlementResult,
   type GameId,
 } from '@/types'
+import { getGameById } from '@/games/registry'
 
 const GAME_MULTIPLIERS: Record<string, number> = {
   survivor: 0.5,
@@ -43,7 +44,8 @@ export const useCurrencyStore = defineStore('currency', () => {
   function calculateCoins(gameId: string, score: number): number {
     const multiplier = GAME_MULTIPLIERS[gameId] ?? 1.0
     const playerStore = usePlayerStore()
-    const stats = playerStore.getEffectiveStats()
+    const gameInfo = getGameById(gameId)
+    const stats = playerStore.getEffectiveStats(gameInfo?.category)
     const economyBonus = stats.economyBonus ?? 1.0
     return Math.floor(score * multiplier * economyBonus)
   }
