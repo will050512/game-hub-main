@@ -26,6 +26,7 @@ const particleCount = computed(() => {
     case 'steam': return 2
     case 'confetti': return 5
   }
+  return 3
 })
 
 const emit = defineEmits<{

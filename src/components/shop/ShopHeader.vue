@@ -83,7 +83,7 @@ watch(() => p.balance, (newVal, oldVal) => {
     <nav class="svh-tabs" aria-label="篩選">
       <div class="tab-indicator" :style="{ left: `${(activeTab / (p.categories.length - 1 || 1)) * 100}%`, width: `${100 / (p.categories.length || 1)}%` }" />
       <button
-        v-for="(c, idx) in p.categories"
+        v-for="c in p.categories"
         :key="c.key"
         :class="['svh-btn', { active: p.activeCategory === c.key }]"
         @click="updateActiveTab(c.key); emit('update:activeCategory', c.key)"

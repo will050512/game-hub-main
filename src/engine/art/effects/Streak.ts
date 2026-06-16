@@ -101,7 +101,7 @@ export const StreakComponent = defineComponent({
   },
   setup(props) {
     const el = ref<HTMLCanvasElement | null>(null)
-    let animationId: number | null = null
+    const animationId: number | null = null
 
     onMounted(() => {
       if (!el.value) return

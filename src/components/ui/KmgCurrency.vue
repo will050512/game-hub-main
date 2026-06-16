@@ -41,13 +41,12 @@ if (props.animated) {
     const steps = Math.abs(diff)
     const stepTime = Math.max(50, Math.min(1200, 1200 / steps))
 
-    let current = startVal
-    for (let i = 0; i <= steps; i++) {
+    displayAmount.value = startVal
+    for (let i = 1; i <= steps; i++) {
       await nextTick()
-      current = startVal + Math.sign(diff) * i
-      displayAmount.value = current
+      displayAmount.value = startVal + Math.sign(diff) * i
+      await new Promise(r => setTimeout(r, stepTime))
     }
-    displayAmount.value = newVal
     isAnimating.value = false
   })
 }

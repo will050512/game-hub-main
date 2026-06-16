@@ -9,7 +9,7 @@ import type { SoundChannel } from './SoundManager'
  * Override this constant before calling any preload method if your
  * asset pipeline places files elsewhere (e.g. Vite build output, CDN).
  */
-export let SOUND_BASE_PATH = '/audio/'
+export const SOUND_BASE_PATH = '/audio/'
 
 function digital(name: string): string {
   return `${SOUND_BASE_PATH}kenney_digital-audio/Audio/${name}`

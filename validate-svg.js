@@ -1,5 +1,7 @@
-const fs = require('fs');
-const svg = fs.readFileSync('public/images/survivor-thumb.svg', 'utf8');
+/* eslint-disable no-console */
+import { readFileSync } from 'fs';
+
+const svg = readFileSync('public/images/survivor-thumb.svg', 'utf8');
 
 console.log('=== SVG Validation ===');
 console.log('Has circle elements:', svg.includes('<circle'));

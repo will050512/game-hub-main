@@ -211,7 +211,7 @@ const gameCallbacks = {
     showUpgrade.value = true
     upgradeOptions.value = options
     upgradeResolver = resolve
-    try { gameEngine?.pause() } catch {}
+    try { gameEngine?.pause() } catch { /* paused for upgrade overlay */ }
   },
   onPause: () => {
     soundManager.pause()
@@ -289,7 +289,7 @@ onMounted(async () => {
       showTutorial.value = true
     }, 900)
     // Pause game during tutorial
-    try { gameEngine?.pause() } catch {}
+    try { gameEngine?.pause() } catch { /* paused for tutorial overlay */ }
   }
 })
 
@@ -326,7 +326,7 @@ function restartGame() {
   coinsEarned.value = 0
   try {
     gameEngine?.stop()
-  } catch {}
+  } catch { /* game already stopped */ }
   gameEngine = null
   // Re-initialize the game
   initGame()
@@ -352,7 +352,7 @@ function selectUpgrade(upgrade: UpgradeOption) {
   upgradeResolver?.(upgrade)
   upgradeResolver = null
   // Resume game after upgrade selection
-  try { gameEngine?.resume() } catch {}
+  try { gameEngine?.resume() } catch { /* already resumed */ }
 }
 
 function formatTime(seconds: number): string {
@@ -364,7 +364,7 @@ function formatTime(seconds: number): string {
 function onTutorialEnd() {
   showTutorial.value = false
   // Resume game after tutorial closes
-  try { gameEngine?.resume() } catch {}
+  try { gameEngine?.resume() } catch { /* already resumed */ }
 }
 </script>
 

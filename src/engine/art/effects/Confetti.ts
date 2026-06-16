@@ -119,7 +119,7 @@ export const ConfettiComponent = defineComponent({
   },
   setup(props) {
     const el = ref<HTMLCanvasElement | null>(null)
-    let animationId: number | null = null
+    const animationId: number | null = null
 
     const animate = () => {
       if (!el.value) return
