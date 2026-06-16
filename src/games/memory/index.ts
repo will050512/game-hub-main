@@ -1,4 +1,5 @@
 import { GameEngine } from '@/engine/GameEngine'
+import { getTheme } from '@/engine/art/KawaiiTheme'
 import { REWARD_EVENT_SCHEMA_VERSION, createRewardPayload, type GameInstance, type PlayerStats, type GameHudData } from '@/types'
 import { drawSprite, preloadGameSprites } from '@/engine/sprites/spriteLoader'
 import { drawKawaiiButton, drawKawaiiInlineLabel, drawKawaiiPanel } from '@/engine/kawaiiCanvas'
@@ -14,7 +15,11 @@ interface Card {
 type GamePhase = 'menu' | 'playing' | 'gameover'
 type Difficulty = 'easy' | 'medium' | 'hard'
 
+/** Visually distinct emoji symbols for card faces — 18 easily-distinguishable icons. */
+const EMOJI_SYMBOLS = ['🎈','🎄','🎃','🎁','🎀','🎪','🎨','🎭','🎯','🎲','🎰','🧩','🎳','🎧','🎸','🎺','🎻','🥁']
+
 class MemoryGame extends GameEngine {
+  private theme = getTheme('memory')
   private cards: Card[] = []
   private flippedCards: Card[] = []
   private phase: GamePhase = 'menu'
@@ -42,7 +47,7 @@ class MemoryGame extends GameEngine {
   private boardEffectTimer = 0
   private mismatchTimeoutId: ReturnType<typeof setTimeout> | null = null
 
-  private readonly symbols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R']
+  private readonly symbols = EMOJI_SYMBOLS
 
   protected init(): void {
     void preloadGameSprites('memory')
@@ -102,12 +107,12 @@ class MemoryGame extends GameEngine {
     this.animationTimer += dt
     if (this.shakeTimer > 0) this.shakeTimer -= dt
     if (this.boardEffectTimer > 0) this.boardEffectTimer -= dt
-    
+
     for (let i = this.matchedAnim.length - 1; i >= 0; i--) {
       this.matchedAnim[i]!.timer -= dt
       if (this.matchedAnim[i]!.timer <= 0) this.matchedAnim.splice(i, 1)
     }
-    
+
     for (let i = this.particles.length - 1; i >= 0; i--) {
       const p = this.particles[i]!
       p.x += p.vx * (dt / 16.667)
@@ -115,19 +120,20 @@ class MemoryGame extends GameEngine {
       p.life -= dt
       if (p.life <= 0) this.particles.splice(i, 1)
     }
-    
+
     if (this.combo === 0 && this.comboMultiplier > 1) {
       this.comboMultiplier = Math.max(1, this.comboMultiplier - dt / 1000)
     }
-    
+
     this.pushStats()
   }
 
   protected render(ctx: CanvasRenderingContext2D): void {
     const scale = this.dpr
+    // Use theme palette for light purple/pink gradient background
     const bg = ctx.createLinearGradient(0, 0, 0, this.height)
-    bg.addColorStop(0, '#1a0a2e')
-    bg.addColorStop(1, '#0f1a2e')
+    bg.addColorStop(0, this.theme.palette.bg)
+    bg.addColorStop(1, this.theme.palette.bgAlt)
     ctx.fillStyle = bg
     ctx.fillRect(0, 0, this.width, this.height)
 
@@ -138,36 +144,48 @@ class MemoryGame extends GameEngine {
     }
   }
 
+  /* ── Menu Screen ─────────────────────────────────────────────── */
+
   private renderMenu(ctx: CanvasRenderingContext2D): void {
     const scale = this.dpr
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
 
-    drawKawaiiPanel(ctx, this.width * 0.14, this.height * 0.12, this.width * 0.72, this.height * 0.14, {
-      fill: 'rgba(255,250,246,0.9)',
-      accent: '#ec4899',
-      stroke: '#171717',
+    // Title panel
+    drawKawaiiPanel(ctx, this.width * 0.14, this.height * 0.06, this.width * 0.72, this.height * 0.12, {
+      fill: this.theme.ui.surface,
+      accent: this.theme.palette.accent,
+      stroke: this.theme.palette.ink,
       radius: Math.floor(20 * scale),
     })
 
-    ctx.fillStyle = '#fff'
-    ctx.font = `bold ${Math.floor(32 * scale)}px sans-serif`
-    ctx.fillText('記憶翻牌', this.width / 2, this.height * 0.15)
+    // Single clear title (no duplication bug)
+    ctx.fillStyle = this.theme.palette.primary
+    ctx.font = `bold ${Math.floor(32 * scale)}px ${this.theme.font.family}`
+    ctx.fillText('記憶翻牌', this.width / 2, this.height * 0.10)
 
-    ctx.fillStyle = '#94a3b8'
-    ctx.font = `${Math.floor(14 * scale)}px sans-serif`
-    ctx.fillText('Memory Card Game', this.width / 2, this.height * 0.15 + Math.floor(40 * scale))
+    // Subtitle beneath title
+    ctx.fillStyle = this.theme.palette.secondary
+    ctx.font = `${Math.floor(14 * scale)}px ${this.theme.font.family}`
+    ctx.fillText('Memory Match', this.width / 2, this.height * 0.15)
 
+    // Difficulty buttons
     const diffItems: { key: Difficulty; label: string; color: string; desc: string }[] = [
-      { key: 'easy', label: 'Easy', color: '#22c55e', desc: '4x3 (6 pairs)' },
-      { key: 'medium', label: 'Medium', color: '#eab308', desc: '4x4 (8 pairs)' },
-      { key: 'hard', label: 'Hard', color: '#ef4444', desc: '6x4 (12 pairs)' },
+      { key: 'easy', label: '簡單', color: '#22c55e', desc: '4×3 (6對)' },
+      { key: 'medium', label: '普通', color: '#eab308', desc: '4×4 (8對)' },
+      { key: 'hard', label: '困難', color: '#ef4444', desc: '6×4 (12對)' },
     ]
 
     const btnWidth = Math.floor(this.width * 0.7)
-    const btnHeight = Math.floor(52 * scale)
-    const btnGap = Math.floor(10 * scale)
-    const menuStartY = this.height * 0.35
+    const btnHeight = Math.max(44, Math.floor(48 * scale))
+    const btnGap = Math.max(8, Math.floor(12 * scale))
+
+    // Vertically center the difficulty buttons with padding for title and start button
+    const totalBtnHeight = 3 * btnHeight + 2 * btnGap
+    const titleAreaHeight = Math.floor(this.height * 0.18)
+    const startBtnArea = Math.floor(80 * scale)
+    const menuAreaHeight = totalBtnHeight + startBtnArea
+    const menuStartY = Math.floor(titleAreaHeight + (this.height - titleAreaHeight - menuAreaHeight) / 2)
 
     diffItems.forEach((d, i) => {
       const btnY = menuStartY + i * (btnHeight + btnGap)
@@ -176,21 +194,22 @@ class MemoryGame extends GameEngine {
       drawKawaiiPanel(ctx, btnX, btnY, btnWidth, btnHeight, {
         fill: isActive ? d.color : 'rgba(255,255,255,0.92)',
         accent: isActive ? '#fffaf6' : d.color,
-        stroke: '#171717',
+        stroke: this.theme.palette.ink,
         radius: Math.floor(12 * scale),
       })
-      ctx.fillStyle = isActive ? '#171717' : '#fff'
-      ctx.font = `bold ${Math.floor(16 * scale)}px sans-serif`
+      ctx.fillStyle = isActive ? this.theme.palette.ink : this.theme.palette.primary
+      ctx.font = `bold ${Math.floor(16 * scale)}px ${this.theme.font.family}`
       ctx.fillText(d.label, this.width / 2, btnY + btnHeight / 2 - Math.floor(8 * scale))
 
-      ctx.fillStyle = isActive ? 'rgba(23,23,23,0.65)' : '#64748b'
-      ctx.font = `${Math.floor(11 * scale)}px sans-serif`
+      ctx.fillStyle = isActive ? 'rgba(29,22,27,0.65)' : this.theme.palette.secondary
+      ctx.font = `${Math.floor(11 * scale)}px ${this.theme.font.family}`
       ctx.fillText(d.desc, this.width / 2, btnY + btnHeight / 2 + Math.floor(10 * scale))
     })
 
-    const startBtnY = menuStartY + 3 * (btnHeight + btnGap) + Math.floor(24 * scale)
+    // Start button below difficulty buttons
+    const startBtnY = menuStartY + 3 * (btnHeight + btnGap) + Math.floor(16 * scale)
     const startBtnW = Math.floor(this.width * 0.5)
-    const startBtnH = Math.floor(52 * scale)
+    const startBtnH = Math.max(44, Math.floor(48 * scale))
     const startBtnX = (this.width - startBtnW) / 2
 
     const pulse = Math.sin(this.animationTimer * 0.003) * 0.08 + 0.92
@@ -204,19 +223,22 @@ class MemoryGame extends GameEngine {
       y: startBtnY,
       width: startBtnW,
       height: startBtnH,
-      label: 'Start Game',
+      label: '開始遊戲',
       iconKind: 'star',
-      fill: '#fce7f3',
-      activeFill: '#f9a8d4',
+      fill: this.theme.palette.bgAlt,
+      activeFill: this.theme.palette.highlight,
     })
     ctx.restore()
   }
+
+  /* ── Game Screen ─────────────────────────────────────────────── */
 
   private renderGame(ctx: CanvasRenderingContext2D): void {
     const scale = this.dpr
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
 
+    // Shake offset
     const shake = { x: 0, y: 0 }
     if (this.shakeTimer > 0) {
       shake.x = (Math.random() - 0.5) * Math.floor(8 * scale)
@@ -226,34 +248,37 @@ class MemoryGame extends GameEngine {
     ctx.save()
     ctx.translate(shake.x, shake.y)
 
-    const topBarY = Math.floor(16 * scale)
-    drawKawaiiPanel(ctx, this.width / 2 - 96 * scale, topBarY - 12 * scale, 192 * scale, 34 * scale, {
-      fill: 'rgba(255,250,246,0.9)',
-      accent: '#ec4899',
-      stroke: '#171717',
+    // HUD top bar
+    const topBarY = Math.floor(12 * scale)
+    const hudW = Math.floor(192 * scale)
+    drawKawaiiPanel(ctx, this.width / 2 - hudW / 2, topBarY - Math.floor(4 * scale), hudW, Math.floor(34 * scale), {
+      fill: this.theme.ui.surface,
+      accent: this.theme.palette.accent,
+      stroke: this.theme.palette.ink,
       radius: Math.floor(12 * scale),
     })
     drawKawaiiInlineLabel(ctx, {
       x: this.width / 2 - 78 * scale,
       y: topBarY + 4 * scale,
-      text: `Moves ${this.moves} · Pairs ${this.matches}/${this.totalPairs}`,
+      text: `步數 ${this.moves} · 配對 ${this.matches}/${this.totalPairs}`,
       iconKind: 'star',
       color: '#831843',
       fontSize: Math.max(11, Math.floor(12 * scale)),
     })
 
+    // Combo display
     if (this.combo > 1) {
-      const comboColor = this.combo >= 5 ? '#f97316' : this.combo >= 3 ? '#fbbf24' : '#a3e635'
+      const comboColor = this.combo >= 5 ? this.theme.palette.accent : this.theme.palette.highlight
       ctx.fillStyle = comboColor
-      ctx.font = `bold ${Math.floor(16 * scale)}px sans-serif`
+      ctx.font = `bold ${Math.floor(16 * scale)}px ${this.theme.font.family}`
       const comboText = this.combo >= 5 ? `FIRE x${this.combo}!` : `Combo x${this.combo}!`
       ctx.fillText(comboText, this.width / 2, topBarY + Math.floor(22 * scale))
-      
+
       if (this.comboMultiplier > 1) {
         drawKawaiiInlineLabel(ctx, {
           x: this.width / 2 - 42 * scale,
           y: topBarY + Math.floor(38 * scale),
-          text: `${this.comboMultiplier.toFixed(1)}x Score`,
+          text: `${this.comboMultiplier.toFixed(1)}x 分`,
           iconKind: 'spark',
           color: '#8b5cf6',
           fontSize: Math.max(10, Math.floor(10 * scale)),
@@ -261,6 +286,7 @@ class MemoryGame extends GameEngine {
       }
     }
 
+    // Board layout
     const layout = computeResponsiveGridLayout({
       canvasWidth: this.width,
       canvasHeight: this.height,
@@ -279,6 +305,7 @@ class MemoryGame extends GameEngine {
     this.boardOffsetX = layout.boardX
     this.boardOffsetY = layout.boardY
 
+    // Draw cards
     for (let r = 0; r < this.rows; r++) {
       for (let c = 0; c < this.cols; c++) {
         const idx = r * this.cols + c
@@ -291,6 +318,7 @@ class MemoryGame extends GameEngine {
       }
     }
 
+    // Particles
     for (const p of this.particles) {
       const alpha = Math.max(0, p.life / 500)
       const size = Math.floor(3 * scale + alpha * 2)
@@ -307,32 +335,60 @@ class MemoryGame extends GameEngine {
 
     ctx.restore()
 
+    // Game over overlay
     if (this.phase === 'gameover') {
-      ctx.fillStyle = 'rgba(0,0,0,0.7)'
-      ctx.fillRect(0, 0, this.width, this.height)
-
-      ctx.fillStyle = '#fff'
-      ctx.font = `bold ${Math.floor(28 * scale)}px sans-serif`
-      ctx.fillText('Complete!', this.width / 2, this.height * 0.35)
-
-      ctx.fillStyle = '#e2e8f0'
-      ctx.font = `${Math.floor(16 * scale)}px sans-serif`
-      ctx.fillText(`Score: ${this.score}`, this.width / 2, this.height * 0.42)
-      ctx.fillText(`Moves: ${this.moves} | Max Combo: ${this.maxCombo}`, this.width / 2, this.height * 0.47)
-
-      const btnW = Math.floor(this.width * 0.5)
-      const btnH = Math.floor(44 * scale)
-      const btnY = this.height * 0.55
-      const btnX = (this.width - btnW) / 2
-      ctx.fillStyle = '#ec4899'
-      ctx.beginPath()
-      this.roundRect(ctx, btnX, btnY, btnW, btnH, Math.floor(12 * scale))
-      ctx.fill()
-      ctx.fillStyle = '#fff'
-      ctx.font = `bold ${Math.floor(15 * scale)}px sans-serif`
-      ctx.fillText('Play Again', this.width / 2, btnY + btnH / 2)
+      this.renderGameOver(ctx, scale)
     }
   }
+
+  /* ── Game Over Screen ────────────────────────────────────────── */
+
+  private renderGameOver(ctx: CanvasRenderingContext2D, scale: number): void {
+    // Semi-transparent dark overlay
+    ctx.fillStyle = 'rgba(0,0,0,0.5)'
+    ctx.fillRect(0, 0, this.width, this.height)
+
+    const panelW = Math.floor(this.width * 0.72)
+    const panelH = Math.floor(260 * scale)
+    const panelX = (this.width - panelW) / 2
+    const panelY = (this.height - panelH) / 2
+
+    drawKawaiiPanel(ctx, panelX, panelY, panelW, panelH, {
+      fill: this.theme.ui.surface,
+      accent: this.theme.palette.accent,
+      stroke: this.theme.palette.ink,
+      radius: Math.floor(20 * scale),
+    })
+
+    const isWon = this.matches >= this.totalPairs
+    ctx.fillStyle = this.theme.palette.primary
+    ctx.font = `bold ${Math.floor(28 * scale)}px ${this.theme.font.family}`
+    ctx.fillText(isWon ? '🎉 恭喜通關！' : '🏁 遊戲結束', this.width / 2, panelY + Math.floor(40 * scale))
+
+    ctx.fillStyle = this.theme.palette.ink
+    ctx.font = `${Math.floor(16 * scale)}px ${this.theme.font.family}`
+    ctx.fillText(`得分: ${this.score}`, this.width / 2, panelY + Math.floor(76 * scale))
+    ctx.fillText(`步數: ${this.moves} | 最大連擊: ${this.maxCombo}`, this.width / 2, panelY + Math.floor(100 * scale))
+
+    // Play again button
+    const btnW = Math.floor(panelW * 0.45)
+    const btnH = Math.max(44, Math.floor(48 * scale))
+    const btnX = (this.width - btnW) / 2
+    const btnY = panelY + panelH - Math.floor(64 * scale)
+
+    drawKawaiiButton(ctx, {
+      x: btnX,
+      y: btnY,
+      width: btnW,
+      height: btnH,
+      label: '再玩一次',
+      iconKind: 'undo',
+      fill: this.theme.palette.bgAlt,
+      activeFill: this.theme.palette.highlight,
+    })
+  }
+
+  /* ── Card Rendering ──────────────────────────────────────────── */
 
   private renderCard(ctx: CanvasRenderingContext2D, x: number, y: number, card: Card): void {
     const scale = this.dpr
@@ -340,60 +396,75 @@ class MemoryGame extends GameEngine {
     const isMatched = this.matchedAnim.some(a => a.cardId === card.id)
     const cardCenterX = x + cs / 2
     const cardCenterY = y + cs / 2
-    const cardScale = cs / 80
 
     if (card.matched || card.flipped) {
+      // Card face — try sprite first, then kawaii panel fallback
       const faceDrawn = drawSprite(ctx, 'memory.card-face', {
         x,
         y,
-        scaleX: cardScale,
-        scaleY: cardScale,
+        scaleX: cs / 80,
+        scaleY: cs / 80,
         alpha: card.matched ? 0.7 : 1,
       })
       if (!faceDrawn) {
         drawKawaiiPanel(ctx, x, y, cs, cs, {
-          fill: card.matched ? 'rgba(220,252,231,0.9)' : 'rgba(255,255,255,0.12)',
-          accent: card.matched ? '#22c55e' : '#ec4899',
-          stroke: '#171717',
+          fill: card.matched ? 'rgba(220,252,231,0.9)' : this.theme.ui.surface,
+          accent: card.matched ? '#22c55e' : this.theme.palette.accent,
+          stroke: this.theme.palette.ink,
           radius: Math.floor(8 * scale),
         })
       }
 
+      // Matched glow effect with pulsating scale
       if (card.matched || isMatched) {
-        const glowAlpha = isMatched ? 0.9 : 0.7
+        const animIdx = this.matchedAnim.findIndex(a => a.cardId === card.id)
+        const animT = animIdx >= 0 ? this.matchedAnim[animIdx]!.timer / 500 : 0
+        const glowPulse = Math.sin(this.animationTimer * 0.005 + card.id) * 0.3 + 0.7
+        const glowAlpha = isMatched ? Math.min(0.9, animT * 0.9) : 0.7
+
+        ctx.save()
+        ctx.translate(cardCenterX, cardCenterY)
+        ctx.scale(1 + animT * 0.06 * glowPulse, 1 + animT * 0.06 * glowPulse)
+        ctx.translate(-cardCenterX, -cardCenterY)
+
         ctx.strokeStyle = `rgba(34,197,94,${glowAlpha})`
-        ctx.lineWidth = Math.floor((isMatched ? 3 : 2) * scale)
+        ctx.lineWidth = Math.floor((isMatched ? 3 : 2) * scale * (1 + animT * 0.3))
         ctx.beginPath()
         this.roundRect(ctx, x, y, cs, cs, Math.floor(8 * scale))
         ctx.stroke()
+        ctx.restore()
       }
 
+      // Emoji symbol — large, centered, clearly readable
       drawKawaiiInlineLabel(ctx, {
         x: cardCenterX - Math.floor(cs * 0.16),
         y: cardCenterY,
         text: card.symbol,
         iconKind: card.matched ? 'heart' : 'star',
-        color: card.matched ? '#166534' : '#fff',
-        fontSize: Math.floor(cs * 0.28),
+        color: card.matched ? '#166534' : this.theme.palette.primary,
+        fontSize: Math.floor(cs * 0.55),
       })
     } else {
+      // Card back
       const backDrawn = drawSprite(ctx, 'memory.card-back', {
         x,
         y,
-        scaleX: cardScale,
-        scaleY: cardScale,
+        scaleX: cs / 80,
+        scaleY: cs / 80,
         alpha: 0.95,
       })
       if (!backDrawn) {
         drawKawaiiPanel(ctx, x, y, cs, cs, {
-          fill: '#ede9fe',
-          accent: '#8b5cf6',
-          stroke: '#171717',
+          fill: this.theme.palette.bg,
+          accent: this.theme.palette.accent,
+          stroke: this.theme.palette.ink,
           radius: Math.floor(8 * scale),
         })
       }
     }
   }
+
+  /* ── Input Handling ──────────────────────────────────────────── */
 
   private handleTap(clientX: number, clientY: number): void {
     const rect = this.canvas.getBoundingClientRect()
@@ -413,9 +484,12 @@ class MemoryGame extends GameEngine {
     const scale = this.dpr
     const diffItems: Difficulty[] = ['easy', 'medium', 'hard']
     const btnWidth = Math.floor(this.width * 0.7)
-    const btnHeight = Math.floor(52 * scale)
-    const btnGap = Math.floor(10 * scale)
-    const menuStartY = this.height * 0.35
+    const btnHeight = Math.max(44, Math.floor(48 * scale))
+    const btnGap = Math.max(8, Math.floor(12 * scale))
+
+    const titleAreaHeight = Math.floor(this.height * 0.18)
+    const menuAreaHeight = 3 * btnHeight + 2 * btnGap + Math.floor(80 * scale)
+    const menuStartY = Math.floor(titleAreaHeight + (this.height - titleAreaHeight - menuAreaHeight) / 2)
 
     diffItems.forEach((d, i) => {
       const btnY = menuStartY + i * (btnHeight + btnGap)
@@ -425,9 +499,9 @@ class MemoryGame extends GameEngine {
       }
     })
 
-    const startBtnY = menuStartY + 3 * (btnHeight + btnGap) + Math.floor(24 * scale)
+    const startBtnY = menuStartY + 3 * (btnHeight + btnGap) + Math.floor(16 * scale)
     const startBtnW = Math.floor(this.width * 0.5)
-    const startBtnH = Math.floor(52 * scale)
+    const startBtnH = Math.max(44, Math.floor(48 * scale))
     const startBtnX = (this.width - startBtnW) / 2
 
     if (x >= startBtnX && x <= startBtnX + startBtnW && y >= startBtnY && y <= startBtnY + startBtnH) {
@@ -476,20 +550,20 @@ class MemoryGame extends GameEngine {
       this.combo++
       if (this.combo > this.maxCombo) this.maxCombo = this.combo
       this.matches++
-      
+
       this.comboMultiplier = Math.min(3, 1 + this.combo * 0.2)
       const baseScore = 100
       const comboBonus = Math.floor(baseScore * this.comboMultiplier * this.combo)
       this.score += comboBonus
-      
+
       this.createMatchParticles(a!.id)
       this.createMatchParticles(b!.id)
-      
+
       this.matchedAnim.push({ cardId: a!.id, timer: 500 })
       this.matchedAnim.push({ cardId: b!.id, timer: 500 })
       this.flippedCards = []
       this.lockBoard = false
-      
+
       this.boardEffectTimer = 200
 
       if (this.matches >= this.totalPairs) {
@@ -534,13 +608,13 @@ class MemoryGame extends GameEngine {
     const scale = this.dpr
     const card = this.cards.find(c => c.id === cardId)
     if (!card) return
-    
+
     const gap = Math.floor(6 * scale)
     const row = Math.floor(cardId / this.cols)
     const col = cardId % this.cols
     const x = this.boardOffsetX + col * (this.cellSize + gap) + this.cellSize / 2
     const y = this.boardOffsetY + row * (this.cellSize + gap) + this.cellSize / 2
-    
+
     const colors = ['#22c55e', '#3b82f6', '#f59e0b', '#ec4899', '#8b5cf6']
     for (let i = 0; i < 12; i++) {
       const angle = (Math.PI * 2 * i) / 12
@@ -558,10 +632,14 @@ class MemoryGame extends GameEngine {
 
   private handleGameOverTap(x: number, y: number): void {
     const scale = this.dpr
-    const btnW = Math.floor(this.width * 0.5)
-    const btnH = Math.floor(44 * scale)
-    const btnY = this.height * 0.55
+    const panelW = Math.floor(this.width * 0.72)
+    const panelH = Math.floor(260 * scale)
+    const panelX = (this.width - panelW) / 2
+    const panelY = (this.height - panelH) / 2
+    const btnW = Math.floor(panelW * 0.45)
+    const btnH = Math.max(44, Math.floor(48 * scale))
     const btnX = (this.width - btnW) / 2
+    const btnY = panelY + panelH - Math.floor(64 * scale)
     if (x >= btnX && x <= btnX + btnW && y >= btnY && y <= btnY + btnH) {
       this.setupBoard()
       this.phase = 'playing'
@@ -628,7 +706,7 @@ export function createMemoryGame(): GameInstance {
   game.start = function(canvas, callbacks) {
     origStart(canvas, callbacks)
     canvas.addEventListener('pointerdown', (e) => {
-      (game as unknown as { handleTap: (x: number, y: number) => void }).handleTap(e.clientX, e.clientY)
+      ;(game as unknown as { handleTap: (x: number, y: number) => void }).handleTap(e.clientX, e.clientY)
     })
   }
   return game

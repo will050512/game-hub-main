@@ -9,7 +9,11 @@ import {
   type PlayerStats,
   type GameHudData,
 } from '@/types'
+import { getTheme } from '@/engine/art/KawaiiTheme'
+import { GameOverlay } from '@/engine/GameOverlay'
+import { drawKawaiiBackground } from '@/engine/kawaiiCanvas'
 import { drawKawaiiPanel } from '@/engine/kawaiiCanvas'
+import type { GamePhase } from '@/engine/GameStateMachine'
 
 type GameState = 'ready' | 'playing' | 'dying' | 'gameover'
 type RingType = 'gold' | 'silver' | 'bronze'
@@ -71,6 +75,10 @@ class FlappyGame extends GameEngine {
   private readonly pipeSpawnInterval = 2000
   private readonly gameOverDelay = 700
 
+  private theme = getTheme('flappy')
+  /** Separate overlay instance for game-specific state/scores (not the base class's unified overlay) */
+  private gameOverlay = new GameOverlay()
+
   private state: GameState = 'ready'
   private score = 0
   private elapsedMs = 0
@@ -96,7 +104,9 @@ class FlappyGame extends GameEngine {
   private floatingTexts: FloatingText[] = []
 
   private groundHeight = 0
-  private listenersBound = false
+  private keyboardBound = false
+  private pointerBound = false
+  private touchBound = false
 
   constructor() {
     super()
@@ -117,6 +127,8 @@ class FlappyGame extends GameEngine {
     this.birdRadius = Math.max(9 * this.dpr, this.width * 0.026)
     this.pipeWidth = Math.max(44 * this.dpr, this.width * 0.14)
 
+    this.gameOverlay.setSize(this.width, this.height)
+
     this.birdX = this.width * 0.3
     this.birdY = this.height * 0.42
     this.birdVelocityY = 0
@@ -132,21 +144,21 @@ class FlappyGame extends GameEngine {
 
     this.callbacks.onScoreUpdate?.(this.score)
 
-    if (!this.listenersBound) {
-      this.bindInputListeners()
-      this.listenersBound = true
-    }
+    this.stateMachine.startIntro()
+    this.bindInputListeners()
 
     this.pushStats()
   }
 
   override stop(): void {
     this.unbindInputListeners()
-    this.listenersBound = false
+    this.stateMachine.reset()
     super.stop()
   }
 
   protected update(dt: number): void {
+    this.stateMachine.update(dt)
+
     const dtScale = dt / 16.667
     this.elapsedMs += dt
 
@@ -284,12 +296,8 @@ class FlappyGame extends GameEngine {
       ctx.translate(this.screenShake.x, this.screenShake.y)
     }
 
-    const sky = ctx.createLinearGradient(0, 0, 0, this.height)
-    sky.addColorStop(0, '#a8e6ff')
-    sky.addColorStop(0.6, '#7fd4ff')
-    sky.addColorStop(1, '#5cc1f0')
-    ctx.fillStyle = sky
-    ctx.fillRect(0, 0, this.width, this.height)
+    const flappyTheme = { base: '#87ceeb', soft: '#b0e0f0', accent: '#facc15', ink: '#5cc1f0', blush: '#f0f9ff' }
+    drawKawaiiBackground(ctx, this.width, this.height, this.frameTick, flappyTheme)
 
     this.drawCloudBands(ctx)
     this.drawPipes(ctx)
@@ -308,29 +316,25 @@ class FlappyGame extends GameEngine {
       })
       ctx.fillStyle = '#2a1e25'
       ctx.textAlign = 'center'
-      ctx.font = `bold ${Math.max(16, Math.floor(17 * this.dpr))}px sans-serif`
+      ctx.font = `bold ${Math.max(16, Math.floor(17 * this.dpr))}px ${this.theme.font.family}`
       ctx.fillText('TAP TO START', this.width / 2, this.height * 0.32)
-      ctx.font = `${Math.max(11, Math.floor(12 * this.dpr))}px sans-serif`
+      ctx.font = `${Math.max(11, Math.floor(12 * this.dpr))}px ${this.theme.font.family}`
       ctx.fillText('Space / ArrowUp / Tap', this.width / 2, this.height * 0.36)
     }
 
     if (this.state === 'gameover') {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.34)'
-      ctx.fillRect(0, 0, this.width, this.height)
-      const panelWidth = Math.max(190 * this.dpr, this.width * 0.46)
-      const panelHeight = Math.max(100 * this.dpr, this.height * 0.18)
-      drawKawaiiPanel(ctx, this.width / 2 - panelWidth / 2, this.height * 0.36, panelWidth, panelHeight, {
-        fill: 'rgba(255, 249, 243, 0.96)',
-        accent: '#f9a8d4',
-        radius: 22,
+      this.gameOverlay.render(ctx, {
+        state: 'gameover' as GamePhase,
+        score: this.score,
+        level: 1,
+        lives: 1,
+        maxLives: 1,
+        gameTime: Math.floor(this.elapsedMs / 1000),
+        gameName: 'Flappy Bird',
+        gameColor: this.theme.ui.accent,
+        dpr: this.dpr,
+        introProgress: 0,
       })
-      ctx.fillStyle = '#2a1e25'
-      ctx.textAlign = 'center'
-      ctx.font = `bold ${Math.max(22, Math.floor(30 * this.dpr))}px sans-serif`
-      ctx.fillText('GAME OVER', this.width / 2, this.height * 0.43)
-      ctx.font = `${Math.max(13, Math.floor(16 * this.dpr))}px sans-serif`
-      ctx.fillText(`Score ${this.score}`, this.width / 2, this.height * 0.49)
-      ctx.fillText('Tap to restart', this.width / 2, this.height * 0.55)
     }
 
     this.renderParticles(ctx)
@@ -365,15 +369,33 @@ class FlappyGame extends GameEngine {
   }
 
   private bindInputListeners(): void {
-    window.addEventListener('keydown', this.handleKeyDown)
-    this.canvas.addEventListener('pointerdown', this.handlePointerDown)
-    this.canvas.addEventListener('touchstart', this.handleTouchStart, { passive: false })
+    if (!this.keyboardBound) {
+      window.addEventListener('keydown', this.handleKeyDown)
+      this.keyboardBound = true
+    }
+    if (!this.pointerBound) {
+      this.canvas.addEventListener('pointerdown', this.handlePointerDown)
+      this.pointerBound = true
+    }
+    if (!this.touchBound) {
+      this.canvas.addEventListener('touchstart', this.handleTouchStart, { passive: false })
+      this.touchBound = true
+    }
   }
 
   private unbindInputListeners(): void {
-    window.removeEventListener('keydown', this.handleKeyDown)
-    this.canvas.removeEventListener('pointerdown', this.handlePointerDown)
-    this.canvas.removeEventListener('touchstart', this.handleTouchStart)
+    if (this.keyboardBound) {
+      window.removeEventListener('keydown', this.handleKeyDown)
+      this.keyboardBound = false
+    }
+    if (this.pointerBound) {
+      this.canvas.removeEventListener('pointerdown', this.handlePointerDown)
+      this.pointerBound = false
+    }
+    if (this.touchBound) {
+      this.canvas.removeEventListener('touchstart', this.handleTouchStart)
+      this.touchBound = false
+    }
   }
 
   private handleKeyDown = (event: KeyboardEvent): void => {
@@ -449,7 +471,15 @@ class FlappyGame extends GameEngine {
       }
     }
 
-    this.pipes = this.pipes.filter((pipe: PipePair) => pipe.x + pipe.width > -4 * this.dpr)
+    let writeIdx = 0
+    for (let i = 0; i < this.pipes.length; i++) {
+      const pipe = this.pipes[i]!
+      if (pipe.x + pipe.width > -4 * this.dpr) {
+        this.pipes[writeIdx] = pipe
+        writeIdx++
+      }
+    }
+    this.pipes.length = writeIdx
   }
 
   private updateRings(dt: number): void {
@@ -938,7 +968,7 @@ class FlappyGame extends GameEngine {
     ctx.fillStyle = 'rgba(255,255,255,0.98)'
     ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)'
     ctx.lineWidth = Math.max(2, Math.floor(3 * this.dpr))
-    ctx.font = `bold ${Math.max(24, Math.floor(40 * this.dpr))}px sans-serif`
+    ctx.font = `bold ${Math.max(24, Math.floor(40 * this.dpr))}px ${this.theme.font.family}`
     ctx.strokeText(String(this.score), this.width / 2, this.height * 0.13)
     ctx.fillText(String(this.score), this.width / 2, this.height * 0.13)
 
@@ -946,7 +976,7 @@ class FlappyGame extends GameEngine {
       const comboY = this.height * 0.2
       const comboAlpha = Math.min(1, this.ringComboTimer / 500)
       ctx.globalAlpha = comboAlpha
-      ctx.font = `bold ${Math.max(14, Math.floor(18 * this.dpr))}px sans-serif`
+      ctx.font = `bold ${Math.max(14, Math.floor(18 * this.dpr))}px ${this.theme.font.family}`
       ctx.fillStyle = '#facc15'
       ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)'
       ctx.lineWidth = Math.max(2, Math.floor(2 * this.dpr))
@@ -954,6 +984,10 @@ class FlappyGame extends GameEngine {
       ctx.fillText(`COMBO ×${this.ringCombo}`, this.width / 2, comboY)
       ctx.globalAlpha = 1
     }
+  }
+
+  protected override onResize(w: number, h: number): void {
+    this.gameOverlay.setSize(w, h)
   }
 }
 

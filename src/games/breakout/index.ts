@@ -14,6 +14,8 @@ import { ModifierCodexManager } from './modifierCodex'
 import { preloadGameSprites, drawSprite } from '@/engine/sprites/spriteLoader'
 import { preloadKenneySprites, drawKenneySprite } from '@/engine/sprites/kenneySpriteLoader'
 import { canvasIconKindForItem, drawKawaiiCanvasIcon, drawKawaiiInlineLabel } from '@/engine/kawaiiCanvas'
+import { ObjectPool } from '@/engine/ObjectPool'
+import { getTheme } from '@/engine/art/KawaiiTheme'
 
 interface Paddle {
   x: number
@@ -153,6 +155,7 @@ class BreakoutGame extends GameEngine {
   private readonly maxLevelTextTime = 1400
   private readonly stageProgression: StageVariant[] = ['standard', 'pyramid', 'walls', 'fortress', 'chaos', 'boss']
 
+  private theme = getTheme('breakout')
   private score = 0
   private lives = this.maxLivesBase
   private level = 1
@@ -184,6 +187,9 @@ class BreakoutGame extends GameEngine {
   private basePaddleWidth = 0
   private laserCooldownMs = 0
   private laserBullets: LaserBullet[] = []
+
+  private ballPool!: ObjectPool<Ball>
+  private powerUpPool!: ObjectPool<PowerUpEntity>
   private stickyBall: Ball | null = null
   private stickyActive = false
   private laserActive = false
@@ -215,7 +221,7 @@ class BreakoutGame extends GameEngine {
     this.gameOver = false
     this.gameOverTriggered = false
 
-    this.powerUps = []
+    this.releaseAllPowerUps()
     this.powerUpsCollectedThisRun = new Set()
     this.activeEffects = []
     this.laserBullets = []
@@ -253,19 +259,28 @@ class BreakoutGame extends GameEngine {
       radius: Math.max(5 * this.dpr, this.width * 0.015),
     }
     this.basePaddleWidth = this.paddle.width
+    this.ballPool = new ObjectPool<Ball>(
+      () => ({ x: 0, y: 0, vx: 0, vy: 0, radius: 0, active: false }),
+      (ball) => { ball.x = 0; ball.y = 0; ball.vx = 0; ball.vy = 0; ball.active = false },
+      3,
+    )
+    this.powerUpPool = new ObjectPool<PowerUpEntity>(
+      () => ({ x: 0, y: 0, width: 0, height: 0, vy: 0, def: POWERUP_DEFS[0]! }),
+      (pu) => { pu.x = 0; pu.y = 0; pu.width = 0; pu.height = 0; pu.vy = 0; pu.def = POWERUP_DEFS[0]! },
+    )
     this.balls = [this.createBall()]
     this.serveTimer = 700
   }
 
   private createBall(): Ball {
-    return {
-      x: this.paddle.x + this.paddle.width / 2,
-      y: this.paddle.y - 8 * this.dpr,
-      vx: 0,
-      vy: 0,
-      radius: Math.max(6 * this.dpr, this.width * 0.018),
-      active: true,
-    }
+    const ball = this.ballPool.acquire()
+    ball.x = this.paddle.x + this.paddle.width / 2
+    ball.y = this.paddle.y - 8 * this.dpr
+    ball.vx = 0
+    ball.vy = 0
+    ball.radius = Math.max(6 * this.dpr, this.width * 0.018)
+    ball.active = true
+    return ball
   }
 
   private createLevelBricks(): void {
@@ -551,8 +566,11 @@ class BreakoutGame extends GameEngine {
       }
 
       if (ball.y + ball.radius > this.height + ball.radius * 2) {
-        ball.active = false
-        this.balls = this.balls.filter(b => b.active)
+        const idx = this.balls.indexOf(ball)
+        if (idx !== -1) {
+          this.ballPool.release(ball)
+          this.balls.splice(idx, 1)
+        }
         if (this.balls.length === 0) {
           this.lives -= 1
           if (this.lives <= 0) {
@@ -613,11 +631,13 @@ class BreakoutGame extends GameEngine {
           powerUp.x + powerUp.width > this.paddle.x &&
           powerUp.x < this.paddle.x + this.paddle.width) {
         this.collectPowerUp(powerUp.def)
+        this.powerUpPool.release(powerUp)
         this.powerUps.splice(i, 1)
         continue
       }
 
       if (powerUp.y > this.height) {
+        this.powerUpPool.release(powerUp)
         this.powerUps.splice(i, 1)
       }
     }
@@ -637,12 +657,13 @@ class BreakoutGame extends GameEngine {
           const speed = Math.hypot(source.vx, source.vy) || this.getLevelBaseBallSpeed()
           const baseAngle = Math.atan2(source.vx, -source.vy)
           const angle = baseAngle + (i === 0 ? -0.34 : 0.34)
-          this.balls.push({
-            ...source,
-            vx: speed * Math.sin(angle),
-            vy: -Math.abs(speed * Math.cos(angle)),
-            active: true,
-          })
+          const newBall = this.ballPool.acquire()
+          Object.assign(newBall, source)
+          newBall.vx = speed * Math.sin(angle)
+          newBall.vy = -Math.abs(speed * Math.cos(angle))
+          newBall.active = true
+          this.ballPool.release(source)
+          this.balls.push(newBall)
         }
         break
       case 'sticky_paddle':
@@ -695,14 +716,14 @@ class BreakoutGame extends GameEngine {
     }) ?? defs[0]
 
     if (!selected) return
-    this.powerUps.push({
-      x: x - 13 * this.dpr,
-      y: y - 13 * this.dpr,
-      width: 26 * this.dpr,
-      height: 26 * this.dpr,
-      vy: 2.2 * this.dpr,
-      def: selected,
-    })
+    const powerUp = this.powerUpPool.acquire()
+    powerUp.x = x - 13 * this.dpr
+    powerUp.y = y - 13 * this.dpr
+    powerUp.width = 26 * this.dpr
+    powerUp.height = 26 * this.dpr
+    powerUp.vy = 2.2 * this.dpr
+    powerUp.def = selected
+    this.powerUps.push(powerUp)
   }
 
   private updateLasers(dt: number): void {
@@ -759,14 +780,15 @@ class BreakoutGame extends GameEngine {
   private checkLevelClear(): void {
     if (this.bricksRemaining <= 0) {
       this.level += 1
-      this.powerUps = []
+      this.releaseAllBalls()
+      this.releaseAllPowerUps()
       this.laserBullets = []
       this.stickyBall = null
       this.stickyActive = false
       this.laserActive = false
       this.activeEffects = []
       this.createLevelBricks()
-      this.balls = [this.createBall()]
+      this.balls = [this.ballPool.acquire()]
       this.resetBallOnPaddle()
       this.triggerScreenShake(6, 200)
       this.spawnFloatingText(this.width / 2, this.height / 2, `Level ${this.level}!`, '#fbbf24', 1.5)
@@ -787,7 +809,7 @@ class BreakoutGame extends GameEngine {
     this.comboTimer = 0
     if (this.comboCount >= 3) {
       this.effects.combo.onHit()
-      const text = this.comboCount >= 5 ? `${this.comboCount}x COMBO!` : `${this.comboCount}x`
+      const text = this.comboCount >= 5 ? `${this.comboCount}x 連擊!` : `${this.comboCount}x`
       const scale = 1 + this.comboCount * 0.08
       this.effects.floatingText.spawn({
         x: this.width / 2,
@@ -1010,10 +1032,10 @@ class BreakoutGame extends GameEngine {
     const scale = 1 + this.comboCount * 0.08
     ctx.globalAlpha = 0.8
     ctx.fillStyle = '#fbbf24'
-    ctx.font = `bold ${Math.floor(24 * this.dpr * scale)}px sans-serif`
+    ctx.font = `bold ${Math.floor(24 * this.dpr * scale)}px ${this.theme.font.family}`
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
-    ctx.fillText(`${this.comboCount}x COMBO!`, this.width / 2, this.height * 0.2)
+    ctx.fillText(`${this.comboCount}x 連擊!`, this.width / 2, this.height * 0.2)
     ctx.globalAlpha = 1
   }
 
@@ -1072,7 +1094,7 @@ class BreakoutGame extends GameEngine {
 
   private renderHudText(ctx: CanvasRenderingContext2D) {
     ctx.fillStyle = 'rgba(248, 250, 252, 0.92)'
-    ctx.font = `${12 * this.dpr}px sans-serif`
+    ctx.font = `${12 * this.dpr}px ${this.theme.font.family}`
     ctx.textAlign = 'right'
     ctx.fillText(`分數 ${this.score}`, this.width - 14 * this.dpr, 24 * this.dpr)
   }
@@ -1086,7 +1108,7 @@ class BreakoutGame extends GameEngine {
 
     ctx.globalAlpha = alpha
     ctx.fillStyle = '#e2e8f0'
-    ctx.font = `bold ${28 * this.dpr}px sans-serif`
+    ctx.font = `bold ${28 * this.dpr}px ${this.theme.font.family}`
     ctx.textAlign = 'center'
     ctx.fillText(`第 ${this.level} 關`, this.width / 2, this.height * 0.5)
     drawKawaiiInlineLabel(ctx, {
@@ -1104,13 +1126,13 @@ class BreakoutGame extends GameEngine {
   private renderGameOver(ctx: CanvasRenderingContext2D) {
     if (!this.gameOver) return
 
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.58)'
+    ctx.fillStyle = this.theme.ui.surface
     ctx.fillRect(0, 0, this.width, this.height)
     ctx.fillStyle = '#f8fafc'
     ctx.textAlign = 'center'
-    ctx.font = `bold ${32 * this.dpr}px sans-serif`
+    ctx.font = `bold ${32 * this.dpr}px ${this.theme.font.family}`
     ctx.fillText('遊戲結束', this.width / 2, this.height * 0.48)
-    ctx.font = `${16 * this.dpr}px sans-serif`
+    ctx.font = `${16 * this.dpr}px ${this.theme.font.family}`
     ctx.fillText(`最終分數 ${this.score}`, this.width / 2, this.height * 0.54)
   }
 
@@ -1127,6 +1149,20 @@ class BreakoutGame extends GameEngine {
     ctx.lineTo(x, y + r)
     ctx.quadraticCurveTo(x, y, x + r, y)
     ctx.closePath()
+  }
+
+  private releaseAllBalls(): void {
+    for (const ball of this.balls) {
+      this.ballPool.release(ball)
+    }
+    this.balls = []
+  }
+
+  private releaseAllPowerUps(): void {
+    for (const powerUp of this.powerUps) {
+      this.powerUpPool.release(powerUp)
+    }
+    this.powerUps = []
   }
 }
 

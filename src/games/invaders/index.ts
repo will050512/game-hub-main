@@ -1,4 +1,5 @@
 import { GameEngine } from '@/engine/GameEngine'
+import { ObjectPool } from '@/engine/ObjectPool'
 import { drawSprite, preloadGameSprites } from '@/engine/sprites/spriteLoader'
 import { drawKenneySprite, preloadKenneySprites } from '@/engine/sprites/kenneySpriteLoader'
 import {
@@ -25,6 +26,12 @@ import {
   type ShieldBlock 
 } from './data'
 import { LoadoutCodexManager } from './loadoutCodex'
+import { getTheme } from '@/engine/art/KawaiiTheme'
+
+function hexToRgb(hex: string): string {
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
+  return result ? `${parseInt(result[1]!, 16)}, ${parseInt(result[2]!, 16)}, ${parseInt(result[3]!, 16)}` : '0, 0, 0'
+}
 
 interface Star {
   x: number
@@ -128,6 +135,8 @@ const COMBO_TIMEOUT_MS = 3000
 const FORMATION_SEQUENCE: FormationType[] = ['standard', 'vee', 'diamond', 'wedge', 'scattered', 'wall']
 
 class InvadersGame extends GameEngine {
+  private theme = getTheme('invaders')
+
   private player: Player = {
     x: 0,
     y: 0,
@@ -142,6 +151,10 @@ class InvadersGame extends GameEngine {
   private alienBullets: Bullet[] = []
   private particles: Particle[] = []
   private shieldBlocks: ShieldBlock[] = []
+
+  private alienPool!: ObjectPool<Alien>
+  private playerBulletPool!: ObjectPool<Bullet>
+  private alienBulletPool!: ObjectPool<Bullet>
 
   private screenShake: ScreenShake | null = null
   private floatingTexts: FloatingText[] = []
@@ -181,6 +194,19 @@ class InvadersGame extends GameEngine {
     super()
     const savedCodex = localStorage.getItem('invaders_loadout_codex')
     this.loadoutCodex = new LoadoutCodexManager(savedCodex || undefined)
+
+    this.alienPool = new ObjectPool<Alien>(
+      () => ({ x: 0, y: 0, width: 0, height: 0, row: 0, col: 0, alive: false }),
+      (alien: Alien) => { alien.alive = false }
+    )
+    this.playerBulletPool = new ObjectPool<Bullet>(
+      () => ({ x: 0, y: 0, width: 0, height: 0, vx: 0, vy: 0, friendly: true }),
+      (bullet: Bullet) => { bullet.x = 0; bullet.y = 0; bullet.vx = 0; bullet.vy = 0; bullet.friendly = true }
+    )
+    this.alienBulletPool = new ObjectPool<Bullet>(
+      () => ({ x: 0, y: 0, width: 0, height: 0, vx: 0, vy: 0, friendly: false }),
+      (bullet: Bullet) => { bullet.x = 0; bullet.y = 0; bullet.vx = 0; bullet.vy = 0; bullet.friendly = false }
+    )
   }
 
   protected init(): void {
@@ -212,6 +238,12 @@ class InvadersGame extends GameEngine {
     this.player.y = this.height - Math.max(42 * scale, this.height * 0.1)
     this.player.speed = 0.6 * scale
 
+    for (const bullet of this.playerBullets) {
+      this.playerBulletPool.release(bullet)
+    }
+    for (const bullet of this.alienBullets) {
+      this.alienBulletPool.release(bullet)
+    }
     this.playerBullets = []
     this.alienBullets = []
     this.particles = []
@@ -337,7 +369,7 @@ class InvadersGame extends GameEngine {
     }
 
     if (this.comboDisplay.count >= 5) {
-      this.spawnFloatingText(x, y, `COMBO ×${this.comboDisplay.count}!`, '#fbbf24', 1.3)
+      this.spawnFloatingText(x, y, `連擊 ×${this.comboDisplay.count}!`, '#fbbf24', 1.3)
     }
   }
 
@@ -371,7 +403,7 @@ class InvadersGame extends GameEngine {
       ctx.translate(this.screenShake.x, this.screenShake.y)
     }
 
-    ctx.fillStyle = '#000000'
+    ctx.fillStyle = this.theme.palette.bg
     ctx.fillRect(0, 0, this.width, this.height)
 
     this.renderStars(ctx)
@@ -388,15 +420,15 @@ class InvadersGame extends GameEngine {
     this.renderHud(ctx)
 
     if (this.gameOver) {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.6)'
+      ctx.fillStyle = `rgba(${hexToRgb(this.theme.palette.bg)}, 0.6)`
       ctx.fillRect(0, 0, this.width, this.height)
-      ctx.fillStyle = '#f8fafc'
+      ctx.fillStyle = this.theme.palette.ink
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
-      ctx.font = `bold ${Math.max(18, 25 * this.dpr)}px monospace`
-      ctx.fillText('GAME OVER', this.width / 2, this.height * 0.45)
-      ctx.font = `${Math.max(10, 12 * this.dpr)}px monospace`
-      ctx.fillText('Press Space or tap top area to restart', this.width / 2, this.height * 0.53)
+      ctx.font = `bold ${Math.max(18, 25 * this.dpr)}px ${this.theme.font.family}`
+      ctx.fillText('遊戲結束', this.width / 2, this.height * 0.45)
+      ctx.font = `${Math.max(10, 12 * this.dpr)}px ${this.theme.font.family}`
+      ctx.fillText('按空白鍵或點擊螢幕上方重新開始', this.width / 2, this.height * 0.53)
     }
 
     if (this.screenShake) {
@@ -419,6 +451,16 @@ class InvadersGame extends GameEngine {
   }
 
   private createWave(): void {
+    for (const alien of this.aliens) {
+      this.alienPool.release(alien)
+    }
+    for (const bullet of this.playerBullets) {
+      this.playerBulletPool.release(bullet)
+    }
+    for (const bullet of this.alienBullets) {
+      this.alienBulletPool.release(bullet)
+    }
+
     const scale = this.dpr
     const alienWidth = Math.max(21 * scale, this.width * 0.034)
     const alienHeight = alienWidth * 0.72
@@ -440,15 +482,17 @@ class InvadersGame extends GameEngine {
       this.wave
     )
 
-    this.aliens = positions.map(pos => ({
-      x: pos.x,
-      y: pos.y,
-      width: alienWidth,
-      height: alienHeight,
-      row: pos.row,
-      col: pos.col,
-      alive: true,
-    }))
+    this.aliens = positions.map(pos => {
+      const alien = this.alienPool.acquire()
+      alien.x = pos.x
+      alien.y = pos.y
+      alien.width = alienWidth
+      alien.height = alienHeight
+      alien.row = pos.row
+      alien.col = pos.col
+      alien.alive = true
+      return alien
+    })
 
     this.waveKills = 0
     this.playerBullets = []
@@ -459,7 +503,7 @@ class InvadersGame extends GameEngine {
     this.alienStepTimerMs = 0
     this.alienShootTimerMs = 0
 
-    this.spawnFloatingText(this.width / 2, this.height * 0.25, `WAVE ${this.wave}`, '#7dd3fc', 1.5)
+    this.spawnFloatingText(this.width / 2, this.height * 0.25, `波次 ${this.wave}`, '#7dd3fc', 1.5)
     this.triggerScreenShake(5, 300)
   }
 
@@ -590,40 +634,40 @@ class InvadersGame extends GameEngine {
     const startX = this.player.x + this.player.width / 2 - bulletWidth / 2
     const startY = this.player.y - bulletHeight
 
-    this.playerBullets.push({
-      x: startX,
-      y: startY,
-      width: bulletWidth,
-      height: bulletHeight,
-      vx: 0,
-      vy: -bulletSpeed,
-      friendly: true,
-    })
+    const bullet = this.playerBulletPool.acquire()
+    bullet.x = startX
+    bullet.y = startY
+    bullet.width = bulletWidth
+    bullet.height = bulletHeight
+    bullet.vx = 0
+    bullet.vy = -bulletSpeed
+    bullet.friendly = true
+    this.playerBullets.push(bullet)
 
     if (this.tripleShotActive) {
       const angleRad = 15 * Math.PI / 180
       const sideVx = Math.sin(angleRad) * bulletSpeed
       const sideVy = -Math.cos(angleRad) * bulletSpeed
 
-      this.playerBullets.push({
-        x: startX,
-        y: startY,
-        width: bulletWidth,
-        height: bulletHeight,
-        vx: -sideVx,
-        vy: sideVy,
-        friendly: true,
-      })
+      const bulletLeft = this.playerBulletPool.acquire()
+      bulletLeft.x = startX
+      bulletLeft.y = startY
+      bulletLeft.width = bulletWidth
+      bulletLeft.height = bulletHeight
+      bulletLeft.vx = -sideVx
+      bulletLeft.vy = sideVy
+      bulletLeft.friendly = true
+      this.playerBullets.push(bulletLeft)
 
-      this.playerBullets.push({
-        x: startX,
-        y: startY,
-        width: bulletWidth,
-        height: bulletHeight,
-        vx: sideVx,
-        vy: sideVy,
-        friendly: true,
-      })
+      const bulletRight = this.playerBulletPool.acquire()
+      bulletRight.x = startX
+      bulletRight.y = startY
+      bulletRight.width = bulletWidth
+      bulletRight.height = bulletHeight
+      bulletRight.vx = sideVx
+      bulletRight.vy = sideVy
+      bulletRight.friendly = true
+      this.playerBullets.push(bulletRight)
     }
 
     const baseCooldown = this.rapidFireActive ? 90 : 180
@@ -638,6 +682,7 @@ class InvadersGame extends GameEngine {
       bullet.x += bullet.vx * dt
       bullet.y += bullet.vy * dt
       if (bullet.y + bullet.height < 0) {
+        this.playerBulletPool.release(bullet)
         this.playerBullets.splice(i, 1)
       }
     }
@@ -649,6 +694,7 @@ class InvadersGame extends GameEngine {
       bullet.x += bullet.vx * dt
       bullet.y += bullet.vy * dt
       if (bullet.y > this.height) {
+        this.alienBulletPool.release(bullet)
         this.alienBullets.splice(i, 1)
       }
     }
@@ -719,15 +765,15 @@ class InvadersGame extends GameEngine {
 
     const bulletWidth = Math.max(2, 2 * this.dpr)
     const bulletHeight = Math.max(10, 10 * this.dpr)
-    this.alienBullets.push({
-      x: shooter.x + shooter.width / 2 - bulletWidth / 2,
-      y: shooter.y + shooter.height,
-      width: bulletWidth,
-      height: bulletHeight,
-      vx: 0,
-      vy: (0.45 + this.wave * 0.03) * this.dpr,
-      friendly: false,
-    })
+    const bullet = this.alienBulletPool.acquire()
+    bullet.x = shooter.x + shooter.width / 2 - bulletWidth / 2
+    bullet.y = shooter.y + shooter.height
+    bullet.width = bulletWidth
+    bullet.height = bulletHeight
+    bullet.vx = 0
+    bullet.vy = (0.45 + this.wave * 0.03) * this.dpr
+    bullet.friendly = false
+    this.alienBullets.push(bullet)
   }
 
   private resolveBulletCollisions(): void {
@@ -779,6 +825,7 @@ class InvadersGame extends GameEngine {
         for (let j = this.alienBullets.length - 1; j >= 0; j--) {
           const alienBullet = this.alienBullets[j]
           if (!alienBullet || !this.overlapRect(playerBullet, alienBullet)) continue
+          this.alienBulletPool.release(alienBullet)
           this.alienBullets.splice(j, 1)
           consumed = true
           break
@@ -786,6 +833,7 @@ class InvadersGame extends GameEngine {
       }
 
       if (consumed) {
+        this.playerBulletPool.release(playerBullet)
         this.playerBullets.splice(i, 1)
       }
     }
@@ -810,7 +858,7 @@ class InvadersGame extends GameEngine {
       }
 
       if (!consumed && this.overlapRect(bullet, this.player)) {
-        this.alienBullets.splice(i, 1)
+        this.alienBulletPool.release(bullet)
 
         if (this.shieldActive) {
           this.shieldActive = false
@@ -836,7 +884,7 @@ class InvadersGame extends GameEngine {
           this.triggerGameOver()
         }
       } else if (consumed) {
-        this.alienBullets.splice(i, 1)
+        this.alienBulletPool.release(bullet)
       }
     }
   }
@@ -881,7 +929,7 @@ class InvadersGame extends GameEngine {
           this.spawnFloatingText(
             this.width / 2,
             this.height * 0.35,
-            `NEW LOADOUT: ${discovery.name}`,
+            `新裝甲：${discovery.name}`,
             '#fbbf24',
             1.2
           )
@@ -893,7 +941,7 @@ class InvadersGame extends GameEngine {
       this.notifyGameOver(this.callbacks, this.score)
       this.gameOverSent = true
       this.triggerScreenShake(10, 400)
-      this.spawnFloatingText(this.width / 2, this.height / 2, 'GAME OVER', '#ef4444', 1.2)
+      this.spawnFloatingText(this.width / 2, this.height / 2, '遊戲結束', '#ef4444', 1.2)
     }
   }
 
@@ -1279,7 +1327,7 @@ class InvadersGame extends GameEngine {
     drawKawaiiInlineLabel(ctx, {
       x: margin + 12 * this.dpr,
       y: margin + 16 * this.dpr,
-      text: `Score ${this.score}`,
+      text: `得分 ${this.score}`,
       iconKind: 'star',
       color: '#14532d',
       fontSize: Math.max(10, Math.floor(11 * this.dpr)),
@@ -1287,7 +1335,7 @@ class InvadersGame extends GameEngine {
     drawKawaiiInlineLabel(ctx, {
       x: margin + 12 * this.dpr,
       y: margin + 16 * this.dpr + line,
-      text: `Wave ${this.wave}`,
+      text: `波次 ${this.wave}`,
       iconKind: 'target',
       color: '#14532d',
       fontSize: Math.max(10, Math.floor(11 * this.dpr)),
@@ -1295,7 +1343,7 @@ class InvadersGame extends GameEngine {
     drawKawaiiInlineLabel(ctx, {
       x: margin + 12 * this.dpr,
       y: margin + 16 * this.dpr + line * 2,
-      text: `Kills ${this.totalKills}`,
+      text: `擊毀 ${this.totalKills}`,
       iconKind: 'laser',
       color: '#14532d',
       fontSize: Math.max(10, Math.floor(11 * this.dpr)),
@@ -1309,7 +1357,7 @@ class InvadersGame extends GameEngine {
     drawKawaiiInlineLabel(ctx, {
       x: rightPanelX + 12 * this.dpr,
       y: margin + 16 * this.dpr,
-      text: `Lives ${this.lives}`,
+      text: `生命 ${this.lives}`,
       iconKind: 'heart',
       color: '#155e75',
       fontSize: Math.max(10, Math.floor(11 * this.dpr)),
@@ -1317,7 +1365,7 @@ class InvadersGame extends GameEngine {
     drawKawaiiInlineLabel(ctx, {
       x: rightPanelX + 12 * this.dpr,
       y: margin + 16 * this.dpr + line,
-      text: `Time ${Math.floor(this.elapsedMs / 1000)}s`,
+      text: `時間 ${Math.floor(this.elapsedMs / 1000)}s`,
       iconKind: 'timer',
       color: '#155e75',
       fontSize: Math.max(10, Math.floor(11 * this.dpr)),
@@ -1362,7 +1410,7 @@ class InvadersGame extends GameEngine {
     for (const t of this.floatingTexts) {
       ctx.globalAlpha = t.alpha
       ctx.fillStyle = t.color
-      ctx.font = `bold ${16 * t.scale * this.dpr}px sans-serif`
+      ctx.font = `bold ${16 * t.scale * this.dpr}px ${this.theme.font.family}`
       ctx.fillText(t.text, t.x, t.y)
     }
     ctx.globalAlpha = 1
@@ -1375,8 +1423,8 @@ class InvadersGame extends GameEngine {
     ctx.textBaseline = 'middle'
     ctx.globalAlpha = Math.min(1, this.comboDisplay.scale)
     ctx.fillStyle = '#fbbf24'
-    ctx.font = `bold ${20 * this.comboDisplay.scale * this.dpr}px sans-serif`
-    ctx.fillText(`COMBO ×${this.comboDisplay.count}`, this.comboDisplay.x, this.comboDisplay.y)
+    ctx.font = `bold ${20 * this.comboDisplay.scale * this.dpr}px ${this.theme.font.family}`
+    ctx.fillText(`連擊 ×${this.comboDisplay.count}`, this.comboDisplay.x, this.comboDisplay.y)
     ctx.globalAlpha = 1
   }
 
@@ -1465,6 +1513,9 @@ class InvadersGame extends GameEngine {
       case 'bomb': {
         for (const bullet of this.alienBullets) {
           this.spawnParticles(bullet.x + bullet.width / 2, bullet.y + bullet.height / 2, 8, '#ef4444')
+        }
+        for (const bullet of this.alienBullets) {
+          this.alienBulletPool.release(bullet)
         }
         this.alienBullets = []
         this.triggerScreenShake(6, 250)

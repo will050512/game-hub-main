@@ -29,13 +29,14 @@ const props = withDefaults(defineProps<{
   align-items: center;
   justify-content: center;
   padding: 0 var(--space-2);
-  border-radius: var(--radius-full);
+  border-radius: var(--radius-lg) var(--radius-sm) var(--radius-lg) var(--radius-sm);
   font-family: var(--font-family-base);
   font-weight: var(--font-weight-semibold);
   line-height: 1;
   white-space: nowrap;
-  border: var(--stroke-thin) solid var(--color-text);
-  transition: filter 200ms ease, transform 200ms ease;
+  border: 2px solid var(--color-text);
+  transition: filter 200ms ease, transform var(--duration-bounce) var(--ease-bounce);
+  box-shadow: var(--shadow-md);
   position: relative;
   overflow: hidden;
 }
@@ -54,7 +55,7 @@ const props = withDefaults(defineProps<{
 /* Hover brighten */
 .kmg-badge:hover {
   filter: brightness(1.15);
-  transform: translateY(-1px);
+  transform: scale(1.1);
 }
 
 .kmg-badge:active {

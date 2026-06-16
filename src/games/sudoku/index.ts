@@ -4,6 +4,7 @@ import { drawSprite, preloadGameSprites } from '@/engine/sprites/spriteLoader'
 import { drawKawaiiButton, drawKawaiiInlineLabel, drawKawaiiPanel } from '@/engine/kawaiiCanvas'
 import { EffectsManager } from '@/engine/effects'
 import { computeResponsiveGridLayout } from '@/games/shared/responsiveGridLayout'
+import { getTheme } from '@/engine/art/KawaiiTheme'
 
 type Cell = number | 0
 type Board = Cell[][]
@@ -69,6 +70,7 @@ const PUZZLES: Record<Difficulty, { puzzle: string; solution: string }[]> = {
 }
 
 class SudokuGame extends GameEngine {
+  private theme = getTheme('sudoku')
   private board: Board = []
   private solution: Board = []
   private given: boolean[][] = []
@@ -241,18 +243,18 @@ class SudokuGame extends GameEngine {
       radius: Math.floor(20 * scale),
     })
 
-    ctx.fillStyle = '#0f172a'
-    ctx.font = `bold ${Math.floor(32 * scale)}px sans-serif`
+    ctx.fillStyle = this.theme.palette.ink
+    ctx.font = `bold ${Math.floor(32 * scale)}px ${this.theme.font.family}`
     ctx.fillText('數獨', this.width / 2, this.height * 0.15)
 
-    ctx.fillStyle = '#94a3b8'
-    ctx.font = `${Math.floor(14 * scale)}px sans-serif`
+    ctx.fillStyle = this.theme.palette.secondary
+    ctx.font = `${Math.floor(14 * scale)}px ${this.theme.font.family}`
     ctx.fillText('邏輯益智', this.width / 2, this.height * 0.15 + Math.floor(40 * scale))
     
     if (this.dailyChallenge) {
       const dailyY = this.height * 0.15 + Math.floor(70 * scale)
-      ctx.fillStyle = this.dailyChallenge.completed ? '#22c55e' : '#fbbf24'
-      ctx.font = `${Math.floor(12 * scale)}px sans-serif`
+      ctx.fillStyle = this.dailyChallenge.completed ? this.theme.palette.accent : this.theme.palette.highlight
+      ctx.font = `${Math.floor(12 * scale)}px ${this.theme.font.family}`
       const status = this.dailyChallenge.completed ? '已完成' : '每日挑戰'
       const diffLabel = { easy: '簡單', medium: '普通', hard: '困難', expert: '專家' }[this.dailyChallenge.difficulty]
       ctx.fillText(`${status} (${diffLabel})`, this.width / 2, dailyY)
@@ -381,11 +383,11 @@ class SudokuGame extends GameEngine {
         })
         if (!cellDrawn) {
           if (isSelected) {
-            ctx.fillStyle = 'rgba(139, 92, 246, 0.3)'
+            ctx.fillStyle = this.theme.palette.glow
           } else if (shouldHighlight) {
             ctx.fillStyle = 'rgba(34, 197, 94, 0.2)'
           } else if (isError) {
-            ctx.fillStyle = 'rgba(239, 68, 68, 0.2)'
+            ctx.fillStyle = this.theme.ui.danger
           } else if (isGiven) {
             ctx.fillStyle = 'rgba(255,255,255,0.12)'
           } else {
@@ -395,7 +397,7 @@ class SudokuGame extends GameEngine {
         }
 
         // Thin cell grid lines
-        ctx.strokeStyle = 'rgba(255,255,255,0.08)'
+        ctx.strokeStyle = this.theme.palette.glow
         ctx.lineWidth = Math.floor(1 * scale)
         ctx.beginPath()
         ctx.moveTo(x, y)
@@ -408,7 +410,7 @@ class SudokuGame extends GameEngine {
 
         // Thick 3x3 box boundary lines
         if (c % 3 === 0) {
-          ctx.strokeStyle = 'rgba(255,255,255,0.5)'
+          ctx.strokeStyle = this.theme.palette.accent
           ctx.lineWidth = Math.floor(3 * scale)
           ctx.beginPath()
           ctx.moveTo(x, y)
@@ -416,7 +418,7 @@ class SudokuGame extends GameEngine {
           ctx.stroke()
         }
         if (r % 3 === 0) {
-          ctx.strokeStyle = 'rgba(255,255,255,0.5)'
+          ctx.strokeStyle = this.theme.palette.accent
           ctx.lineWidth = Math.floor(3 * scale)
           ctx.beginPath()
           ctx.moveTo(x, y)
@@ -425,15 +427,15 @@ class SudokuGame extends GameEngine {
         }
 
         if (val !== 0) {
-          ctx.fillStyle = isGiven ? '#e2e8f0' : isError ? '#ef4444' : '#8b5cf6'
-          ctx.font = `bold ${Math.floor(this.cellSize * 0.55)}px sans-serif`
+          ctx.fillStyle = isGiven ? this.theme.palette.ink : isError ? this.theme.ui.danger : this.theme.palette.glow
+          ctx.font = `bold ${Math.floor(this.cellSize * 0.55)}px ${this.theme.font.family}`
           ctx.fillText(val.toString(), x + this.cellSize / 2, y + this.cellSize / 2)
         } else {
           const key = `${r},${c}`
           const notes = this.cellNotes.get(key)
           if (notes && notes.size > 0) {
-            ctx.fillStyle = '#94a3b8'
-            ctx.font = `${Math.floor(this.cellSize * 0.24)}px sans-serif`
+            ctx.fillStyle = this.theme.palette.secondary
+            ctx.font = `${Math.floor(this.cellSize * 0.24)}px ${this.theme.font.family}`
             const noteArr = Array.from(notes).sort()
             noteArr.forEach((n, idx) => {
               const nx = x + ((idx % 3) + 0.5) * (this.cellSize / 3)
@@ -446,7 +448,7 @@ class SudokuGame extends GameEngine {
     }
 
     // Board outer border
-    ctx.strokeStyle = 'rgba(255,255,255,0.6)'
+    ctx.strokeStyle = this.theme.palette.glow
     ctx.lineWidth = Math.floor(4 * scale)
     ctx.strokeRect(this.boardOffsetX, this.boardOffsetY, this.cellSize * 9, this.cellSize * 9)
 
@@ -481,7 +483,7 @@ class SudokuGame extends GameEngine {
           width: padSize,
           height: padSize,
           label: i.toString(),
-          fill: 'rgba(255,255,255,0.92)',
+          fill: this.theme.ui.surface,
           activeFill: '#a7f3d0',
         })
 
@@ -512,7 +514,7 @@ class SudokuGame extends GameEngine {
         height: btn.h,
         label: btn.label,
         iconKind: btn.action === 'erase' ? 'undo' : btn.action === 'hint' ? 'star' : 'target',
-        fill: btn.action === 'hint' ? '#fef3c7' : 'rgba(255,255,255,0.92)',
+        fill: btn.action === 'hint' ? '#fef3c7' : this.theme.ui.surface,
         activeFill: btn.action === 'hint' ? '#fcd34d' : '#a7f3d0',
       })
     })
@@ -542,7 +544,7 @@ class SudokuGame extends GameEngine {
         label: tool.label,
         iconKind: tool.action === 'notes' ? 'preview' : tool.action === 'highlight' ? 'spark' : 'speed',
         active: isActive,
-        fill: 'rgba(255,255,255,0.92)',
+        fill: this.theme.ui.surface,
         activeFill: '#bbf7d0',
       })
     })

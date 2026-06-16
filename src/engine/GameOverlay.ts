@@ -80,7 +80,7 @@ export class GameOverlay {
     ctx.translate(width / 2, height * 0.4)
     ctx.scale(titleScale, titleScale)
     ctx.fillStyle = '#f8fafc'
-    ctx.font = `bold ${28 * dpr}px "Noto Sans KR", sans-serif`
+    ctx.font = `bold ${28 * dpr}px "Noto Sans KR", "Noto Sans SC", "Noto Sans TC", "PingFang SC", "Microsoft YaHei", "Hiragino Sans", "Segoe UI", sans-serif`
     ctx.fillText(config.gameName, 0, 0)
     ctx.restore()
 
@@ -146,7 +146,7 @@ export class GameOverlay {
       ctx.fillStyle = '#f8fafc'
       ctx.shadowColor = config.gameColor
       ctx.shadowBlur = 20 * dpr
-      ctx.font = `bold ${48 * dpr}px "Noto Sans KR", sans-serif`
+      ctx.font = `bold ${48 * dpr}px "Noto Sans KR", "Noto Sans SC", "Noto Sans TC", "PingFang SC", "Microsoft YaHei", "Hiragino Sans", "Segoe UI", sans-serif`
       ctx.fillText(num, 0, 0)
       ctx.restore()
     } else {
@@ -161,7 +161,7 @@ export class GameOverlay {
       ctx.fillStyle = '#facc15'
       ctx.shadowColor = '#facc15'
       ctx.shadowBlur = 30 * dpr
-      ctx.font = `bold ${64 * dpr}px "Noto Sans KR", sans-serif`
+      ctx.font = `bold ${64 * dpr}px "Noto Sans KR", "Noto Sans SC", "Noto Sans TC", "PingFang SC", "Microsoft YaHei", "Hiragino Sans", "Segoe UI", sans-serif`
       ctx.fillText('GO!', 0, 0)
       ctx.restore()
     }
@@ -211,7 +211,7 @@ export class GameOverlay {
     // Score display
     const scoreSize = 36 * dpr
     ctx.fillStyle = '#f8fafc'
-    ctx.font = `900 ${scoreSize}px "Noto Sans KR", sans-serif`
+    ctx.font = `900 ${scoreSize}px "Noto Sans KR", "Noto Sans SC", "Noto Sans TC", "PingFang SC", "Microsoft YaHei", "Hiragino Sans", "Segoe UI", sans-serif`
     ctx.fillText(`${config.score}`, width / 2, panelY + panelHToUse * 0.35)
 
     drawKawaiiInlineLabel(ctx, {

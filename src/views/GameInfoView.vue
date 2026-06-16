@@ -9,7 +9,9 @@ import KawaiiDecorLayer from "@/components/KawaiiDecorLayer.vue"
 import KawaiiIcon from "@/components/KawaiiIcon.vue"
 import KmgButton from "@/components/ui/KmgButton.vue"
 import BaseCard from "@/components/BaseCard.vue"
+import AmbientParticles from "@/components/AmbientParticles.vue"
 import { iconForGame } from "@/data/iconManifest"
+import { getGameIdentityColors, PARTICLE_CSS } from "@/composables/useGameIdentity"
 import type { ScoreRecord } from "@/types"
 
 const props = defineProps<{ id: string }>()
@@ -25,6 +27,54 @@ const playCount = ref(0)
 const topScores = ref<ScoreRecord[]>([])
 const totalUpgradeLevel = ref(0)
 const thumbFailed = ref(false)
+
+/**
+ * Convert hex color to rgba string.
+ */
+function hexToRgba(hex: string, alpha: number): string {
+  const h = hex.replace('#', '')
+  const r = parseInt(h.slice(0, 2), 16)
+  const g = parseInt(h.slice(2, 4), 16)
+  const b = parseInt(h.slice(4, 6), 16)
+  return `rgba(${r},${g},${b},${alpha})`
+}
+
+/**
+ * Derive ambient particle colors from game identity tokens.
+ */
+const identityColors = computed(() => props.id ? getGameIdentityColors(props.id) : null)
+
+const particleColors = computed((): string[] => {
+  const id = identityColors.value
+  if (!id) return ['rgba(200,200,255,0.2)']
+
+  const colors: string[] = []
+
+  // Surface tones
+  const surfaceMatch = id.surface.match(/rgba\((\d+),\s*(\d+),\s*(\d+)/)
+  if (surfaceMatch) {
+    const [_, sr, sg, sb] = surfaceMatch
+    colors.push(`rgba(${sr},${sg},${sb},0.25)`)
+    colors.push(`rgba(${sr},${sg},${sb},0.12)`)
+  }
+
+  // Accent tones
+  if (id.accent.startsWith('#')) {
+    colors.push(hexToRgba(id.accent, 0.25))
+    colors.push(hexToRgba(id.accent, 0.10))
+  }
+
+  // White glow
+  colors.push('rgba(255,255,255,0.15)')
+
+  return colors.length >= 3 ? colors : ['rgba(200,200,255,0.2)']
+})
+
+const particleChar = computed(() => {
+  const id = identityColors.value
+  if (!id) return null
+  return PARTICLE_CSS[id.particle] ?? null
+})
 
 const difficultyBadge = computed(() => {
   const d = game.value?.difficulty
@@ -63,10 +113,26 @@ function onThumbError() { thumbFailed.value = true }
 <template>
   <div v-if="game" class="page">
     <div class="bg">
+      <AmbientParticles
+        :count="15"
+        :colors="particleColors"
+        :speed="0.3"
+        :max-size="5"
+        :min-size="2"
+      />
       <div class="orb o1" :style="{ background: game.color }" />
       <div class="orb o2" :style="{ background: game.color }" />
       <KawaiiDecorLayer :category="game.category" mood="cozy" />
-      <span v-for="i in 5" :key="i" :class="['pt', 'p' + i]" :style="{ '--gc': game.color }" />
+      <span
+        v-for="i in 6" :key="i"
+        :class="['pt', 'p' + i]"
+        :style="{
+          '--gc': game.color,
+          '--pc': particleChar?.character ?? '✦',
+          '--ps': (particleChar?.size ?? 4) + 'px',
+          '--pc-color': particleChar?.color ?? game.color,
+        }"
+      />
     </div>
 
     <header class="hdr">
@@ -189,13 +255,34 @@ function onThumbError() { thumbFailed.value = true }
 .o2 { width: 280px; height: 280px; bottom: 15%; left: -50px; animation-delay: -11s; }
 @keyframes orb { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(30px,-40px) scale(1.1)} }
 
-.pt { position: absolute; width: 5px; height: 5px; border-radius: 50%; background: var(--gc, var(--color-primary)); opacity: 0.3; animation: fp 10s ease-in-out infinite; }
+.pt {
+  position: absolute;
+  width: var(--ps, 5px);
+  height: var(--ps, 5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.3;
+  animation: fp 10s ease-in-out infinite;
+  pointer-events: none;
+}
+.pt::after {
+  content: var(--pc, '✦');
+  font-size: var(--ps, 14px);
+  color: var(--pc-color, var(--gc, var(--color-primary)));
+  line-height: 1;
+  filter: blur(0.5px);
+}
 .p1 { top: 18%; left: 12%; animation-delay: 0; }
 .p2 { top: 65%; left: 80%; animation-delay: -2s; }
 .p3 { top: 40%; left: 55%; animation-delay: -4s; }
 .p4 { top: 82%; left: 28%; animation-delay: -6s; }
 .p5 { top: 10%; left: 72%; animation-delay: -1s; }
-@keyframes fp { 0%,100%{transform:translateY(0) rotate(0deg);opacity:.3} 50%{transform:translateY(-18px) rotate(180deg);opacity:.6} }
+.p6 { top: 50%; left: 40%; animation-delay: -8s; }
+@keyframes fp {
+  0%,100% { transform: translateY(0) rotate(0deg); opacity: 0.3; }
+  50% { transform: translateY(-20px) rotate(15deg); opacity: 0.7; }
+}
 
 .hdr { position: relative; z-index: 1; display: flex; align-items: center; gap: 1rem; padding: 1rem 1rem 0.5rem; }
 .back-btn { width: 44px; height: 44px; border-radius: 50%; background: var(--color-bg-card); color: var(--color-text); display: flex; align-items: center; justify-content: center; transition: all var(--duration-fast) var(--ease-out); border: 2px solid var(--color-border); cursor: pointer; flex-shrink: 0; }

@@ -17,6 +17,7 @@ import {
   drawKawaiiPanel,
   drawKawaiiProgressBar,
 } from '@/engine/kawaiiCanvas'
+import { getTheme } from '@/engine/art/KawaiiTheme'
 
 type FruitSpriteKind =
   | 'apple'
@@ -136,6 +137,7 @@ interface CatchBurst {
 }
 
 class FruitCatchGame extends GameEngine {
+  private readonly theme = getTheme('fruit-catch')
   private readonly maxLives = 5
   private readonly levelScoreStep = 100
 
@@ -1125,7 +1127,7 @@ class FruitCatchGame extends GameEngine {
     }
 
     ctx.save()
-    ctx.font = `bold ${Math.max(9, Math.floor(radius * 0.62))}px sans-serif`
+    ctx.font = `bold ${Math.max(9, Math.floor(radius * 0.62))}px ${this.theme.font.family}`
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
     ctx.fillStyle = def?.color ?? '#7c2d12'
@@ -1289,7 +1291,7 @@ class FruitCatchGame extends GameEngine {
       const alpha = Math.max(0, popup.timer / popup.duration)
       ctx.globalAlpha = alpha
       ctx.fillStyle = popup.color
-      ctx.font = `bold ${Math.max(13, Math.floor(14 * this.dpr))}px sans-serif`
+      ctx.font = `bold ${Math.max(13, Math.floor(14 * this.dpr))}px ${this.theme.font.family}`
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
       ctx.fillText(popup.text, popup.x, popup.y)
@@ -1440,15 +1442,15 @@ class FruitCatchGame extends GameEngine {
   }
 
   private renderGameOver(ctx: CanvasRenderingContext2D): void {
-    ctx.fillStyle = 'rgba(0,0,0,0.45)'
+    ctx.fillStyle = this.theme.ui.danger
     ctx.fillRect(0, 0, this.width, this.height)
 
-    ctx.fillStyle = '#ffffff'
+    ctx.fillStyle = this.theme.palette.ink
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
-    ctx.font = `bold ${Math.max(26, Math.floor(30 * this.dpr))}px sans-serif`
+    ctx.font = `bold ${Math.max(26, Math.floor(30 * this.dpr))}px ${this.theme.font.family}`
     ctx.fillText('遊戲結束', this.width / 2, this.height * 0.44)
-    ctx.font = `${Math.max(14, Math.floor(16 * this.dpr))}px sans-serif`
+    ctx.font = `${Math.max(14, Math.floor(16 * this.dpr))}px ${this.theme.font.family}`
     ctx.fillText(`最終分數：${this.score}`, this.width / 2, this.height * 0.5)
     ctx.fillText(`接到水果：${this.fruitsCaught}`, this.width / 2, this.height * 0.55)
   }

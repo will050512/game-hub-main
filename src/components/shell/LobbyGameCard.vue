@@ -3,11 +3,30 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import type { GameInfo } from '@/types'
 import GameCard from '@/components/GameCard.vue'
 import { iconForGame } from '@/data/iconManifest'
+import { getGameIdentityColors, PARTICLE_CSS } from '@/composables/useGameIdentity'
 
 const props = defineProps<{
   game: GameInfo
   highScore: number
 }>()
+
+const identity = computed(() => getGameIdentityColors(props.game.id))
+const particle = computed(() => PARTICLE_CSS[identity.value.particle])
+const particleCount = computed(() => {
+  // More particles for certain types, fewer for subtle ones
+  switch (identity.value.particle) {
+    case 'firefly': return 3
+    case 'sparkle': return 4
+    case 'butterfly': return 2
+    case 'cloud': return 2
+    case 'star': return 3
+    case 'leaf': return 3
+    case 'petal': return 3
+    case 'bubble': return 3
+    case 'steam': return 2
+    case 'confetti': return 5
+  }
+})
 
 const emit = defineEmits<{
   click: []
@@ -78,7 +97,15 @@ onUnmounted(() => {
 <template>
   <div
     class="lobby-game-card-wrapper"
-    :style="{ '--game-color': game.color }"
+    :style="{
+      '--game-color': game.color,
+      '--game-ui-surface': identity.surface,
+      '--game-ui-accent': identity.accent,
+      '--game-particle-character': particle.character,
+      '--game-particle-color': particle.color,
+      '--game-particle-size': particle.size + 'px',
+      '--game-particle-anim': particle.animation,
+    }"
     @mouseenter="isHovered = true"
   >
     <div
@@ -163,6 +190,16 @@ onUnmounted(() => {
 
     <!-- Reflection -->
     <div class="card-reflection" :style="{ background: game.color }"></div>
+
+    <!-- Ambient particle decorations -->
+    <div class="card-particles" aria-hidden="true">
+      <span
+        v-for="i in particleCount"
+        :key="i"
+        :class="['card-particle', `p-${i}`]"
+        :style="{ '--p-delay': `-${i * 2.3}s` }"
+      >{{ particle.character }}</span>
+    </div>
   </div>
 </template>
 
@@ -170,7 +207,7 @@ onUnmounted(() => {
 .lobby-game-card-wrapper {
   position: relative;
   border-radius: var(--radius-2xl);
-  overflow: visible;
+  overflow: hidden;
   perspective: 1200px;
   transition: transform var(--duration-slow) var(--ease-bounce);
 }
@@ -180,13 +217,26 @@ onUnmounted(() => {
   width: 100%;
   min-height: 320px;
   transform-style: preserve-3d;
-  transition: transform var(--duration-slow) var(--ease-bounce), filter var(--duration-normal) var(--ease-out);
+  transition: transform var(--duration-base) var(--ease-out), filter var(--duration-normal) var(--ease-out);
   will-change: transform;
 }
 
 /* 3D Tilt */
 .lobby-game-card.tilted {
   transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)) scale(1.03);
+}
+
+/* Hover Lift */
+.lobby-game-card-wrapper:hover .lobby-game-card {
+  transform: translateY(-6px);
+}
+
+.lobby-game-card-wrapper:hover .lobby-game-card.tilted {
+  transform: rotateX(var(--tilt-x, 0deg)) rotateY(var(--tilt-y, 0deg)) scale(1.03) translateY(-6px);
+}
+
+.lobby-game-card-wrapper:hover .card-face {
+  box-shadow: 0 0 0 2px var(--color-border-light), 0 12px 0 var(--color-border), 0 16px 32px rgba(0,0,0,0.15);
 }
 
 /* Flip */
@@ -199,11 +249,11 @@ onUnmounted(() => {
   position: absolute;
   inset: 0;
   backface-visibility: hidden;
-  border-radius: var(--radius-2xl);
+  border-radius: var(--radius-xl) var(--radius-sm) var(--radius-xl) var(--radius-sm);
   overflow: hidden;
-  border: 2px solid var(--color-border);
+  border: none;
   background: var(--color-gradient-card);
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 0 0 2px var(--color-border-light), 0 8px 0 var(--color-border);
 }
 
 .card-face--back {
@@ -472,6 +522,36 @@ onUnmounted(() => {
   opacity: 0.3;
 }
 
+/* Ambient Particle Decorations */
+.card-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity var(--duration-slow) var(--ease-out);
+}
+
+.lobby-game-card-wrapper:hover .card-particles {
+  opacity: 0.35;
+}
+
+.card-particle {
+  position: absolute;
+  font-size: var(--game-particle-size, 4px);
+  color: var(--game-particle-color, #fde68a);
+  filter: blur(0.3px);
+  will-change: transform;
+}
+
+.card-particle.p-1 { top: 12%; left: 8%;  animation: var(--game-particle-anim, particle-float) 4s ease-in-out var(--p-delay, 0s) infinite; }
+.card-particle.p-2 { top: 70%; left: 85%; animation: var(--game-particle-anim, particle-float) 5s ease-in-out calc(var(--p-delay, 0s) - 1.6s) infinite; }
+.card-particle.p-3 { top: 45%; left: 55%; animation: var(--game-particle-anim, particle-float) 3.5s ease-in-out calc(var(--p-delay, 0s) - 3.2s) infinite; }
+.card-particle.p-4 { top: 20%; left: 75%; animation: var(--game-particle-anim, particle-float) 4.5s ease-in-out calc(var(--p-delay, 0s) - 0.8s) infinite; }
+.card-particle.p-5 { top: 80%; left: 15%; animation: var(--game-particle-anim, particle-float) 3.8s ease-in-out calc(var(--p-delay, 0s) - 2.4s) infinite; }
+
 /* Wrapper Hover Effect */
 .lobby-game-card-wrapper:hover {
   filter: drop-shadow(0 8px 24px color-mix(in srgb, var(--game-color, #6366f1) 30%, transparent));
@@ -479,6 +559,53 @@ onUnmounted(() => {
 
 .lobby-game-card-wrapper:active {
   transform: scale(0.98);
+}
+
+/* ==================== Particle Keyframes ==================== */
+@keyframes particle-float {
+  0%, 100% { transform: translateY(0) translateX(0) scale(1); opacity: 0; }
+  20% { opacity: 0.7; }
+  50% { transform: translateY(-20px) translateX(8px) scale(1.1); }
+  80% { opacity: 0.5; }
+}
+@keyframes particle-sparkle {
+  0%, 100% { transform: scale(0) rotate(0deg); opacity: 0; }
+  30% { transform: scale(1) rotate(90deg); opacity: 0.8; }
+  60% { transform: scale(0.6) rotate(180deg); opacity: 0.4; }
+  100% { transform: scale(0) rotate(270deg); opacity: 0; }
+}
+@keyframes particle-flutter {
+  0%, 100% { transform: translate(0, 0) scale(1); opacity: 0; }
+  20% { opacity: 0.6; }
+  50% { transform: translate(15px, -18px) scale(0.9); }
+  80% { transform: translate(-10px, -8px) scale(1.05); opacity: 0.3; }
+}
+@keyframes particle-drift {
+  0%, 100% { transform: translateX(0) scale(1); opacity: 0; }
+  30% { opacity: 0.3; }
+  70% { transform: translateX(25px) scale(1.3); opacity: 0.15; }
+}
+@keyframes particle-twinkle {
+  0%, 100% { transform: scale(0) rotate(0deg); opacity: 0; }
+  40% { transform: scale(1.2) rotate(90deg); opacity: 0.7; }
+  70% { transform: scale(0.5) rotate(180deg); opacity: 0.3; }
+}
+@keyframes particle-fall {
+  0% { transform: translateY(-10px) rotate(0deg); opacity: 0; }
+  20% { opacity: 0.5; }
+  80% { opacity: 0.3; }
+  100% { transform: translateY(30px) rotate(60deg); opacity: 0; }
+}
+@keyframes particle-rise {
+  0% { transform: translateY(10px) scale(0); opacity: 0; }
+  30% { transform: translateY(0) scale(1); opacity: 0.4; }
+  100% { transform: translateY(-25px) scale(0.5); opacity: 0; }
+}
+@keyframes particle-confetti {
+  0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0; }
+  20% { opacity: 0.6; }
+  50% { transform: translateY(-15px) rotate(180deg); }
+  80% { transform: translateY(-5px) rotate(360deg); opacity: 0.2; }
 }
 
 /* Staggered entrance */

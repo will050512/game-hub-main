@@ -12,6 +12,7 @@ const props = withDefaults(defineProps<{
 
 const displayAmount = ref(props.amount)
 const isAnimating = ref(false)
+const bounce = ref(false)
 
 const colorVar = computed(() => {
   switch (props.type) {
@@ -51,6 +52,13 @@ if (props.animated) {
   })
 }
 
+watch(() => props.amount, () => {
+  bounce.value = true
+  setTimeout(() => {
+    bounce.value = false
+  }, 400)
+})
+
 const formattedAmount = computed(() => {
   return displayAmount.value.toLocaleString()
 })
@@ -60,7 +68,7 @@ const formattedAmount = computed(() => {
   <span
     :class="[
       'kmg-currency',
-      { 'kmg-animate': isAnimating },
+      { 'kmg-animate': isAnimating, 'bounce': bounce },
     ]"
     :style="{ '--kmg-currency-color': colorVar }"
   >
@@ -88,6 +96,10 @@ const formattedAmount = computed(() => {
   font-size: var(--font-size-base);
   color: var(--kmg-currency-color);
   white-space: nowrap;
+  transition: transform var(--duration-bounce) var(--ease-bounce);
+  border-radius: var(--radius-base) var(--radius-sm) var(--radius-base) var(--radius-sm);
+  border: 2px solid var(--color-text);
+  box-shadow: var(--shadow-md);
 }
 
 .kmg-currency__icon {
@@ -98,6 +110,10 @@ const formattedAmount = computed(() => {
 
 .kmg-currency.kmg-animate .kmg-currency__amount {
   animation: kmg-count-pop 200ms ease-out;
+}
+
+.kmg-currency.bounce {
+  transform: scale(1.3);
 }
 
 @keyframes kmg-count-pop {

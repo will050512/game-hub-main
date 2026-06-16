@@ -2,6 +2,7 @@ import { GameEngine } from '@/engine/GameEngine'
 import { EffectsManager } from '@/engine/effects'
 import { drawSprite, preloadGameSprites } from '@/engine/sprites/spriteLoader'
 import { drawKenneySprite, preloadKenneySprites } from '@/engine/sprites/kenneySpriteLoader'
+import { getTheme } from '@/engine/art/KawaiiTheme'
 import { REWARD_EVENT_SCHEMA_VERSION, createRewardPayload, type GameInstance, type GameHudData } from '@/types'
 import { MISSION_DEFS, SPECIAL_ROW_DEFS, type MissionDef, type SpecialRowDef } from './data'
 import {
@@ -132,6 +133,7 @@ class TetrisGame extends GameEngine {
   private touchBound = false
   private activeTouch: TouchTrack | null = null
 
+  private theme = getTheme('tetris')
   private effects: EffectsManager = new EffectsManager()
   private lineClearEffects: LineClearEffect[] = []
   private comboCount = 0
@@ -356,7 +358,7 @@ class TetrisGame extends GameEngine {
     const boardY = Math.floor((this.height - boardPixelHeight) / 2)
 
     ctx.clearRect(0, 0, this.width, this.height)
-    ctx.fillStyle = '#0a0f1a'
+    ctx.fillStyle = this.theme.palette.bg
     ctx.fillRect(0, 0, this.width, this.height)
 
     if (this.effects.shake.isActive) {
@@ -369,7 +371,7 @@ class TetrisGame extends GameEngine {
     ctx.fillStyle = bgGradient
     ctx.fillRect(0, 0, this.width, this.height)
 
-    ctx.fillStyle = '#111827'
+    ctx.fillStyle = this.theme.palette.bgAlt
     ctx.fillRect(boardX, boardY, boardPixelWidth, boardPixelHeight)
 
     this.renderGrid(ctx, boardX, boardY, cellSize)
@@ -379,14 +381,14 @@ class TetrisGame extends GameEngine {
     this.renderPanels(ctx, boardX, boardY, cellSize, boardPixelWidth)
 
     if (this.gameOver) {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.65)'
+      ctx.fillStyle = this.theme.ui.surface
       ctx.fillRect(boardX, boardY, boardPixelWidth, boardPixelHeight)
-      ctx.fillStyle = '#ffffff'
+      ctx.fillStyle = this.theme.palette.highlight
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
-      ctx.font = `bold ${Math.max(18, Math.floor(cellSize * 0.9))}px sans-serif`
+      ctx.font = `bold ${Math.max(18, Math.floor(cellSize * 0.9))}px ${this.theme.font.family}`
       ctx.fillText('遊戲結束', boardX + boardPixelWidth / 2, boardY + boardPixelHeight / 2 - cellSize * 0.6)
-      ctx.font = `${Math.max(12, Math.floor(cellSize * 0.5))}px sans-serif`
+      ctx.font = `${Math.max(12, Math.floor(cellSize * 0.5))}px ${this.theme.font.family}`
       ctx.fillText('按 R 重新開始', boardX + boardPixelWidth / 2, boardY + boardPixelHeight / 2 + cellSize * 0.5)
     }
 
@@ -1086,8 +1088,8 @@ class TetrisGame extends GameEngine {
 
     ctx.textAlign = 'left'
     ctx.textBaseline = 'top'
-    ctx.fillStyle = '#2a1e25'
-    ctx.font = `bold ${Math.max(12, Math.floor(cellSize * 0.55))}px sans-serif`
+    ctx.fillStyle = this.theme.palette.ink
+    ctx.font = `bold ${Math.max(12, Math.floor(cellSize * 0.55))}px ${this.theme.font.family}`
     ctx.fillText(`等級 ${this.level}`, leftPanelX + 6, boardY + cellSize * 0.35)
     ctx.fillText(`消行 ${this.linesCleared}`, leftPanelX + 6, boardY + cellSize * 1.55)
     ctx.fillText(`總分 ${this.score}`, leftPanelX + 6, boardY + cellSize * 2.75)
@@ -1166,8 +1168,8 @@ class TetrisGame extends GameEngine {
         align: 'left',
       })
 
-      ctx.fillStyle = '#e5e7eb'
-      ctx.font = `${Math.max(9, Math.floor(cellSize * 0.35))}px sans-serif`
+      ctx.fillStyle = this.theme.palette.highlight
+      ctx.font = `${Math.max(9, Math.floor(cellSize * 0.35))}px ${this.theme.font.family}`
       const lines = this.wrapText(ctx, this.activeMission.name, boxSize - 12)
       let lineY = missionY + Math.max(26, Math.floor(cellSize * 1.1))
       for (const line of lines) {
@@ -1184,21 +1186,21 @@ class TetrisGame extends GameEngine {
         fill: '#4ade80',
       })
 
-      ctx.fillStyle = '#7c6257'
-      ctx.font = `${Math.max(8, Math.floor(cellSize * 0.32))}px sans-serif`
+      ctx.fillStyle = this.theme.palette.ink
+      ctx.font = `${Math.max(8, Math.floor(cellSize * 0.32))}px ${this.theme.font.family}`
       ctx.fillText(`${this.missionProgress}/${this.activeMission.target}`, previewBoxX + 6, barY - Math.max(4, Math.floor(cellSize * 0.15)))
     }
 
     const previewBottomY = previewBoxY + previewCount * boxSize + (previewCount - 1) * previewGap
     const statusY = previewBottomY + cellSize * 0.35
 
-    ctx.fillStyle = '#fffaf6'
-    ctx.font = `${Math.max(10, Math.floor(cellSize * 0.42))}px sans-serif`
+    ctx.fillStyle = this.theme.palette.ink
+    ctx.font = `${Math.max(10, Math.floor(cellSize * 0.42))}px ${this.theme.font.family}`
     ctx.fillText(`Bomb x${this.bombRowCharges}  Preview x${this.previewPlusCharges}`, previewBoxX, statusY)
 
     if (this.previewPlusActive) {
       const secondsLeft = Math.ceil(this.previewPlusTimer / 1000)
-      ctx.fillStyle = '#93c5fd'
+      ctx.fillStyle = this.theme.palette.accent
       ctx.fillText(`預覽+ 剩餘 ${secondsLeft} 秒`, previewBoxX, statusY + cellSize * 0.75)
     }
 

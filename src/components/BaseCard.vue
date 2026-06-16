@@ -41,8 +41,10 @@ function handleClick(event: MouseEvent) {
 
 <style scoped>
 .base-card {
-  border-radius: var(--radius-lg);
-  transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1), border-color 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: var(--radius-xl) var(--radius-sm) var(--radius-xl) var(--radius-sm);
+  box-shadow: 0 0 0 2px var(--color-border-light), 0 4px 0 var(--color-border);
+  transition: transform var(--duration-base) var(--ease-out), box-shadow var(--duration-base) var(--ease-out);
+  overflow: hidden;
 }
 
 /* Variants */
@@ -80,8 +82,8 @@ function handleClick(event: MouseEvent) {
 }
 
 .clickable:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  transform: translateY(-4px);
+  box-shadow: 0 0 0 2px var(--color-border-light), 0 12px 28px rgba(0, 0, 0, 0.15);
 }
 
 .clickable:hover.variant-outlined {

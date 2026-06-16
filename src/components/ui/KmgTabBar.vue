@@ -84,10 +84,11 @@ const activeTab = computed(() => activeId.value)
   gap: var(--space-1);
   padding: var(--space-1);
   background: var(--color-glass-bg);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-full);
   border: var(--stroke-thin) solid var(--color-glass-border);
   backdrop-filter: blur(var(--color-glass-blur));
   -webkit-backdrop-filter: blur(var(--color-glass-blur));
+  box-shadow: var(--shadow-md);
   width: fit-content;
   min-width: 100%;
   justify-content: center;
@@ -101,20 +102,24 @@ const activeTab = computed(() => activeId.value)
   font-family: var(--font-family-heading);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  color: var(--color-text-dim);
+  color: var(--color-text);
+  opacity: 0.6;
+  border: 2px solid var(--color-text);
   cursor: pointer;
-  border-radius: var(--radius-base);
-  transition: color var(--duration-fast) var(--ease-out);
+  border-radius: var(--radius-full);
+  transition: all var(--duration-base) var(--ease-out);
   user-select: none;
   white-space: nowrap;
 }
 
 .kmg-tab-bar__tab:hover {
-  color: var(--color-text-secondary);
+  opacity: 1;
 }
 
 .kmg-tab-bar__tab.active {
-  color: var(--color-text);
+  background: var(--color-primary);
+  color: white;
+  opacity: 1;
 }
 
 .kmg-tab-bar__label {

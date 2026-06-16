@@ -38,6 +38,21 @@ export interface GamePalette {
 }
 
 /**
+ * UI identity tokens for game-specific visual identity.
+ * These drive the canvas HUD/overlay styling and Vue shell adaptation.
+ */
+export interface GameUiTokens {
+  /** Panel/surface fill (typically semi-transparent) */
+  surface: string
+  /** UI accent for panels, borders, active buttons */
+  accent: string
+  /** Danger/alert color — boss warnings, game over, low HP */
+  danger: string
+  /** Ambient particle type for the game's atmosphere */
+  particle: 'firefly' | 'sparkle' | 'butterfly' | 'cloud' | 'star' | 'leaf' | 'petal' | 'bubble' | 'steam' | 'confetti'
+}
+
+/**
  * Complete visual preset for a single game.
  * Combines the palette with entity colors and HUD colors.
  */
@@ -55,6 +70,8 @@ export interface GamePreset {
     /** Combo/milestone text color */
     combo: string
   }
+  /** UI identity tokens for game-specific visual style (optional per-game override) */
+  ui?: GameUiTokens
 }
 
 /**
@@ -75,17 +92,23 @@ export const PRESETS: Record<GameId, GamePreset> = {
       primary: '#06b6d4',
       secondary: '#4ade80',
       accent: '#fbbf24',
-      bg: '#0c1222',
-      bgAlt: '#1a3a2a',
-      ink: '#1d161b',
-      highlight: '#67e8f9',
-      glow: '#06b6d4',
+      bg: '#0a0a1a',
+      bgAlt: '#1a1a3a',
+      ink: '#e2e8f0',
+      highlight: '#fbbf24',
+      glow: '#8b5cf6',
     },
     entityColors: ['#06b6d4', '#22d3ee', '#f472b6', '#fbbf24', '#4ade80'],
     hudColors: {
-      hpBar: '#4ade80',
+      hpBar: '#ef4444',
       score: '#fbbf24',
-      combo: '#f472b6',
+      combo: '#8b5cf6',
+    },
+    ui: {
+      surface: '#1a1a3a',
+      accent: '#8b5cf6',
+      danger: '#ef4444',
+      particle: 'firefly',
     },
   },
   'breakout': {
@@ -105,6 +128,12 @@ export const PRESETS: Record<GameId, GamePreset> = {
       score: '#fde68a',
       combo: '#f472b6',
     },
+    ui: {
+      surface: 'rgba(15,15,30,0.88)',
+      accent: '#eab308',
+      danger: '#ef4444',
+      particle: 'sparkle',
+    },
   },
   'tetris': {
     palette: {
@@ -122,6 +151,12 @@ export const PRESETS: Record<GameId, GamePreset> = {
       hpBar: '#a78bfa',
       score: '#c4b5fd',
       combo: '#818cf8',
+    },
+    ui: {
+      surface: 'rgba(12,10,30,0.88)',
+      accent: '#8b5cf6',
+      danger: '#ef4444',
+      particle: 'star',
     },
   },
   'snake': {
@@ -141,6 +176,12 @@ export const PRESETS: Record<GameId, GamePreset> = {
       score: '#86efac',
       combo: '#22d3ee',
     },
+    ui: {
+      surface: 'rgba(22,101,52,0.88)',
+      accent: '#22c55e',
+      danger: '#ef4444',
+      particle: 'butterfly',
+    },
   },
   'game2048': {
     palette: {
@@ -159,23 +200,35 @@ export const PRESETS: Record<GameId, GamePreset> = {
       score: '#f59e0b',
       combo: '#f97316',
     },
+    ui: {
+      surface: 'rgba(255,247,237,0.88)',
+      accent: '#f59e0b',
+      danger: '#ef4444',
+      particle: 'confetti',
+    },
   },
   'flappy': {
     palette: {
       primary: '#0891b2',
       secondary: '#fbbf24',
       accent: '#f472b6',
-      bg: '#7dd3fc',
-      bgAlt: '#22c55e',
+      bg: '#87ceeb',
+      bgAlt: '#f0f9ff',
       ink: '#1d161b',
-      highlight: '#22d3ee',
+      highlight: '#facc15',
       glow: '#0891b2',
     },
     entityColors: ['#0891b2', '#fbbf24', '#22d3ee', '#f472b6', '#22c55e'],
     hudColors: {
-      hpBar: '#22d3ee',
-      score: '#fbbf24',
+      hpBar: '#f43f5e',
+      score: '#facc15',
       combo: '#f472b6',
+    },
+    ui: {
+      surface: 'rgba(240,249,255,0.85)',
+      accent: '#facc15',
+      danger: '#f43f5e',
+      particle: 'cloud',
     },
   },
   'invaders': {
@@ -195,6 +248,12 @@ export const PRESETS: Record<GameId, GamePreset> = {
       score: '#f472b6',
       combo: '#ec4899',
     },
+    ui: {
+      surface: 'rgba(7,1,10,0.88)',
+      accent: '#ec4899',
+      danger: '#ef4444',
+      particle: 'star',
+    },
   },
   'fruit-catch': {
     palette: {
@@ -213,23 +272,35 @@ export const PRESETS: Record<GameId, GamePreset> = {
       score: '#fbbf24',
       combo: '#34d399',
     },
+    ui: {
+      surface: 'rgba(167,243,208,0.88)',
+      accent: '#ef4444',
+      danger: '#dc2626',
+      particle: 'petal',
+    },
   },
   'tower-defense': {
     palette: {
       primary: '#f97316',
       secondary: '#60a5fa',
       accent: '#34d399',
-      bg: '#93c5fd',
-      bgAlt: '#166534',
-      ink: '#1d161b',
-      highlight: '#93c5fd',
+      bg: '#1a1410',
+      bgAlt: '#2a2018',
+      ink: '#e2e8f0',
+      highlight: '#f59e0b',
       glow: '#f97316',
     },
     entityColors: ['#f97316', '#60a5fa', '#34d399', '#fbbf24', '#93c5fd'],
     hudColors: {
-      hpBar: '#34d399',
-      score: '#fbbf24',
-      combo: '#60a5fa',
+      hpBar: '#f97316',
+      score: '#f59e0b',
+      combo: '#3b82f6',
+    },
+    ui: {
+      surface: 'rgba(30,20,16,0.88)',
+      accent: '#f59e0b',
+      danger: '#dc2626',
+      particle: 'bubble',
     },
   },
   'tic-tac-toe': {
@@ -249,6 +320,12 @@ export const PRESETS: Record<GameId, GamePreset> = {
       score: '#f472b6',
       combo: '#a78bfa',
     },
+    ui: {
+      surface: 'rgba(237,233,254,0.9)',
+      accent: '#6366f1',
+      danger: '#ef4444',
+      particle: 'confetti',
+    },
   },
   'memory': {
     palette: {
@@ -266,6 +343,12 @@ export const PRESETS: Record<GameId, GamePreset> = {
       hpBar: '#c4b5fd',
       score: '#f472b6',
       combo: '#ec4899',
+    },
+    ui: {
+      surface: 'rgba(237,233,254,0.9)',
+      accent: '#ec4899',
+      danger: '#ef4444',
+      particle: 'sparkle',
     },
   },
   'sudoku': {
@@ -285,6 +368,12 @@ export const PRESETS: Record<GameId, GamePreset> = {
       score: '#0d9488',
       combo: '#f59e0b',
     },
+    ui: {
+      surface: 'rgba(240,253,250,0.9)',
+      accent: '#14b8a6',
+      danger: '#ef4444',
+      particle: 'steam',
+    },
   },
 }
 
@@ -303,4 +392,33 @@ export function getPresetForGame(gameId: GameId): GamePreset {
 export function getRandomEntityColor(gameId: GameId): string {
   const preset = getPresetForGame(gameId)
   return preset.entityColors[Math.floor(Math.random() * preset.entityColors.length)] ?? '#a78bfa'
+}
+
+/* ── GameTheme (full design token bag for Canvas bridge) ── */
+
+import { FONT, RADII } from './TypographyPresets'
+
+export interface GameTheme {
+  palette: GamePalette
+  entityColors: string[]
+  hudColors: { hpBar: string; score: string; combo: string }
+  font: typeof FONT
+  radii: typeof RADII
+  /** UI identity tokens for game-specific visual style */
+  ui: GameUiTokens
+}
+
+export function getGameTheme(gameId: GameId): GameTheme {
+  const preset = getPresetForGame(gameId)
+  return {
+    ...preset,
+    font: FONT,
+    radii: RADII,
+    ui: preset.ui ?? {
+      surface: 'rgba(30,20,50,0.85)',
+      accent: '#06b6d4',
+      danger: '#ef4444',
+      particle: 'sparkle',
+    },
+  }
 }

@@ -22,6 +22,7 @@ import {
   drawKawaiiProgressBar,
 } from '@/engine/kawaiiCanvas'
 import { EffectsManager } from '@/engine/effects'
+import { getTheme } from '@/engine/art/KawaiiTheme'
 
 const SPECIAL_FOOD_TINTS: Record<string, { variant: string; color: string }> = {
   slow: { variant: 'slow', color: '#60a5fa' },
@@ -54,6 +55,7 @@ type Direction = 'up' | 'down' | 'left' | 'right'
 class SnakeGame extends GameEngine {
   private readonly gridCols = 20
   private readonly gridRows = 20
+  private theme = getTheme('snake')
   private readonly levelFoodTarget = 5
 
   private snake: Cell[] = []
@@ -437,14 +439,14 @@ class SnakeGame extends GameEngine {
     }
 
     if (this.gameOver) {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.58)'
+      ctx.fillStyle = this.theme.ui.surface
       ctx.fillRect(offsetX, offsetY, gridWidth, gridHeight)
-      ctx.fillStyle = '#d7ffe0'
+      ctx.fillStyle = this.theme.palette.ink
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
-      ctx.font = `bold ${Math.max(22, Math.floor(cellSize * 1.1))}px sans-serif`
+      ctx.font = `bold ${Math.max(22, Math.floor(cellSize * 1.1))}px ${this.theme.font.family}`
       ctx.fillText('遊戲結束', offsetX + gridWidth / 2, offsetY + gridHeight * 0.46)
-      ctx.font = `${Math.max(12, Math.floor(cellSize * 0.5))}px sans-serif`
+      ctx.font = `${Math.max(12, Math.floor(cellSize * 0.5))}px ${this.theme.font.family}`
       ctx.fillText('滑動或按方向鍵再玩一次', offsetX + gridWidth / 2, offsetY + gridHeight * 0.56)
     }
 
@@ -836,7 +838,7 @@ class SnakeGame extends GameEngine {
 
     ctx.save()
     drawKawaiiPanel(ctx, x, y, width, height, {
-      fill: 'rgba(255, 251, 245, 0.96)',
+      fill: this.theme.ui.surface,
       accent: activeBuff.def.color,
       radius: 12,
       shadow: 'rgba(2, 12, 8, 0.16)',
@@ -885,7 +887,7 @@ class SnakeGame extends GameEngine {
 
     ctx.save()
     drawKawaiiPanel(ctx, x, y, width, height, {
-      fill: 'rgba(255, 251, 245, 0.96)',
+      fill: this.theme.ui.surface,
       accent: activeArenaModifier.def.color,
       radius: 12,
       shadow: 'rgba(2, 12, 8, 0.16)',

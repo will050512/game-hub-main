@@ -37,6 +37,11 @@ const isHovered = ref(false)
 </template>
 
 <style scoped>
+@keyframes scaleIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
 .kmg-tooltip__wrapper {
   position: relative;
   display: inline-flex;
@@ -52,13 +57,14 @@ const isHovered = ref(false)
   color: var(--color-text);
   white-space: nowrap;
   pointer-events: none;
-  border-radius: var(--radius-base);
+  border-radius: var(--radius-lg) var(--radius-sm) var(--radius-lg) var(--radius-sm);
   background: var(--color-glass-bg-elevated);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--color-glass-border);
+  border: 2px solid var(--color-text);
   box-shadow: var(--shadow-md);
   transform: translateY(-2px);
+  animation: scaleIn var(--duration-base) var(--ease-out);
 }
 
 .kmg-tooltip--top {

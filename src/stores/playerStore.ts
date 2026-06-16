@@ -9,6 +9,7 @@ const DEFAULT_PROFILE: PlayerProfile = {
   totalCoinsEarned: 0,
   upgrades: {},
   gamesPlayed: 0,
+  uniqueGamesPlayed: 0,
   totalPlayTime: 0,
   achievements: [],
 }
@@ -48,6 +49,7 @@ export const usePlayerStore = defineStore('player', () => {
   const achievements = ref<PlayerAchievement[]>([])
   const dailyQuests = ref<DailyQuestsState>({ date: '', quests: [] })
   const collection = ref<PlayerCollection>({ badges: [], avatarFrames: [], equippedBadge: null, equippedAvatarFrame: null })
+  const playedGameIds = ref<Set<string>>(new Set())
 
   async function loadProfile() {
     const db = useDatabase()
@@ -58,12 +60,22 @@ export const usePlayerStore = defineStore('player', () => {
     dailyQuests.value = await db.getDailyQuests()
     collection.value = await db.getCollection()
     isLoaded.value = true
+    playedGameIds.value = new Set()
   }
 
   async function incrementGamesPlayed() {
     profile.value.gamesPlayed++
     const db = useDatabase()
     await db.updateProfile({ gamesPlayed: profile.value.gamesPlayed })
+  }
+
+  async function incrementUniqueGamesPlayed(gameId: string) {
+    if (!playedGameIds.value.has(gameId)) {
+      playedGameIds.value.add(gameId)
+      profile.value.uniqueGamesPlayed++
+      const db = useDatabase()
+      await db.updateProfile({ uniqueGamesPlayed: profile.value.uniqueGamesPlayed })
+    }
   }
 
   async function addPlayTime(ms: number) {
@@ -204,6 +216,7 @@ export const usePlayerStore = defineStore('player', () => {
     collection,
     loadProfile,
     incrementGamesPlayed,
+    incrementUniqueGamesPlayed,
     addPlayTime,
     getUpgradeLevel,
     totalUpgradeLevel,

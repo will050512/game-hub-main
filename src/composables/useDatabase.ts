@@ -65,6 +65,7 @@ const defaultProfile: PlayerProfile = {
   totalCoinsEarned: 0,
   upgrades: {},
   gamesPlayed: 0,
+  uniqueGamesPlayed: 0,
   totalPlayTime: 0,
   achievements: [],
 }
@@ -124,6 +125,7 @@ function sanitizeProfile(value: unknown): PlayerProfile {
     totalCoinsEarned: clampNonNegative(src.totalCoinsEarned, 0),
     upgrades: sanitizeUpgrades(src.upgrades),
     gamesPlayed: clampNonNegative(src.gamesPlayed, 0),
+    uniqueGamesPlayed: clampNonNegative(src.uniqueGamesPlayed ?? 0, 0),
     totalPlayTime: clampNonNegative(src.totalPlayTime, 0),
     achievements: sanitizeStringArray(src.achievements),
   }
@@ -641,6 +643,7 @@ async function createCapacitorAdapter(): Promise<DbAdapter> {
       total_coins INTEGER DEFAULT 0,
       total_coins_earned INTEGER DEFAULT 0,
       games_played INTEGER DEFAULT 0,
+      unique_games_played INTEGER DEFAULT 0,
       total_play_time INTEGER DEFAULT 0,
       achievements TEXT DEFAULT '[]',
       created_at TEXT DEFAULT (datetime('now','localtime')),
@@ -807,17 +810,18 @@ async function createCapacitorAdapter(): Promise<DbAdapter> {
     },
     getProfile: async () => {
       const result = await db.query(
-        'SELECT total_coins, total_coins_earned, games_played, total_play_time, achievements FROM player_profile WHERE id = 1',
+        'SELECT total_coins, total_coins_earned, games_played, unique_games_played, total_play_time, achievements FROM player_profile WHERE id = 1',
       )
       const row = result.values?.[0] as {
         total_coins: number
         total_coins_earned: number
         games_played: number
+        unique_games_played: number
         total_play_time: number
         achievements: string
       } | undefined
       if (!row) {
-        return { totalCoins: 0, totalCoinsEarned: 0, upgrades: {}, gamesPlayed: 0, totalPlayTime: 0, achievements: [] }
+        return { totalCoins: 0, totalCoinsEarned: 0, upgrades: {}, gamesPlayed: 0, uniqueGamesPlayed: 0, totalPlayTime: 0, achievements: [] }
       }
       const upgradesResult = await db.query('SELECT upgrade_id, current_level FROM upgrades')
       const upgrades: Record<string, number> = {}
@@ -829,6 +833,7 @@ async function createCapacitorAdapter(): Promise<DbAdapter> {
         totalCoinsEarned: row.total_coins_earned,
         upgrades,
         gamesPlayed: row.games_played,
+        uniqueGamesPlayed: row.unique_games_played,
         totalPlayTime: row.total_play_time,
         achievements: sanitizeStringArray(safeParseJson<unknown>(row.achievements, [])),
       })
@@ -839,6 +844,7 @@ async function createCapacitorAdapter(): Promise<DbAdapter> {
       if (partial.totalCoins !== undefined) { fields.push('total_coins = ?'); values.push(partial.totalCoins) }
       if (partial.totalCoinsEarned !== undefined) { fields.push('total_coins_earned = ?'); values.push(partial.totalCoinsEarned) }
       if (partial.gamesPlayed !== undefined) { fields.push('games_played = ?'); values.push(partial.gamesPlayed) }
+      if (partial.uniqueGamesPlayed !== undefined) { fields.push('unique_games_played = ?'); values.push(partial.uniqueGamesPlayed) }
       if (partial.totalPlayTime !== undefined) { fields.push('total_play_time = ?'); values.push(partial.totalPlayTime) }
       if (partial.achievements !== undefined) { fields.push('achievements = ?'); values.push(JSON.stringify(partial.achievements)) }
       if (fields.length > 0) {

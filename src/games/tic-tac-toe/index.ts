@@ -4,6 +4,7 @@ import { preloadGameSprites, drawSprite } from '@/engine/sprites/spriteLoader'
 import { canvasIconKindForItem, drawKawaiiButton, drawKawaiiInlineLabel, drawKawaiiPanel } from '@/engine/kawaiiCanvas'
 import { EffectsManager } from '@/engine/effects'
 import { computeResponsiveGridLayout } from '@/games/shared/responsiveGridLayout'
+import { getTheme } from '@/engine/art/KawaiiTheme'
 
 type Cell = 'X' | 'O' | null
 type Board = Cell[][]
@@ -22,6 +23,7 @@ interface PowerCardState {
 }
 
 class TicTacToeGame extends GameEngine {
+  private theme = getTheme('tic-tac-toe')
   private board: Board = [[null, null, null], [null, null, null], [null, null, null]]
   private currentPlayer: 'X' | 'O' = 'X'
   private phase: GamePhase = 'menu'
@@ -128,8 +130,8 @@ class TicTacToeGame extends GameEngine {
     this.boardOffsetY = layout.boardY
 
     const bg = ctx.createLinearGradient(0, 0, 0, this.height)
-    bg.addColorStop(0, '#0f0a1e')
-    bg.addColorStop(1, '#1a1030')
+    bg.addColorStop(0, this.theme.palette.bg)
+    bg.addColorStop(1, this.theme.palette.bgAlt)
     ctx.fillStyle = bg
     ctx.fillRect(0, 0, this.width, this.height)
 
@@ -147,25 +149,25 @@ class TicTacToeGame extends GameEngine {
     ctx.textBaseline = 'middle'
 
     drawKawaiiPanel(ctx, this.width * 0.12, this.height * 0.09, this.width * 0.76, this.height * 0.14, {
-      fill: 'rgba(255, 250, 246, 0.9)',
-      accent: '#8b5cf6',
-      stroke: '#171717',
+      fill: this.theme.palette.bgAlt,
+      accent: this.theme.palette.accent,
+      stroke: this.theme.palette.ink,
       radius: Math.floor(20 * scale),
     })
 
-    ctx.fillStyle = '#fff'
-    ctx.font = `bold ${titleSize}px sans-serif`
+    ctx.fillStyle = this.theme.palette.highlight
+    ctx.font = `bold ${titleSize}px ${this.theme.font.family}`
     ctx.fillText('井字棋', this.width / 2, this.height * 0.12)
 
     const subtitleSize = Math.floor(14 * scale)
     ctx.fillStyle = '#94a3b8'
-    ctx.font = `${subtitleSize}px sans-serif`
-    ctx.fillText('Tic-Tac-Toe with Power Cards', this.width / 2, this.height * 0.12 + titleSize + 8 * scale)
+    ctx.font = `${subtitleSize}px ${this.theme.font.family}`
+    ctx.fillText('井字棋大戰', this.width / 2, this.height * 0.12 + titleSize + 8 * scale)
 
     const diffItems: { key: Difficulty; label: string; color: string }[] = [
-      { key: 'easy', label: 'Easy', color: '#22c55e' },
-      { key: 'medium', label: 'Medium', color: '#eab308' },
-      { key: 'hard', label: 'Hard', color: '#ef4444' },
+      { key: 'easy', label: '簡單', color: '#22c55e' },
+      { key: 'medium', label: '普通', color: '#eab308' },
+      { key: 'hard', label: '困難', color: '#ef4444' },
     ]
 
     const btnWidth = Math.floor(this.width * 0.6)
@@ -173,9 +175,9 @@ class TicTacToeGame extends GameEngine {
     const btnGap = Math.floor(12 * scale)
     const menuStartY = this.height * 0.35
 
-    ctx.fillStyle = '#8b5cf6'
-    ctx.font = `bold ${Math.floor(13 * scale)}px sans-serif`
-    ctx.fillText('Difficulty', this.width / 2, menuStartY - Math.floor(16 * scale))
+    ctx.fillStyle = this.theme.palette.glow
+    ctx.font = `bold ${Math.floor(13 * scale)}px ${this.theme.font.family}`
+    ctx.fillText('難度', this.width / 2, menuStartY - Math.floor(16 * scale))
 
     diffItems.forEach((d, i) => {
       const btnY = menuStartY + i * (btnHeight + btnGap)
@@ -189,20 +191,20 @@ class TicTacToeGame extends GameEngine {
         label: d.label,
         iconKind: d.key === 'easy' ? 'heart' : d.key === 'medium' ? 'star' : 'bomb',
         active: isActive,
-        fill: 'rgba(255,255,255,0.92)',
+        fill: this.theme.palette.bgAlt,
         activeFill: d.color,
       })
     })
 
     const persStartY = menuStartY + 3 * (btnHeight + btnGap) + Math.floor(20 * scale)
-    ctx.fillStyle = '#06b6d4'
-    ctx.font = `bold ${Math.floor(13 * scale)}px sans-serif`
-    ctx.fillText('AI Personality', this.width / 2, persStartY - Math.floor(16 * scale))
+    ctx.fillStyle = this.theme.palette.primary
+    ctx.font = `bold ${Math.floor(13 * scale)}px ${this.theme.font.family}`
+    ctx.fillText('AI 風格', this.width / 2, persStartY - Math.floor(16 * scale))
 
     const personalities: { key: AIPersonality; label: string; desc: string; color: string }[] = [
-      { key: 'aggressive', label: 'Aggressive', desc: 'Offensive plays', color: '#ef4444' },
-      { key: 'defensive', label: 'Defensive', desc: 'Blocks threats', color: '#3b82f6' },
-      { key: 'balanced', label: 'Balanced', desc: 'Optimal strategy', color: '#8b5cf6' },
+      { key: 'aggressive', label: '攻擊型', desc: '積極進攻', color: '#ef4444' },
+      { key: 'defensive', label: '防禦型', desc: '穩守防守', color: '#3b82f6' },
+      { key: 'balanced', label: '均衡型', desc: '攻守平衡', color: '#8b5cf6' },
     ]
 
     const persWidth = Math.floor((this.width - Math.floor(32 * scale)) / 3)
@@ -214,24 +216,26 @@ class TicTacToeGame extends GameEngine {
       const btnY = persStartY
       const isActive = this.aiPersonality === p.key
       drawKawaiiPanel(ctx, btnX, btnY, persWidth, persHeight, {
-        fill: isActive ? p.color : 'rgba(255,255,255,0.92)',
-        accent: isActive ? '#fffaf6' : p.color,
-        stroke: '#171717',
+        fill: isActive ? p.color : this.theme.palette.bgAlt,
+        accent: isActive ? this.theme.palette.bg : p.color,
+        stroke: this.theme.palette.ink,
         radius: Math.floor(8 * scale),
       })
-      ctx.fillStyle = isActive ? '#171717' : '#fff'
-      ctx.font = `bold ${Math.floor(11 * scale)}px sans-serif`
+      ctx.fillStyle = isActive ? this.theme.palette.ink : this.theme.palette.highlight
+      ctx.font = `bold ${Math.floor(11 * scale)}px ${this.theme.font.family}`
       ctx.fillText(p.label, btnX + persWidth / 2, btnY + persHeight / 2 - Math.floor(8 * scale))
 
-      ctx.fillStyle = isActive ? 'rgba(23,23,23,0.75)' : '#64748b'
-      ctx.font = `${Math.floor(9 * scale)}px sans-serif`
+      ctx.fillStyle = isActive ? this.theme.palette.ink : this.theme.palette.ink
+      ctx.globalAlpha = isActive ? 0.75 : 0.6
+      ctx.font = `${Math.floor(9 * scale)}px ${this.theme.font.family}`
       ctx.fillText(p.desc, btnX + persWidth / 2, btnY + persHeight / 2 + Math.floor(8 * scale))
+      ctx.globalAlpha = 1
     })
 
     const statsY = persStartY + persHeight + Math.floor(20 * scale)
-    ctx.fillStyle = '#64748b'
-    ctx.font = `${Math.floor(13 * scale)}px sans-serif`
-    ctx.fillText(`W:${this.wins} L:${this.losses} D:${this.draws}`, this.width / 2, statsY)
+    ctx.fillStyle = this.theme.palette.ink
+    ctx.font = `${Math.floor(13 * scale)}px ${this.theme.font.family}`
+    ctx.fillText(`勝:${this.wins} 負:${this.losses} 和:${this.draws}`, this.width / 2, statsY)
 
     const startBtnY = statsY + Math.floor(32 * scale)
     const startBtnW = Math.floor(this.width * 0.5)
@@ -249,10 +253,10 @@ class TicTacToeGame extends GameEngine {
       y: startBtnY,
       width: startBtnW,
       height: startBtnH,
-      label: 'Start Game',
+      label: '開始遊戲',
       iconKind: 'target',
-      fill: '#ede9fe',
-      activeFill: '#c4b5fd',
+      fill: this.theme.palette.bgAlt,
+      activeFill: this.theme.palette.highlight,
     })
     ctx.restore()
   }
@@ -263,28 +267,28 @@ class TicTacToeGame extends GameEngine {
     ctx.textBaseline = 'middle'
 
     drawKawaiiPanel(ctx, this.width / 2 - 76 * scale, this.boardOffsetY - 52 * scale, 152 * scale, 34 * scale, {
-      fill: 'rgba(255,250,246,0.9)',
-      accent: '#8b5cf6',
-      stroke: '#171717',
+      fill: this.theme.palette.bgAlt,
+      accent: this.theme.palette.accent,
+      stroke: this.theme.palette.ink,
       radius: Math.floor(12 * scale),
     })
     drawKawaiiInlineLabel(ctx, {
       x: this.width / 2 - 40 * scale,
       y: this.boardOffsetY - 35 * scale,
-      text: `Game ${this.totalGames + 1}`,
+      text: `第${this.totalGames + 1}局`,
       iconKind: 'star',
       color: '#4c1d95',
       fontSize: Math.max(11, Math.floor(12 * scale)),
     })
 
-    let turnText = this.currentPlayer === 'X' ? 'Your Turn (X)' : 'AI Thinking...'
+    let turnText = this.currentPlayer === 'X' ? '你的回合 (X)' : 'AI 思考中...'
     let turnColor = '#e2e8f0'
     if (this.phase === 'gameover') {
       if (this.winLine.length > 0) {
-        if (this.currentPlayer === 'X') { turnText = 'You Win!'; turnColor = '#22c55e' }
-        else { turnText = 'AI Wins'; turnColor = '#ef4444' }
+        if (this.currentPlayer === 'X') { turnText = '你贏了!'; turnColor = '#22c55e' }
+        else { turnText = 'AI 獲勝'; turnColor = '#ef4444' }
       } else {
-        turnText = 'Draw!'
+        turnText = '平局!'
         turnColor = '#eab308'
       }
     }
@@ -303,8 +307,8 @@ class TicTacToeGame extends GameEngine {
     const oy = this.boardOffsetY
 
     drawKawaiiPanel(ctx, ox - Math.floor(10 * scale), oy - Math.floor(10 * scale), cs * 3 + gap * 2 + Math.floor(20 * scale), cs * 3 + gap * 2 + Math.floor(20 * scale), {
-      fill: 'rgba(255,250,246,0.18)',
-      accent: '#8b5cf6',
+      fill: this.theme.ui.surface,
+      accent: this.theme.palette.accent,
       stroke: 'rgba(255,255,255,0.2)',
       radius: Math.floor(18 * scale),
       shadow: 'rgba(15, 23, 42, 0.25)',
@@ -327,8 +331,8 @@ class TicTacToeGame extends GameEngine {
         iconKind: canvasIconKindForItem(card.icon),
         enabled: card.uses > 0,
         active: this.selectedPowerCard === card.type,
-        fill: 'rgba(255,250,246,0.92)',
-        activeFill: '#ddd6fe',
+        fill: this.theme.palette.bgAlt,
+        activeFill: this.theme.palette.highlight,
       })
     })
 
@@ -345,7 +349,7 @@ class TicTacToeGame extends GameEngine {
           alpha: isWinCell ? 0.6 : 1,
         })
         if (!cellDrawn) {
-          ctx.fillStyle = isWinCell ? 'rgba(139, 92, 246, 0.3)' : 'rgba(255,255,255,0.05)'
+          ctx.fillStyle = isWinCell ? `${this.theme.palette.glow}50` : `${this.theme.palette.bgAlt}10`
           ctx.beginPath()
           this.roundRect(ctx, cx, cy, cs, cs, Math.floor(8 * scale))
           ctx.fill()
@@ -368,10 +372,10 @@ class TicTacToeGame extends GameEngine {
         y: btnY,
         width: btnW,
         height: btnH,
-        label: 'Play Again',
+        label: '再玩一次',
         iconKind: 'undo',
-        fill: '#ede9fe',
-        activeFill: '#c4b5fd',
+        fill: this.theme.palette.bgAlt,
+        activeFill: this.theme.palette.highlight,
       })
     }
 

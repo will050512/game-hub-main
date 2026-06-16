@@ -20,9 +20,13 @@ export function useMetaProgression() {
     gameId?: GameId
     score: number
     gamesPlayed: number
+    uniqueGamesPlayed?: number
     totalCoinsEarned: number
     totalPlayTime: number
     winStreak?: number
+    kills?: number
+    perfectGame?: boolean
+    collectionComplete?: { type: 'badge' | 'avatarFrame'; collected: number; total: number }
   }): Promise<string[]> {
     const newlyUnlocked: string[] = []
     const currentAchievements = playerStore.achievements
@@ -43,6 +47,11 @@ export function useMetaProgression() {
       switch (def.condition.type) {
         case 'gamesPlayed':
           progress = context.gamesPlayed
+          shouldUnlock = progress >= def.condition.threshold
+          break
+
+        case 'uniqueGamesPlayed':
+          progress = context.uniqueGamesPlayed ?? 0
           shouldUnlock = progress >= def.condition.threshold
           break
 
@@ -74,9 +83,26 @@ export function useMetaProgression() {
           break
 
         case 'perfectGame':
+          shouldUnlock = context.perfectGame ?? false
           break
 
         case 'collectAll':
+          if (context.collectionComplete && def.condition.collectionType === context.collectionComplete.type) {
+            progress = context.collectionComplete.collected
+            shouldUnlock = progress >= def.condition.threshold
+          }
+          break
+
+        case 'kills':
+          if (def.condition.gameId) {
+            if (def.condition.gameId === context.gameId) {
+              progress = context.kills ?? 0
+              shouldUnlock = progress >= def.condition.threshold
+            }
+          } else {
+            progress = context.kills ?? 0
+            shouldUnlock = progress >= def.condition.threshold
+          }
           break
       }
 
@@ -244,6 +270,9 @@ export function useMetaProgression() {
     coinsEarned: number
     won?: boolean
     upgradesPurchased?: number
+    kills?: number
+    perfectGame?: boolean
+    collectionComplete?: { type: 'badge' | 'avatarFrame'; collected: number; total: number }
   }): Promise<{
     newAchievements: string[]
     completedQuests: string[]
@@ -259,9 +288,15 @@ export function useMetaProgression() {
       gameId: context.gameId,
       score: context.score,
       gamesPlayed,
+      uniqueGamesPlayed: profile.uniqueGamesPlayed,
       totalCoinsEarned,
       totalPlayTime,
+      kills: context.kills,
+      perfectGame: context.perfectGame,
+      collectionComplete: context.collectionComplete,
     })
+
+    await playerStore.incrementUniqueGamesPlayed(context.gameId)
 
     const { completedQuestIds } = await updateDailyQuestProgress(context)
 

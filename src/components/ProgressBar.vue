@@ -46,8 +46,10 @@ const percentage = computed(() => {
   position: relative;
   width: 100%;
   background: var(--color-bg-elevated);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-full);
   overflow: hidden;
+  border: 2px solid var(--color-text);
+  box-shadow: var(--shadow-sm);
 }
 
 .size-sm .progress-track {
@@ -60,12 +62,12 @@ const percentage = computed(() => {
 
 .progress-fill {
   height: 100%;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-full);
   min-width: 0;
 }
 
 .progress-fill.animated {
-  transition: width 300ms ease;
+  transition: width var(--duration-bounce) var(--ease-bounce);
 }
 
 .progress-label {

@@ -11,9 +11,12 @@ export class InputManager {
 
   private readonly JOYSTICK_DEADZONE = 10
   private readonly MAX_JOYSTICK_DIST = 60
+  private hasFocus = true
 
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas
+    // Prevent browser touch gesture delay (scroll, zoom) on the game canvas
+    this.canvas.style.touchAction = 'none'
     this.bindEvents()
   }
 
@@ -29,6 +32,7 @@ export class InputManager {
   private keysDown = new Set<string>()
 
   private onKeyDown = (e: KeyboardEvent) => {
+    if (!this.hasFocus) return
     this.keysDown.add(e.key.toLowerCase())
     if (e.key === ' ' || e.key === 'Enter') this.firePressed = true
     if (e.key === 'Shift') this.actionPressed = true
@@ -36,10 +40,15 @@ export class InputManager {
   }
 
   private onKeyUp = (e: KeyboardEvent) => {
+    if (!this.hasFocus) return
     this.keysDown.delete(e.key.toLowerCase())
     if (e.key === ' ' || e.key === 'Enter') this.firePressed = false
     if (e.key === 'Shift') this.actionPressed = false
     this.updateKeyboardMovement()
+  }
+
+  setFocused(focused: boolean) {
+    this.hasFocus = focused
   }
 
   private updateKeyboardMovement() {
@@ -126,6 +135,7 @@ export class InputManager {
   }
 
   destroy() {
+    this.hasFocus = false
     this.canvas.removeEventListener('touchstart', this.onTouchStart)
     this.canvas.removeEventListener('touchmove', this.onTouchMove)
     this.canvas.removeEventListener('touchend', this.onTouchEnd)

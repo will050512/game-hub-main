@@ -48,6 +48,11 @@ function onPanelClick(event: MouseEvent) {
 </template>
 
 <style scoped>
+@keyframes scaleIn {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -62,13 +67,14 @@ function onPanelClick(event: MouseEvent) {
 
 .modal-panel {
   background: var(--color-bg-card);
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl) var(--radius-sm) var(--radius-xl) var(--radius-sm);
+  border: 2px solid var(--color-text);
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  box-shadow: var(--shadow-lg);
 }
 
 .size-sm {
@@ -139,7 +145,10 @@ function onPanelClick(event: MouseEvent) {
   transition: opacity 200ms ease;
 }
 
-.modal-enter-active .modal-panel,
+.modal-enter-active .modal-panel {
+  animation: scaleIn var(--duration-base) var(--ease-out);
+}
+
 .modal-leave-active .modal-panel {
   transition: transform 200ms ease, opacity 200ms ease;
 }

@@ -18,6 +18,7 @@ import {
   drawKawaiiProgressBar,
 } from '@/engine/kawaiiCanvas'
 import { EffectsManager } from '@/engine/effects'
+import { getTheme } from '@/engine/art/KawaiiTheme'
 
 type TileTheme = string
 type TileVariant = 'button_square_gradient' | 'button_square_gloss' | 'button_square_flat'
@@ -141,6 +142,7 @@ const TILE_COLORS: Record<number, string> = {
 }
 
 class Game2048 extends GameEngine {
+  private theme = getTheme('game2048')
   private grid: number[][] = []
   private pendingGrid: number[][] | null = null
   private previousGrid: number[][] | null = null
@@ -345,9 +347,9 @@ class Game2048 extends GameEngine {
     ctx.clearRect(0, 0, this.width, this.height)
 
     const bgGrad = ctx.createLinearGradient(0, 0, this.width, this.height)
-    bgGrad.addColorStop(0, '#2d3748')
-    bgGrad.addColorStop(0.5, '#1a202c')
-    bgGrad.addColorStop(1, '#2d3748')
+    bgGrad.addColorStop(0, this.theme.palette.bg)
+    bgGrad.addColorStop(0.5, this.theme.palette.bgAlt)
+    bgGrad.addColorStop(1, this.theme.palette.bg)
     ctx.fillStyle = bgGrad
     ctx.fillRect(0, 0, this.width, this.height)
 
@@ -364,8 +366,8 @@ class Game2048 extends GameEngine {
     const { boardX, boardY, boardSize, gap, tileSize, radius } = layout
 
     const boardGrad = ctx.createLinearGradient(boardX, boardY, boardX, boardY + boardSize)
-    boardGrad.addColorStop(0, '#475569')
-    boardGrad.addColorStop(1, '#334155')
+    boardGrad.addColorStop(0, this.theme.ui.surface)
+    boardGrad.addColorStop(1, this.theme.palette.bgAlt)
     this.drawRoundedRect(ctx, boardX, boardY, boardSize, boardSize, radius)
     ctx.fillStyle = boardGrad
     ctx.fill()
@@ -373,7 +375,7 @@ class Game2048 extends GameEngine {
     if (this.removeTileMode) {
       const pulse = (Math.sin(this.gameTime * 0.01) + 1) * 0.5
       ctx.lineWidth = Math.max(3 * this.dpr, boardSize * 0.012)
-      ctx.strokeStyle = `rgba(237, 194, 46, ${0.35 + pulse * 0.55})`
+      ctx.strokeStyle = `rgba(245, 158, 11, ${0.35 + pulse * 0.55})`
       this.drawRoundedRect(
         ctx,
         boardX - ctx.lineWidth / 2,
@@ -389,7 +391,7 @@ class Game2048 extends GameEngine {
       for (let col = 0; col < GRID_SIZE; col += 1) {
         const x = boardX + gap + col * (tileSize + gap)
         const y = boardY + gap + row * (tileSize + gap)
-        this.drawTileRect(ctx, x, y, tileSize, radius, '#cdc1b4')
+        this.drawTileRect(ctx, x, y, tileSize, radius, this.theme.ui.surface)
       }
     }
 
@@ -423,12 +425,12 @@ class Game2048 extends GameEngine {
     }
 
     if (this.gameOver) {
-      ctx.fillStyle = 'rgba(238, 228, 218, 0.72)'
+      ctx.fillStyle = this.theme.ui.surface
       ctx.fillRect(boardX, boardY, boardSize, boardSize)
-      ctx.fillStyle = '#776e65'
+      ctx.fillStyle = this.theme.palette.ink
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
-      ctx.font = `bold ${Math.floor(24 * this.dpr)}px Arial`
+      ctx.font = `bold ${Math.floor(24 * this.dpr)}px ${this.theme.font.family}`
       ctx.fillText('遊戲結束', boardX + boardSize / 2, boardY + boardSize / 2)
     }
 
@@ -849,10 +851,10 @@ class Game2048 extends GameEngine {
       iconKind: canvasIconKindForItem(iconId),
       enabled,
       active: enabled && removeTileMode && text === '移除',
-      fill: '#e8d5c3',
-      activeFill: '#fde68a',
-      disabledFill: '#d8cec1',
-      textColor: enabled ? '#4a3426' : '#7a6c60',
+      fill: this.theme.palette.bgAlt,
+      activeFill: this.theme.palette.highlight,
+      disabledFill: this.theme.palette.bg,
+      textColor: enabled ? this.theme.palette.ink : this.theme.palette.ink,
     })
   }
 
@@ -868,7 +870,7 @@ class Game2048 extends GameEngine {
 
     ctx.save()
     drawKawaiiPanel(ctx, x, y, width, height, {
-      fill: '#fff2e5',
+      fill: this.theme.palette.bgAlt,
       accent: '#f6c453',
       radius: Math.max(8 * this.dpr, height * 0.15),
     })
@@ -878,7 +880,7 @@ class Game2048 extends GameEngine {
       y: y + Math.floor(height * 0.34),
       text: this.activeObjective.name,
       iconKind: canvasIconKindForItem(this.activeObjective.icon),
-      color: '#5f4b3f',
+      color: this.theme.palette.ink,
       fontSize: Math.floor(height * 0.32),
       align: 'left',
     })
@@ -894,8 +896,8 @@ class Game2048 extends GameEngine {
       stroke: 'rgba(95, 75, 63, 0.25)',
     })
 
-    ctx.fillStyle = '#f2ece4'
-    ctx.font = `${Math.floor(height * 0.28)}px Arial`
+    ctx.fillStyle = this.theme.palette.bgAlt
+    ctx.font = `${Math.floor(height * 0.28)}px ${this.theme.font.family}`
     ctx.textAlign = 'right'
     ctx.textBaseline = 'bottom'
     ctx.fillText(`${this.objectiveProgress}/${this.activeObjective.target}`, barX + barWidth, barY - Math.floor(height * 0.05))
@@ -1072,7 +1074,7 @@ class Game2048 extends GameEngine {
       })
       this.callbacks.onGameOver?.(this.score)
       this.triggerScreenShake(8, 300)
-      this.effects.floatingText.spawn({ x: this.width / 2, y: this.height / 2, text: 'GAME OVER', color: '#776e65' })
+      this.effects.floatingText.spawn({ x: this.width / 2, y: this.height / 2, text: 'GAME OVER', color: this.theme.palette.ink })
     }
   }
 
@@ -1158,10 +1160,10 @@ class Game2048 extends GameEngine {
 
     const text = String(value)
     const fontSize = this.getTileFontSize(value, size)
-    ctx.fillStyle = value <= 4 ? '#776e65' : '#f9f6f2'
+    ctx.fillStyle = value <= 4 ? this.theme.palette.ink : this.theme.palette.highlight
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
-    ctx.font = `bold ${fontSize}px Arial`
+    ctx.font = `bold ${fontSize}px ${this.theme.font.family}`
     ctx.fillText(text, x + size / 2, y + size / 2)
   }
 

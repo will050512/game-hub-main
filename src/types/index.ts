@@ -189,6 +189,7 @@ export interface PlayerProfile {
   totalCoinsEarned: number
   upgrades: Record<string, number>
   gamesPlayed: number
+  uniqueGamesPlayed: number
   totalPlayTime: number
   achievements: string[]
 }
@@ -210,11 +211,16 @@ export interface AchievementDef {
   reward: { coins: number; badge?: string }
 }
 
-export interface AchievementCondition {
-  type: 'score' | 'gamesPlayed' | 'totalCoins' | 'winStreak' | 'perfectGame' | 'timePlayed' | 'collectAll'
-  gameId?: string
-  threshold: number
-}
+export type AchievementCondition =
+  | { type: 'score'; gameId?: string; threshold: number }
+  | { type: 'gamesPlayed'; threshold: number }
+  | { type: 'uniqueGamesPlayed'; threshold: number }
+  | { type: 'totalCoins'; threshold: number }
+  | { type: 'winStreak'; threshold: number }
+  | { type: 'perfectGame'; threshold: number }
+  | { type: 'timePlayed'; threshold: number }
+  | { type: 'collectAll'; collectionType: 'badge' | 'avatarFrame'; threshold: number }
+  | { type: 'kills'; gameId?: string; threshold: number }
 
 export interface PlayerAchievement {
   achievementId: string
@@ -293,6 +299,7 @@ export interface EnhancedPlayerProfile {
   totalCoinsEarned: number
   upgrades: Record<string, number>
   gamesPlayed: number
+  uniqueGamesPlayed: number
   totalPlayTime: number
   achievements: PlayerAchievement[]
   level: PlayerLevelState

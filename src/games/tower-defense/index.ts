@@ -3,6 +3,8 @@ import { REWARD_EVENT_SCHEMA_VERSION, createRewardPayload, type PlayerStats, typ
 import { drawSprite, preloadGameSprites } from '@/engine/sprites/spriteLoader'
 import { drawKawaiiButton, drawKawaiiInlineLabel, drawKawaiiPanel, drawKawaiiProgressBar } from '@/engine/kawaiiCanvas'
 import { EffectsManager } from '@/engine/effects'
+import { getTheme } from '@/engine/art/KawaiiTheme'
+import { GameOverlay } from '@/engine/GameOverlay'
 
 interface Tower {
   x: number
@@ -79,6 +81,10 @@ class TowerDefenseGame extends GameEngine {
   private eliteWaveInterval = 3
   private particles: Array<{ x: number; y: number; vx: number; vy: number; life: number; color: string; size: number }> = []
   private effects: EffectsManager = new EffectsManager()
+  private synergiesDirty = true
+  private theme = getTheme('tower-defense')
+  /** Separate overlay instance for game-specific state/scores */
+  private gameOverlay = new GameOverlay()
 
   protected init(): void {
     this.phase = 'menu'
@@ -93,6 +99,7 @@ class TowerDefenseGame extends GameEngine {
     this.projectiles = []
     this.enemiesSpawned = 0
     this.animationTimer = 0
+    this.gameOverlay.setSize(this.width, this.height)
     this.generatePath()
     this.pushStats()
     void preloadGameSprites('tower-defense')
@@ -139,6 +146,8 @@ class TowerDefenseGame extends GameEngine {
   }
 
   private updateTowerSynergies(): void {
+    if (!this.synergiesDirty) return
+    this.synergiesDirty = false
     for (const tower of this.towers) {
       let adjacent = 0
       const towerRow = Math.floor((tower.y - this.gridOffsetY) / this.cellSize)
@@ -160,8 +169,8 @@ class TowerDefenseGame extends GameEngine {
   protected render(ctx: CanvasRenderingContext2D): void {
     const scale = this.dpr
     const bg = ctx.createLinearGradient(0, 0, 0, this.height)
-    bg.addColorStop(0, '#0a1a0a')
-    bg.addColorStop(1, '#1a2a1a')
+    bg.addColorStop(0, this.theme.palette.bg)
+    bg.addColorStop(1, this.theme.palette.bgAlt)
     ctx.fillStyle = bg
     ctx.fillRect(0, 0, this.width, this.height)
 
@@ -178,18 +187,18 @@ class TowerDefenseGame extends GameEngine {
     ctx.textBaseline = 'middle'
 
     drawKawaiiPanel(ctx, this.width * 0.17, this.height * 0.14, this.width * 0.66, this.height * 0.2, {
-      fill: 'rgba(255, 250, 246, 0.9)',
-      accent: '#f97316',
-      stroke: '#0f172a',
+      fill: this.theme.ui.surface,
+      accent: this.theme.ui.accent,
+      stroke: this.theme.palette.ink,
       radius: Math.floor(22 * scale),
     })
 
-    ctx.fillStyle = '#fff'
-    ctx.font = `bold ${Math.floor(32 * scale)}px sans-serif`
+    ctx.fillStyle = this.theme.palette.ink
+    ctx.font = `bold ${Math.floor(32 * scale)}px ${this.theme.font.family}`
     ctx.fillText('塔防大戰', this.width / 2, this.height * 0.2)
 
-    ctx.fillStyle = '#94a3b8'
-    ctx.font = `${Math.floor(14 * scale)}px sans-serif`
+    ctx.fillStyle = this.theme.palette.ink + '80'
+    ctx.font = `${Math.floor(14 * scale)}px ${this.theme.font.family}`
     ctx.fillText('Tower Defense', this.width / 2, this.height * 0.2 + Math.floor(40 * scale))
 
     const startBtnY = this.height * 0.45
@@ -209,13 +218,13 @@ class TowerDefenseGame extends GameEngine {
       height: startBtnH,
       label: 'Start Game',
       iconKind: 'target',
-      fill: '#fee2e2',
-      activeFill: '#fdba74',
+      fill: this.theme.ui.surface,
+      activeFill: this.theme.ui.accent,
     })
     ctx.restore()
 
-    ctx.fillStyle = '#64748b'
-    ctx.font = `${Math.floor(12 * scale)}px sans-serif`
+    ctx.fillStyle = this.theme.palette.ink + '66'
+    ctx.font = `${Math.floor(12 * scale)}px ${this.theme.font.family}`
     ctx.fillText('Place towers to stop enemies!', this.width / 2, this.height * 0.65)
     ctx.fillText('Basic: 50g | Sniper: 100g | Splash: 150g', this.width / 2, this.height * 0.7)
   }
@@ -229,17 +238,21 @@ class TowerDefenseGame extends GameEngine {
     this.gridOffsetX = Math.floor((this.width - this.cellSize * this.cols) / 2)
     this.gridOffsetY = Math.floor(16 * scale)
 
+    // Build tower cell lookup set for O(1) checks
+    const towerCells = new Set<string>()
+    for (const t of this.towers) {
+      const tc = Math.floor((t.x - this.gridOffsetX) / this.cellSize)
+      const tr = Math.floor((t.y - this.gridOffsetY) / this.cellSize)
+      towerCells.add(`${tc},${tr}`)
+    }
+
     // Draw grid
     for (let r = 0; r < this.rows; r++) {
       for (let c = 0; c < this.cols; c++) {
         const x = this.gridOffsetX + c * this.cellSize
         const y = this.gridOffsetY + r * this.cellSize
         const isPath = this.path.some(p => p.r === r && p.c === c)
-        const hasTower = this.towers.some(t => {
-          const tc = Math.floor((t.x - this.gridOffsetX) / this.cellSize)
-          const tr = Math.floor((t.y - this.gridOffsetY) / this.cellSize)
-          return tc === c && tr === r
-        })
+        const hasTower = towerCells.has(`${c},${r}`)
 
         if (isPath) {
           ctx.fillStyle = 'rgba(139, 92, 246, 0.1)'
@@ -293,9 +306,9 @@ class TowerDefenseGame extends GameEngine {
     // HUD
     const hudY = this.gridOffsetY + this.cellSize * this.rows + Math.floor(6 * scale)
     drawKawaiiPanel(ctx, Math.floor(8 * scale), hudY, Math.floor(108 * scale), Math.floor(42 * scale), {
-      fill: 'rgba(255, 250, 246, 0.9)',
-      accent: '#fbbf24',
-      stroke: '#0f172a',
+      fill: this.theme.ui.surface,
+      accent: this.theme.ui.accent,
+      stroke: this.theme.palette.ink,
       radius: Math.floor(12 * scale),
     })
     drawKawaiiInlineLabel(ctx, {
@@ -316,9 +329,9 @@ class TowerDefenseGame extends GameEngine {
     })
 
     drawKawaiiPanel(ctx, Math.floor(this.width / 2 - 52 * scale), hudY, Math.floor(104 * scale), Math.floor(42 * scale), {
-      fill: 'rgba(240, 253, 250, 0.92)',
-      accent: '#22c55e',
-      stroke: '#0f172a',
+      fill: this.theme.ui.surface,
+      accent: this.theme.ui.accent,
+      stroke: this.theme.palette.ink,
       radius: Math.floor(12 * scale),
     })
     drawKawaiiInlineLabel(ctx, {
@@ -331,7 +344,7 @@ class TowerDefenseGame extends GameEngine {
     })
     drawKawaiiProgressBar(ctx, Math.floor(this.width / 2 - 38 * scale), hudY + Math.floor(25 * scale), Math.floor(76 * scale), Math.floor(8 * scale), Math.min(1, this.enemiesSpawned / Math.max(1, this.enemiesPerWave)), {
       trackFill: 'rgba(15, 23, 42, 0.12)',
-      fill: '#22c55e',
+      fill: this.theme.ui.accent,
       stroke: 'rgba(15, 23, 42, 0.22)',
     })
 
@@ -340,29 +353,18 @@ class TowerDefenseGame extends GameEngine {
 
     // Game over overlay
     if (this.phase === 'gameover') {
-      ctx.fillStyle = 'rgba(0,0,0,0.7)'
-      ctx.fillRect(0, 0, this.width, this.height)
-
-      ctx.textAlign = 'center'
-      ctx.fillStyle = '#ef4444'
-      ctx.font = `bold ${Math.floor(28 * scale)}px sans-serif`
-      ctx.fillText('Game Over', this.width / 2, this.height * 0.4)
-
-      ctx.fillStyle = '#e2e8f0'
-      ctx.font = `${Math.floor(16 * scale)}px sans-serif`
-      ctx.fillText(`Score: ${this.score} | Waves: ${this.wave}`, this.width / 2, this.height * 0.47)
-
-      const btnW = Math.floor(this.width * 0.5)
-      const btnH = Math.floor(44 * scale)
-      const btnY = this.height * 0.55
-      const btnX = (this.width - btnW) / 2
-      ctx.fillStyle = '#f97316'
-      ctx.beginPath()
-      this.roundRect(ctx, btnX, btnY, btnW, btnH, Math.floor(12 * scale))
-      ctx.fill()
-      ctx.fillStyle = '#fff'
-      ctx.font = `bold ${Math.floor(15 * scale)}px sans-serif`
-      ctx.fillText('Play Again', this.width / 2, btnY + btnH / 2)
+      this.gameOverlay.render(ctx, {
+        state: 'gameover',
+        score: this.score,
+        level: this.wave,
+        lives: this.lives,
+        maxLives: 20,
+        gameTime: this.gameTime,
+        gameName: '塔防大戰',
+        gameColor: this.theme.ui.accent,
+        dpr: scale,
+        introProgress: 1,
+      })
     }
 
     this.effects.render(ctx)
@@ -876,10 +878,15 @@ class TowerDefenseGame extends GameEngine {
             adjacentTowers: 0,
           }
           this.towers.push(tower)
+          this.synergiesDirty = true
           this.effects.burst(pos.x, pos.y, 8, ['#4caf50'], { min: 1, max: 3 })
         }
       }
     }
+  }
+
+  protected override onResize(w: number, h: number): void {
+    this.gameOverlay.setSize(w, h)
   }
 
   private pushStats(): void {

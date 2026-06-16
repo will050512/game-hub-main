@@ -525,26 +525,28 @@ export class SpriteLoader {
     return this.imageCache.has(resolved)
   }
 
-  /** Preload multiple image URLs with optional progress callback. */
+  /** Preload multiple image URLs in parallel with optional progress callback. */
   public async preload(
     urls: string[],
     progress?: LoadProgress,
   ): Promise<HTMLImageElement[]> {
     this.progressCallback = progress ?? null
-    const results: HTMLImageElement[] = []
+    const validUrls = urls.filter(Boolean)
 
-    for (let i = 0; i < urls.length; i++) {
-      const url = urls[i]
-      if (!url) continue
-      try {
-        const img = await this.load(url)
-        results.push(img)
-        progress?.(i + 1, urls.length, url)
-      } catch (err) {
-        console.warn(`[SpriteLoader] Failed to preload ${url}:`, err)
-        progress?.(i + 1, urls.length, url)
+    const settled = await Promise.allSettled(
+      validUrls.map((url) => this.load(url)),
+    )
+
+    const results: HTMLImageElement[] = []
+    settled.forEach((result, i) => {
+      const url = validUrls[i]!
+      if (result.status === 'fulfilled') {
+        results.push(result.value)
+      } else {
+        console.warn(`[SpriteLoader] Failed to preload ${url}:`, result.reason)
       }
-    }
+      progress?.(i + 1, validUrls.length, url)
+    })
 
     this.progressCallback = null
     return results

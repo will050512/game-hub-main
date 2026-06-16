@@ -133,13 +133,14 @@ const actionButtons = computed<VirtualButtonConfig[]>(() => {
   padding: 8px 10px;
   pointer-events: none;
   z-index: 14;
-  border: 2px solid var(--color-kawaii-ink);
-  border-radius: 14px;
+  border: 2px solid var(--color-text);
+  border-radius: var(--radius-full);
   background: rgba(255, 252, 247, 0.54);
   color: var(--color-kawaii-ink);
-  box-shadow: 0 8px 18px rgba(32, 24, 31, 0.12);
+  box-shadow: var(--shadow-md);
   backdrop-filter: blur(10px);
   opacity: 0.72;
+  animation: breathe 2s var(--ease-spring) infinite;
 }
 
 .companion-header {
@@ -193,6 +194,11 @@ const actionButtons = computed<VirtualButtonConfig[]>(() => {
   .companion-tags span:nth-of-type(n + 2) {
     display: none;
   }
+}
+
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -14,7 +14,8 @@ import InputAffordance from '@/components/InputAffordance.vue'
 import KawaiiDecorLayer from '@/components/KawaiiDecorLayer.vue'
 import KawaiiIcon from '@/components/KawaiiIcon.vue'
 import TutorialOverlay from '@/components/TutorialOverlay.vue'
-import type { GameId } from '@/types'
+import { getTheme } from '@/engine/art/KawaiiTheme'
+import type { GameId, GameRewardEvent } from '@/types'
 import type { PlayerStats, UpgradeOption, GameInstance, GameHudData, ActiveBuff, ItemSlot, ResultPayloadContract } from '@/types'
 
 const props = defineProps<{ id: string }>()
@@ -85,6 +86,27 @@ const shellClasses = computed(() => [
     'game-has-safe-area': hasSafeArea(platformLayout.value.safeArea),
   },
 ])
+
+const gameIdentity = computed(() => {
+  try {
+    return getTheme(gameId.value)
+  } catch {
+    return null
+  }
+})
+
+const identityVars = computed(() => {
+  const t = gameIdentity.value
+  if (!t) return {}
+  return {
+    '--game-bg': t.palette.bg,
+    '--game-surface': t.ui.surface,
+    '--game-accent': t.ui.accent,
+    '--game-danger': t.ui.danger,
+    '--game-highlight': t.palette.highlight,
+    '--game-ink': t.palette.ink,
+  } as Record<string, string>
+})
 
 function playScoreFeedback(score: number) {
   const now = Date.now()
@@ -197,15 +219,15 @@ const gameCallbacks = {
   onResume: () => {
     soundManager.resume()
   },
-  onRewardEvent: (event: any) => {
+  onRewardEvent: (event: GameRewardEvent) => {
     void soundManager.playShellSfx('coinCollect')
     currencyStore.emitRewardEvent(event)
   },
-  onGameOver: async (data: any) => {
+  onGameOver: async (data: number | Partial<ResultPayloadContract>) => {
     void soundManager.playShellSfx('gameOver')
     soundManager.pause()
     isGameOver.value = true
-    const score = typeof data === 'number' ? data : data.score
+    const score = typeof data === 'number' ? data : (data.score ?? 0)
     finalScore.value = score
     const resultPayload: Partial<ResultPayloadContract> = {
       score,
@@ -236,8 +258,6 @@ async function initGame() {
     }
 
     const canvas = canvasRef.value
-    canvas.width = canvas.clientWidth * window.devicePixelRatio
-    canvas.height = canvas.clientHeight * window.devicePixelRatio
 
     touchCleanup = setupTouchTracking(canvas)
 
@@ -349,7 +369,7 @@ function onTutorialEnd() {
 </script>
 
 <template>
-  <div v-if="game" :class="shellClasses">
+  <div v-if="game" :class="shellClasses" :style="identityVars">
     <KawaiiDecorLayer class="play-decor" :category="game.category" mood="action" />
 
     <Transition name="fade">
@@ -479,7 +499,7 @@ function onTutorialEnd() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(38, 27, 34, 0.78);
+  background: color-mix(in srgb, var(--game-bg, #261b22) 88%, #000);
   backdrop-filter: blur(12px);
   z-index: 30;
 }
@@ -499,8 +519,8 @@ function onTutorialEnd() {
   align-items: center;
   justify-content: center;
   box-shadow: 5px 5px 0 rgba(38, 27, 34, 0.22), 0 20px 40px rgba(38, 27, 34, 0.24);
-  background: linear-gradient(135deg, var(--color-kawaii-butter-main), var(--color-kawaii-warm-main));
-  border: 2px solid var(--color-kawaii-ink);
+  background: linear-gradient(135deg, var(--game-accent, var(--color-kawaii-butter-main)), color-mix(in srgb, var(--game-accent, var(--color-kawaii-warm-main)) 70%, #000));
+  border: 2px solid var(--game-ink, var(--color-kawaii-ink));
 }
 
 .start-icon {
@@ -579,8 +599,8 @@ function onTutorialEnd() {
   min-height: 100%;
   overflow: hidden;
   background:
-    radial-gradient(circle at top, rgba(255, 246, 232, 0.16), transparent 32%),
-    linear-gradient(180deg, #261b22 0%, #171219 100%);
+    radial-gradient(circle at top, rgba(255, 246, 232, 0.08), transparent 40%),
+    linear-gradient(180deg, var(--game-bg, #261b22) 0%, color-mix(in srgb, var(--game-bg, #171219) 80%, #000) 100%);
 }
 
 .play-decor {
@@ -609,7 +629,7 @@ function onTutorialEnd() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(38, 27, 34, 0.72);
+  background: color-mix(in srgb, var(--game-bg, #261b22) 85%, transparent);
   z-index: 20;
   backdrop-filter: blur(10px);
 }

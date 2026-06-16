@@ -3,7 +3,8 @@ import { SpatialHash } from '@/engine/SpatialHash'
 import { ObjectPool } from '@/engine/ObjectPool'
 import { EffectsManager } from '@/engine/effects'
 import { drawSprite, preloadGameSprites } from '@/engine/sprites/spriteLoader'
-import { drawKawaiiBackground, drawKawaiiProgressBar, drawKawaiiCanvasIcon, drawKawaiiPanel, defaultKawaiiTheme } from '@/engine/kawaiiCanvas'
+import { drawKawaiiBackground, drawKawaiiProgressBar, drawKawaiiPanel } from '@/engine/kawaiiCanvas'
+import { getTheme } from '@/engine/art/KawaiiTheme'
 import { audioManager } from './audio'
 import {
   WEAPON_DEFS,
@@ -136,6 +137,7 @@ class SurvivorGame extends GameEngine {
 
   private buildCodex!: BuildCodexManager
 
+  private theme = getTheme('survivor')
   private effects: EffectsManager = new EffectsManager()
   private comboCount = 0
   private comboTimer = 0
@@ -1197,54 +1199,53 @@ class SurvivorGame extends GameEngine {
   private renderKawaiiHud(ctx: CanvasRenderingContext2D) {
     const hud = this.pushHudAndGetHud()
     const scale = this.dpr
+    const t = this.theme
     const barWidth = Math.floor(this.width * 0.18)
     const barHeight = Math.floor(10 * scale)
     const padding = Math.floor(10 * scale)
-    const btnW = Math.floor(56 * scale)
-    const btnH = Math.floor(28 * scale)
 
     // HP bar
     drawKawaiiPanel(ctx, padding, padding, barWidth + padding * 4, barHeight + padding * 2, {
-      fill: 'rgba(30,20,50,0.85)',
-      accent: '#ec4899',
-      stroke: '#374151',
+      fill: 'rgba(12,18,34,0.85)',
+      accent: t.hudColors.hpBar,
+      stroke: t.palette.ink,
       radius: Math.floor(6 * scale),
     })
-    drawKawaiiProgressBar(ctx, padding + padding * 2, padding + padding * 0.5, barWidth, barHeight, this.playerHp / this.playerMaxHp, { fill: '#ef4444', trackFill: '#991b1b' })
+    drawKawaiiProgressBar(ctx, padding + padding * 2, padding + padding * 0.5, barWidth, barHeight, this.playerHp / this.playerMaxHp, { fill: t.hudColors.hpBar, trackFill: '#7f1d1d' })
 
     // XP bar
     drawKawaiiPanel(ctx, padding, padding + barHeight + padding * 3, barWidth + padding * 4, barHeight + padding * 2, {
-      fill: 'rgba(30,20,50,0.85)',
-      accent: '#3b82f6',
-      stroke: '#374151',
+      fill: 'rgba(12,18,34,0.85)',
+      accent: t.hudColors.score,
+      stroke: t.palette.ink,
       radius: Math.floor(6 * scale),
     })
-    drawKawaiiProgressBar(ctx, padding + padding * 2, padding + barHeight + padding * 3.5, barWidth, barHeight, this.xp / this.xpToNext, { fill: '#3b82f6', trackFill: '#1e3a5f' })
+    drawKawaiiProgressBar(ctx, padding + padding * 2, padding + barHeight + padding * 3.5, barWidth, barHeight, this.xp / this.xpToNext, { fill: t.palette.highlight, trackFill: '#1e3a5f' })
 
     // Level badge
     const badgeY = padding * 2
     const badgeX = barWidth + padding * 4.5
     drawKawaiiPanel(ctx, badgeX, badgeY, Math.floor(70 * scale), Math.floor(32 * scale), {
       fill: 'rgba(251,191,36,0.15)',
-      accent: '#fbbf24',
-      stroke: '#fbbf24',
+      accent: t.palette.highlight,
+      stroke: t.palette.highlight,
       radius: Math.floor(8 * scale),
     })
-    ctx.fillStyle = '#fbbf24'
-    ctx.font = `bold ${Math.floor(14 * scale)}px sans-serif`
+    ctx.fillStyle = t.palette.highlight
+    ctx.font = `bold ${Math.floor(14 * scale)}px ${t.font.family}`
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
     ctx.fillText(`Lv.${this.level}`, badgeX + Math.floor(35 * scale), badgeY + Math.floor(16 * scale))
 
     // Time & Score
     ctx.textAlign = 'right'
-    ctx.fillStyle = '#e2e8f0'
-    ctx.font = `${Math.floor(12 * scale)}px sans-serif`
+    ctx.fillStyle = t.palette.highlight
+    ctx.font = `${Math.floor(12 * scale)}px ${t.font.family}`
     const mins = Math.floor(hud.time / 60)
     const secs = String(hud.time % 60).padStart(2, '0')
     ctx.fillText(`${mins}:${secs}`, this.width - padding, padding + Math.floor(14 * scale))
-    ctx.fillStyle = '#94a3b8'
-    ctx.font = `${Math.floor(10 * scale)}px sans-serif`
+    ctx.fillStyle = t.palette.highlight + '99'
+    ctx.font = `${Math.floor(10 * scale)}px ${t.font.family}`
     ctx.fillText(`Score: ${hud.score}`, this.width - padding, padding + Math.floor(28 * scale))
 
     ctx.textAlign = 'start'
@@ -1279,22 +1280,23 @@ class SurvivorGame extends GameEngine {
 
   private renderBossWarning(ctx: CanvasRenderingContext2D) {
     if (!this.bossWarningActive) return
+    const t = this.theme
     
     const pulseAlpha = 0.3 + Math.sin(this.bossWarningTimer * 0.01) * 0.2
     ctx.globalAlpha = pulseAlpha
-    ctx.fillStyle = '#dc2626'
+    ctx.fillStyle = t.ui.danger
     ctx.fillRect(0, 0, this.width, 8)
     ctx.fillRect(0, this.height - 8, this.width, 8)
     ctx.fillRect(0, 0, 8, this.height)
     ctx.fillRect(this.width - 8, 0, 8, this.height)
     
     ctx.globalAlpha = 1
-    ctx.fillStyle = '#ef4444'
-    ctx.font = `bold ${Math.round(24 * this.dpr)}px sans-serif`
+    ctx.fillStyle = t.ui.danger
+    ctx.font = `bold ${Math.round(24 * this.dpr)}px ${t.font.family}`
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
     ctx.shadowBlur = 10
-    ctx.shadowColor = '#dc2626'
+    ctx.shadowColor = t.ui.danger
     ctx.fillText('BOSS INCOMING', this.width / 2, this.height * 0.15)
     ctx.shadowBlur = 0
     ctx.globalAlpha = 1
@@ -1304,6 +1306,7 @@ class SurvivorGame extends GameEngine {
 
   private renderComboText(ctx: CanvasRenderingContext2D) {
     if (this.comboCount < 2) return
+    const t = this.theme
     const text = `${this.comboCount}x COMBO!`
     const scale = Math.min(2, 1 + this.comboCount * 0.1)
     const fontSize = Math.round(18 * scale * this.dpr)
@@ -1314,20 +1317,21 @@ class SurvivorGame extends GameEngine {
     ctx.fillStyle = '#fbbf24'
     ctx.shadowBlur = 10
     ctx.shadowColor = '#fbbf24'
-    ctx.font = `bold ${fontSize}px sans-serif`
+    ctx.font = `bold ${fontSize}px ${t.font.family}`
     ctx.fillText(text, this.width / 2, this.height * 0.25)
     ctx.restore()
   }
 
   private renderGrid(ctx: CanvasRenderingContext2D) {
+    const t = this.theme
     ctx.save()
     ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0)
     drawKawaiiBackground(ctx, this.width, this.height, this.gameTime, {
-      base: '#0c1222',
-      soft: '#1a2744',
-      accent: '#2d4a7a',
-      ink: '#4a90d9',
-      blush: '#6b46c1',
+      base: t.palette.bg,
+      soft: t.ui.surface,
+      accent: t.palette.primary,
+      ink: t.palette.highlight,
+      blush: t.ui.accent,
     })
     this.renderDungeonTiles(ctx)
     ctx.restore()
@@ -1517,11 +1521,12 @@ class SurvivorGame extends GameEngine {
   }
 
   private renderDamageNumbers(ctx: CanvasRenderingContext2D) {
+    const t = this.theme
     for (const d of this.damageNumbers) {
       const alpha = Math.min(1, d.timer / 300)
       ctx.globalAlpha = alpha
-      ctx.fillStyle = '#fbbf24'
-      ctx.font = `bold ${14}px sans-serif`
+      ctx.fillStyle = t.palette.highlight
+      ctx.font = `bold ${14}px ${t.font.family}`
       ctx.textAlign = 'center'
       ctx.fillText(d.value.toString(), d.x, d.y)
     }

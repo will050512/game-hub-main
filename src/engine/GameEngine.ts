@@ -24,8 +24,11 @@ export abstract class GameEngine {
   protected width = 0
   protected height = 0
   protected dpr = 1
-  private frameTick = 0
+  protected frameTick = 0
   protected pixelArtMode = false
+
+  /** Skip drawing background preset (set true for games that draw their own full background) */
+  protected skipBackgroundPreset = true
 
   /** Set the canvas to pixelated rendering mode (nearest-neighbor, no smoothing) */
   setPixelArt(enabled: boolean) {
@@ -43,6 +46,27 @@ export abstract class GameEngine {
   /** Game ID used to select the correct background preset */
   protected gameId: GameId = 'survivor'
 
+  /** Override in subclasses to inject real overlay data */
+  protected getOverlayData(): {
+    score: number
+    level: number
+    lives: number
+    maxLives: number
+    gameTime: number
+    gameName: string
+    gameColor: string
+  } {
+    return {
+      score: 0,
+      level: 1,
+      lives: 3,
+      maxLives: 3,
+      gameTime: 0,
+      gameName: '',
+      gameColor: '#06b6d4',
+    }
+  }
+
   start(canvas: HTMLCanvasElement, callbacks: GameCallbacks) {
     this.canvas = canvas
     this.ctx = canvas.getContext('2d')!
@@ -57,7 +81,7 @@ export abstract class GameEngine {
       this.resizeTimer = window.setTimeout(() => {
         this.syncCanvasToParent()
         this.onResize(this.width, this.height)
-      }, 250)
+      }, 100)
     })
     if (this.canvas.parentElement) {
       this.resizeObserver.observe(this.canvas.parentElement)
@@ -75,6 +99,8 @@ export abstract class GameEngine {
     const parent = this.canvas.parentElement
     const w = parent ? parent.clientWidth : this.canvas.clientWidth || 320
     const h = parent ? parent.clientHeight : this.canvas.clientHeight || 480
+    // Re-read DPR: some devices change DPR on external display / split-screen
+    this.dpr = window.devicePixelRatio || 1
     this.canvas.width = w * this.dpr
     this.canvas.height = h * this.dpr
     this.canvas.style.width = w + 'px'
@@ -143,22 +169,26 @@ export abstract class GameEngine {
     this.frameTick = now
 
     // Draw game-specific background preset (not generic kawaii background)
-    const bgPreset = getBackgroundForGame(this.gameId)
-    drawBackgroundPreset(this.ctx, bgPreset, this.width, this.height, this.frameTick)
+    // Skipped when the game draws its own full background
+    if (!this.skipBackgroundPreset) {
+      const bgPreset = getBackgroundForGame(this.gameId)
+      drawBackgroundPreset(this.ctx, bgPreset, this.width, this.height, this.frameTick)
+    }
 
     // Render the game's own visual layer
     this.render(this.ctx)
 
     // Render unified overlay on top (intro countdown, game-over)
+    const overlayData = this.getOverlayData()
     this.overlay.render(this.ctx, {
       state: this.stateMachine.getState(),
-      score: 0,
-      level: 1,
-      lives: 3,
-      maxLives: 3,
-      gameTime: 0,
-      gameName: '',
-      gameColor: '#06b6d4',
+      score: overlayData.score,
+      level: overlayData.level,
+      lives: overlayData.lives,
+      maxLives: overlayData.maxLives,
+      gameTime: overlayData.gameTime,
+      gameName: overlayData.gameName,
+      gameColor: overlayData.gameColor,
       introProgress: this.stateMachine.getIntroProgress(),
       dpr: this.dpr,
     })

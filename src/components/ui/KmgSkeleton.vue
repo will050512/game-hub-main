@@ -48,31 +48,28 @@ const variantStyles = computed(() => {
 .kmg-skeleton {
   position: relative;
   overflow: hidden;
-  background: var(--color-bg-elevated);
+  background: var(--color-border-light);
+  border-radius: var(--radius-lg);
 }
 
 .kmg-skeleton::before {
   content: '';
   position: absolute;
   top: 0;
-  left: -100%;
+  left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    var(--color-glass-bg-hover) 50%,
-    transparent 100%
-  );
-  animation: kmg-pulse 1.5s ease-in-out infinite;
+  background: inherit;
+  border-radius: inherit;
+  animation: kmg-pulse var(--duration-slow) var(--ease-spring) infinite;
 }
 
 @keyframes kmg-pulse {
-  0% {
-    left: -100%;
+  0%, 100% {
+    opacity: 0.4;
   }
-  100% {
-    left: 100%;
+  50% {
+    opacity: 0.7;
   }
 }
 </style>
