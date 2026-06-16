@@ -24,15 +24,21 @@ const localSearch = ref(props.search)
 watch(() => props.search, (val) => { localSearch.value = val })
 
 const achievements = computed(() => {
-  return achievementDefs.map(def => {
-    const playerAchievement = playerStore.achievements.find(a => a.achievementId === def.id)
-    return {
-      def,
-      unlocked: !!playerAchievement?.unlockedAt,
-      progress: playerAchievement?.progress ?? 0,
-      unlockedAt: playerAchievement?.unlockedAt,
-    }
-  })
+  return achievementDefs
+    .filter(def => {
+      if (!def.hidden) return true
+      const playerAchievement = playerStore.achievements.find(a => a.achievementId === def.id)
+      return !!playerAchievement?.unlockedAt
+    })
+    .map(def => {
+      const playerAchievement = playerStore.achievements.find(a => a.achievementId === def.id)
+      return {
+        def,
+        unlocked: !!playerAchievement?.unlockedAt,
+        progress: playerAchievement?.progress ?? 0,
+        unlockedAt: playerAchievement?.unlockedAt,
+      }
+    })
 })
 
 const filteredAchievements = computed(() => {

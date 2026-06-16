@@ -10,6 +10,7 @@ defineProps<{
   xpPercent: number
   gamesPlayed: number
   unlockedCount: number
+  coins: number
 }>()
 
 defineEmits<{
@@ -40,6 +41,7 @@ function onMascotClick() {
         :xp-percent="xpPercent"
         :games-played="gamesPlayed"
         :unlocked-count="unlockedCount"
+        :coins="coins"
       />
     </div>
   </nav>

@@ -2,6 +2,7 @@ import type { GameCallbacks } from '@/types'
 import { InputManager } from './InputManager'
 import { GameStateMachine } from './GameStateMachine'
 import { GameOverlay } from './GameOverlay'
+import { EffectsManager } from './effects'
 import { getBackgroundForGame, drawBackgroundPreset } from './art/presets'
 import type { GameId } from '@/types'
 
@@ -42,6 +43,9 @@ export abstract class GameEngine {
 
   /** Unified overlay for intro countdown, game-over overlay, etc. */
   protected overlay: GameOverlay = new GameOverlay()
+
+  /** Shared effects system for shake, particles, floating text, flash, etc. */
+  protected _effectsManager: EffectsManager = new EffectsManager()
 
   /** Game ID used to select the correct background preset */
   protected gameId: GameId = 'survivor'
@@ -178,6 +182,10 @@ export abstract class GameEngine {
     // Render the game's own visual layer
     this.render(this.ctx)
 
+    // Update and render shared effects (on top of game layer, below overlay)
+    this._effectsManager.update(0)
+    this._effectsManager.render(this.ctx, this.width, this.height)
+
     // Render unified overlay on top (intro countdown, game-over)
     const overlayData = this.getOverlayData()
     this.overlay.render(this.ctx, {
@@ -199,4 +207,49 @@ export abstract class GameEngine {
   protected abstract init(): void
   protected abstract update(dt: number): void
   protected abstract render(ctx: CanvasRenderingContext2D): void
+
+  // ── Public effect triggers — games call these for juice ──
+
+  /** Trigger a screen shake (intensity 1-10, duration in ms). */
+  engineShake(intensity: number = 5, duration: number = 200): void {
+    this._effectsManager.shake.trigger({ intensity, duration })
+  }
+
+  /** Full-screen flash overlay (color, initial alpha 0-1, duration ms). */
+  engineFlash(color: string = '#ffffff', alpha: number = 0.3, duration: number = 150): void {
+    this._effectsManager.flash.trigger({ color, alpha, duration })
+  }
+
+  /** Floating text popup at world position. */
+  engineFloatingText(x: number, y: number, text: string, color: string = '#ffffff', size: number = 20): void {
+    this._effectsManager.floatingText.spawn({ x, y, text, color, size })
+  }
+
+  /** Emit particle burst at world position. */
+  engineBurstParticles(x: number, y: number, count: number, colors: string[], speed?: { min: number; max: number }): void {
+    this._effectsManager.particles.emit(
+      { count, colors, speed: speed ?? { min: 2, max: 8 }, size: { start: 5, end: 0 }, lifetime: 600, gravity: 0.1, opacity: { start: 1, end: 0 } },
+      x, y,
+    )
+  }
+
+  /** Increment combo counter (used for hit combos). */
+  engineComboHit(): void {
+    this._effectsManager.combo.onHit()
+  }
+
+  /** Reset combo counter. */
+  engineComboReset(): void {
+    this._effectsManager.combo.onReset()
+  }
+
+  /** Burst confetti from screen center. */
+  engineConfetti(count: number = 80): void {
+    this._effectsManager.confetti.burst(count)
+  }
+
+  /** Access the shared effects manager for advanced usage. */
+  engineEffects(): EffectsManager {
+    return this._effectsManager
+  }
 }

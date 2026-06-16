@@ -12,6 +12,7 @@ import BaseCard from "@/components/BaseCard.vue"
 import type { ScoreRecord, AchievementDef } from "@/types"
 import { achievementDefs } from "@/data/achievements"
 import type { KawaiiIconId } from "@/data/iconManifest"
+import { copyToClipboard } from "@/utils/share"
 
 const props = defineProps<{ id: string }>()
 const router = useRouter()
@@ -36,6 +37,7 @@ const displayScore = ref(0)
 const showConfetti = ref(false)
 const achievedIds = ref<string[]>([])
 const scorePulsing = ref(false)
+const showShareToast = ref(false)
 let rafId = 0
 
 // Score count-up animation
@@ -90,6 +92,14 @@ onUnmounted(() => { if (rafId) cancelAnimationFrame(rafId) })
 const sfx = () => gameAudio.value.playShellSfx("buttonClick")
 async function playAgain() { await sfx(); router.replace({ name: "game-play", params: { id: props.id } }) }
 async function goHome() { await sfx(); router.push({ name: "lobby" }) }
+
+async function handleShare() {
+  const url = `${window.location.origin}${window.location.pathname}?ref=score:${score.value}@${props.id}`
+  const shareText = `我在${game.value?.name ?? '遊戲'}中獲得了${score.value}分！來挑戰我吧 🎮`
+  await copyToClipboard(shareText + '\n' + url)
+  showShareToast.value = true
+  setTimeout(() => { showShareToast.value = false }, 2000)
+}
 </script>
 
 <template>
@@ -195,10 +205,16 @@ async function goHome() { await sfx(); router.push({ name: "lobby" }) }
           <KawaiiIcon name="controller" size="sm" /> 再玩一次
         </KmgButton>
         <div class="footer-row">
+          <KmgButton variant="ghost" size="lg" @click="handleShare">
+            <KawaiiIcon name="sparkle" size="sm" /> 分享分數
+          </KmgButton>
           <KmgButton variant="ghost" size="lg" @click="goHome">
             <KawaiiIcon name="home" size="sm" /> 返回大廳
           </KmgButton>
         </div>
+        <Transition name="fade">
+          <div v-if="showShareToast" class="share-toast">已複製到剪貼簿！</div>
+        </Transition>
       </div>
     </main>
   </div>
@@ -316,7 +332,26 @@ async function goHome() { await sfx(); router.push({ name: "lobby" }) }
 .ps { font-size: 0.9375rem; font-weight: var(--font-weight-bold); color: var(--color-primary); font-variant-numeric: tabular-nums; }
 
 .footer { position: relative; z-index: 1; width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 0.75rem; padding: clamp(0.5rem, 2dvh, 1rem) 0 0; }
-.footer-row { display: flex; justify-content: center; }
+.footer-row { display: flex; justify-content: center; gap: 0.75rem; }
+
+.share-toast {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.5rem 1.25rem;
+  background: var(--color-bg-card);
+  border: 2px solid var(--color-success);
+  border-radius: var(--radius-lg);
+  color: var(--color-success);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  box-shadow: var(--shadow-lg);
+  z-index: 10;
+}
+
+.fade-enter-active, .fade-leave-active { transition: all 0.2s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; transform: translateX(-50%) translateY(10px); }
 
 .badge-pop-enter-active { transition: all 0.4s var(--ease-bounce); }
 .badge-pop-leave-active { transition: 0.2s ease; }

@@ -27,6 +27,8 @@ export function useMetaProgression() {
     kills?: number
     perfectGame?: boolean
     collectionComplete?: { type: 'badge' | 'avatarFrame'; collected: number; total: number }
+    gameTime?: number
+    uniqueGamesToday?: number
   }): Promise<string[]> {
     const newlyUnlocked: string[] = []
     const currentAchievements = playerStore.achievements
@@ -102,6 +104,27 @@ export function useMetaProgression() {
           } else {
             progress = context.kills ?? 0
             shouldUnlock = progress >= def.condition.threshold
+          }
+          break
+
+        case 'speedrun':
+          {
+            const gameTime = context.gameTime ?? Infinity
+            shouldUnlock = gameTime <= def.condition.threshold
+          }
+          break
+
+        case 'nightOwl':
+          {
+            const hour = new Date().getHours()
+            shouldUnlock = hour >= 2 && hour < 5
+          }
+          break
+
+        case 'allInOneDay':
+          {
+            const todayGames = context.uniqueGamesToday ?? 0
+            shouldUnlock = todayGames >= def.condition.threshold
           }
           break
       }
@@ -273,6 +296,8 @@ export function useMetaProgression() {
     kills?: number
     perfectGame?: boolean
     collectionComplete?: { type: 'badge' | 'avatarFrame'; collected: number; total: number }
+    gameTime?: number
+    uniqueGamesToday?: number
   }): Promise<{
     newAchievements: string[]
     completedQuests: string[]
@@ -294,6 +319,8 @@ export function useMetaProgression() {
       kills: context.kills,
       perfectGame: context.perfectGame,
       collectionComplete: context.collectionComplete,
+      gameTime: context.gameTime,
+      uniqueGamesToday: context.uniqueGamesToday,
     })
 
     await playerStore.incrementUniqueGamesPlayed(context.gameId)

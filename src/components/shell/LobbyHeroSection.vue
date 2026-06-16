@@ -12,6 +12,7 @@ const props = defineProps<{
   xpPercent: number
   gamesPlayed: number
   unlockedCount: number
+  coins: number
 }>()
 
 const emit = defineEmits<{
@@ -130,71 +131,97 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <!-- Player Stats Row -->
-    <div class="hero-stats">
-      <!-- Level Card (clickable to show quests) -->
-      <button
-        class="stat-card stat-card--level"
-        @click="emit('show-quests')"
-        aria-label="查看每日任務"
-      >
-        <div class="stat-card__icon-wrap">
-          <KawaiiIcon name="star" size="md" class="stat-icon" />
-          <div class="level-ring">
-            <svg viewBox="0 0 36 36" class="xp-ring">
-              <circle cx="18" cy="18" r="15.9" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2" />
-              <circle
-                cx="18" cy="18" r="15.9"
-                fill="none"
-                stroke="url(#xpGradient)"
-                stroke-width="2.5"
-                stroke-dasharray="100"
-                :stroke-dashoffset="100 - xpPercent"
-                stroke-linecap="round"
-                class="xp-ring__fill"
-              />
-              <defs>
-                <linearGradient id="xpGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="var(--color-primary)" />
-                  <stop offset="50%" stop-color="var(--color-accent)" />
-                  <stop offset="100%" stop-color="var(--color-secondary)" />
-                </linearGradient>
-              </defs>
-            </svg>
-          </div>
-        </div>
-        <div class="stat-card__info">
-          <span class="stat-value stat-value--level">Lv.{{ level }}</span>
-          <span class="stat-title">{{ levelTitle }}</span>
-          <div class="xp-bar">
-            <div class="xp-fill" :style="{ width: xpPercent + '%' }" />
-          </div>
-        </div>
-        <span class="stat-card__hover-glow"></span>
-      </button>
-
-      <!-- Games Played -->
-      <div class="stat-card" aria-label="已遊玩場次">
-        <div class="stat-card__icon-wrap">
-          <KawaiiIcon name="controller" size="md" class="stat-icon" />
-        </div>
-        <div class="stat-card__info">
-          <span class="stat-value">{{ gamesPlayed }}</span>
-          <span class="stat-label">已遊玩</span>
+  <!-- Player Stats Row -->
+  <div class="hero-stats">
+    <!-- Level Card (clickable to show quests) -->
+    <button
+      class="stat-card stat-card--level"
+      @click="emit('show-quests')"
+      aria-label="查看每日任務"
+    >
+      <div class="stat-card__icon-wrap">
+        <KawaiiIcon name="star" size="md" class="stat-icon" />
+        <div class="level-ring">
+          <svg viewBox="0 0 36 36" class="xp-ring">
+            <circle cx="18" cy="18" r="15.9" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2" />
+            <circle
+              cx="18" cy="18" r="15.9"
+              fill="none"
+              stroke="url(#xpGradient)"
+              stroke-width="2.5"
+              stroke-dasharray="100"
+              :stroke-dashoffset="100 - xpPercent"
+              stroke-linecap="round"
+              class="xp-ring__fill"
+            />
+            <defs>
+              <linearGradient id="xpGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="var(--color-primary)" />
+                <stop offset="50%" stop-color="var(--color-accent)" />
+                <stop offset="100%" stop-color="var(--color-secondary)" />
+              </linearGradient>
+            </defs>
+          </svg>
         </div>
       </div>
-
-      <!-- Achievements -->
-      <div class="stat-card" aria-label="成就解鎖數">
-        <div class="stat-card__icon-wrap">
-          <KawaiiIcon name="trophy" size="md" class="stat-icon" />
-        </div>
-        <div class="stat-card__info">
-          <span class="stat-value">{{ unlockedCount }}</span>
-          <span class="stat-label">成就</span>
+      <div class="stat-card__info">
+        <span class="stat-value stat-value--level">Lv.{{ level }}</span>
+        <span class="stat-title">{{ levelTitle }}</span>
+        <div class="xp-bar">
+          <div class="xp-fill" :style="{ width: xpPercent + '%' }" />
         </div>
       </div>
+      <span class="stat-card__hover-glow"></span>
+    </button>
+
+    <!-- Coins Card -->
+    <div class="stat-card" aria-label="金幣持有量">
+      <div class="stat-card__icon-wrap">
+        <KawaiiIcon name="coin" size="md" class="stat-icon" />
+      </div>
+      <div class="stat-card__info">
+        <span class="stat-value">{{ coins.toLocaleString() }}</span>
+        <span class="stat-label">金幣</span>
+      </div>
+      <span class="stat-card__hover-glow"></span>
     </div>
+
+    <!-- Coins Card -->
+    <div class="stat-card" aria-label="金幣持有量">
+      <div class="stat-card__icon-wrap">
+        <KawaiiIcon name="coin" size="md" class="stat-icon" />
+      </div>
+      <div class="stat-card__info">
+        <span class="stat-value">{{ coins.toLocaleString() }}</span>
+        <span class="stat-label">金幣</span>
+      </div>
+      <span class="stat-card__hover-glow"></span>
+    </div>
+
+    <!-- Games Played -->
+    <div class="stat-card" aria-label="已遊玩場次">
+      <div class="stat-card__icon-wrap">
+        <KawaiiIcon name="controller" size="md" class="stat-icon" />
+      </div>
+      <div class="stat-card__info">
+        <span class="stat-value">{{ gamesPlayed }}</span>
+        <span class="stat-label">已遊玩</span>
+      </div>
+      <span class="stat-card__hover-glow"></span>
+    </div>
+
+    <!-- Achievements -->
+    <div class="stat-card" aria-label="成就解鎖數">
+      <div class="stat-card__icon-wrap">
+        <KawaiiIcon name="trophy" size="md" class="stat-icon" />
+      </div>
+      <div class="stat-card__info">
+        <span class="stat-value">{{ unlockedCount }}<span class="stat-total">/20</span></span>
+        <span class="stat-label">成就</span>
+      </div>
+      <span class="stat-card__hover-glow"></span>
+    </div>
+  </div>
   </section>
 </template>
 

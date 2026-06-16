@@ -15,6 +15,7 @@ import { CanvasParticles } from './CanvasParticles.js'
 import { CanvasFloatingText } from './CanvasFloatingText.js'
 import { CanvasComboText } from './CanvasComboText.js'
 import { CanvasConfetti } from './CanvasConfetti.js'
+import { CanvasFlashOverlay } from './CanvasFlashOverlay.js'
 
 export class EffectsManager {
   readonly shake: CanvasScreenShake
@@ -22,6 +23,7 @@ export class EffectsManager {
   readonly floatingText: CanvasFloatingText
   readonly combo: CanvasComboText
   readonly confetti: CanvasConfetti
+  readonly flash: CanvasFlashOverlay
 
   constructor() {
     this.shake = new CanvasScreenShake()
@@ -29,6 +31,7 @@ export class EffectsManager {
     this.floatingText = new CanvasFloatingText()
     this.combo = new CanvasComboText()
     this.confetti = new CanvasConfetti()
+    this.flash = new CanvasFlashOverlay()
   }
 
   triggerShake(intensity: number, duration: number): void {
@@ -71,18 +74,26 @@ export class EffectsManager {
     this.confetti.burst(count)
   }
 
+  triggerFlash(color: string = '#ffffff', alpha: number = 0.3, duration: number = 150): void {
+    this.flash.trigger({ color, alpha, duration })
+  }
+
   update(dt: number): void {
     this.shake.update(dt)
     this.particles.update(dt)
     this.floatingText.update(dt)
     this.combo.update(dt)
     this.confetti.update(dt)
+    this.flash.update(dt)
   }
 
-  render(ctx: CanvasRenderingContext2D): void {
+  render(ctx: CanvasRenderingContext2D, width?: number, height?: number): void {
     this.particles.render(ctx)
     this.floatingText.render(ctx)
     this.combo.render(ctx)
     this.confetti.render(ctx)
+    if (width !== undefined && height !== undefined) {
+      this.flash.render(ctx, width, height)
+    }
   }
 }

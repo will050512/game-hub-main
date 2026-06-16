@@ -16,6 +16,7 @@ import LobbyViewTabs from '@/components/shell/LobbyViewTabs.vue'
 import LobbyCategoryBar from '@/components/shell/LobbyCategoryBar.vue'
 import LobbySearchBar from '@/components/shell/LobbySearchBar.vue'
 import LobbyGameGrid from '@/components/shell/LobbyGameGrid.vue'
+import PlayerProfileCard from '@/components/shell/PlayerProfileCard.vue'
 import AudioMixerPanel from '@/components/settings/AudioMixerPanel.vue'
 
 // --- Quest/Achievement imports ---
@@ -134,10 +135,13 @@ onMounted(async () => {
           :xp-percent="xpPercent"
           :games-played="playerStore.profile.gamesPlayed"
           :unlocked-count="unlockedCount"
+          :coins="currencyStore.balance"
           @show-quests="showQuests = !showQuests"
           @mascot-click="handleMascotClick"
         />
       </Transition>
+
+      <PlayerProfileCard />
 
       <!-- Quest Panel -->
       <Transition name="quest-panel">

@@ -21,4 +21,9 @@ export const achievementDefs: AchievementDef[] = [
   { id: 'time_1h', name: '時間管理師', description: '累計遊玩1小時', icon: 'timer', category: 'gameplay', rarity: 'common', condition: { type: 'timePlayed', threshold: 3600 }, reward: { coins: 100 } },
   { id: 'time_10h', name: '重度玩家', description: '累計遊玩10小時', icon: 'arcade', category: 'gameplay', rarity: 'rare', condition: { type: 'timePlayed', threshold: 36000 }, reward: { coins: 500, badge: 'hardcore' } },
   { id: 'tower_10', name: '塔防大師', description: '塔防建造10座砲塔', icon: 'strategy', category: 'mastery', rarity: 'uncommon', condition: { type: 'score', gameId: 'tower-defense', threshold: 1000 }, reward: { coins: 300 } },
+
+  // Hidden achievements — not shown in the list until unlocked
+  { id: 'hidden_speedrun', name: '時間管理大師', description: '在 10 秒內完成一場遊戲', icon: 'timer', category: 'special', rarity: 'legendary', condition: { type: 'speedrun', threshold: 10000 }, reward: { coins: 500, badge: 'speed_demon' }, hidden: true },
+  { id: 'hidden_nightowl', name: '夜貓子', description: '在凌晨 2-5 點遊玩', icon: 'moon', category: 'special', rarity: 'epic', condition: { type: 'nightOwl', threshold: 1 }, reward: { coins: 300 }, hidden: true },
+  { id: 'hidden_combo', name: '秘密組合', description: '在同一天玩遍所有 12 款遊戲', icon: 'sparkle', category: 'special', rarity: 'legendary', condition: { type: 'allInOneDay', threshold: 12 }, reward: { coins: 2000, badge: 'speed_demon' }, hidden: true },
 ]

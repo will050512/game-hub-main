@@ -211,6 +211,8 @@ export interface AchievementDef {
   rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary'
   condition: AchievementCondition
   reward: { coins: number; badge?: string }
+  /** When true, the achievement is hidden from the list until unlocked */
+  hidden?: boolean
 }
 
 export type AchievementCondition =
@@ -223,6 +225,9 @@ export type AchievementCondition =
   | { type: 'timePlayed'; threshold: number }
   | { type: 'collectAll'; collectionType: 'badge' | 'avatarFrame'; threshold: number }
   | { type: 'kills'; gameId?: string; threshold: number }
+  | { type: 'speedrun'; threshold: number }
+  | { type: 'nightOwl'; threshold: number }
+  | { type: 'allInOneDay'; threshold: number }
 
 export interface PlayerAchievement {
   achievementId: string
