@@ -227,12 +227,16 @@ describe('SpriteLoader', () => {
     expect(cache.size).toBe(0)
   })
 
-  it('has returns false for uncached images', () => {
+  it('clearCache removes single entry and has() reflects cache state', () => {
+    const cache = (loader as any).imageCache
+    cache.set('/test-assets/a.png', new Image())
+    cache.set('/test-assets/b.png', new Image())
     expect(loader.cacheSize).toBe(2)
 
     loader.clearCache('a.png')
     expect(loader.cacheSize).toBe(1)
     expect(loader.has('b.png')).toBe(true)
+    expect(loader.has('a.png')).toBe(false)
   })
 
   it('has returns false for uncached images', () => {
