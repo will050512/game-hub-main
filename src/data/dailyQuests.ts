@@ -15,7 +15,15 @@ export const dailyQuestPool: DailyQuestDef[] = [
   { id: 'memory_play', name: '記憶挑戰', description: '遊玩記憶翻牌2次', icon: 'board', category: 'play', targetGameId: 'memory', target: 2, reward: { coins: 100, xp: 50 } },
 ]
 
+function shuffleArray<T>(array: T[]): T[] {
+  const shuffled = [...array]
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[shuffled[i], shuffled[j]] = [shuffled[j]!, shuffled[i]!]
+  }
+  return shuffled
+}
+
 export function generateDailyQuests(): DailyQuestDef[] {
-  const shuffled = [...dailyQuestPool].sort(() => Math.random() - 0.5)
-  return shuffled.slice(0, 3)
+  return shuffleArray(dailyQuestPool).slice(0, 3)
 }

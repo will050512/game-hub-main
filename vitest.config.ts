@@ -6,6 +6,7 @@ export default mergeConfig(
   viteConfig,
   defineConfig({
     test: {
+      setupFiles: ['src/__tests__/setup.ts'],
       environment: 'happy-dom',
       exclude: [...configDefaults.exclude, 'tests/*'],
       root: fileURLToPath(new URL('./', import.meta.url)),
