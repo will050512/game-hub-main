@@ -32,8 +32,8 @@ export class CanvasComboText {
   constructor(config?: CanvasComboTextConfig) {
     this.combo = 0
     this.config = {
-      x: 0,
-      y: 0,
+      x: 0.5,
+      y: 0.25,
       resetTimeout: 2000,
       baseFontSize: 32,
       fontSizeStep: 4,

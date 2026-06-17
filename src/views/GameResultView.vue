@@ -105,8 +105,6 @@ async function handleShare() {
 <template>
   <div v-if="game" class="page">
     <div class="bg">
-      <div class="orb o1" :style="{ background: game.color }" />
-      <div class="orb o2" :style="{ background: game.color }" />
       <KawaiiDecorLayer :category="game.category" :mood="isNewHighScore ? 'victory' : 'playful'" />
     </div>
 

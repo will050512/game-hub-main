@@ -141,6 +141,7 @@ export abstract class GameEngine {
     this.canvas.height = h * this.dpr
     this.width = w * this.dpr
     this.height = h * this.dpr
+    this._effectsManager.confetti.setCanvasSize(w, h)
   }
 
   protected onResize(_width: number, _height: number): void {

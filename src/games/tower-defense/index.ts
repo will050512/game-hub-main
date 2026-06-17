@@ -6,6 +6,7 @@ import { EffectsManager } from '@/engine/effects'
 import { getTheme } from '@/engine/art/KawaiiTheme'
 import { GameOverlay } from '@/engine/GameOverlay'
 import { getFont, FONTS } from '@/engine/CanvasFontRegistry'
+
 interface Tower {
   x: number
   y: number
@@ -19,6 +20,7 @@ interface Tower {
   angle: number
   synergyBonus: number
   adjacentTowers: number
+  flashTimer: number
 }
 
 interface Enemy {
@@ -35,6 +37,7 @@ interface Enemy {
   alive: boolean
   isElite: boolean
   eliteModifier?: 'armored' | 'swift' | 'regenerating' | 'explosive'
+  bobOffset: number
 }
 
 interface Projectile {
@@ -48,6 +51,7 @@ interface Projectile {
   splashRadius: number
   color: string
   active: boolean
+  trailTimer: number
 }
 
 type GamePhase = 'menu' | 'playing' | 'gameover' | 'waveComplete'
@@ -79,12 +83,13 @@ class TowerDefenseGame extends GameEngine {
   private animationTimer = 0
   private towerCosts: Record<string, number> = { basic: 50, sniper: 100, splash: 150 }
   private eliteWaveInterval = 3
-  private particles: Array<{ x: number; y: number; vx: number; vy: number; life: number; color: string; size: number }> = []
   private effects: EffectsManager = new EffectsManager()
   private synergiesDirty = true
   private theme = getTheme('tower-defense')
-  /** Separate overlay instance for game-specific state/scores */
   private gameOverlay = new GameOverlay()
+  private pathDotTimer = 0
+  private menuPulseTimer = 0
+  private towerPreviewType = 'basic' as Tower['type']
 
   protected init(): void {
     this.phase = 'menu'
@@ -123,6 +128,7 @@ class TowerDefenseGame extends GameEngine {
   protected update(dt: number): void {
     this.gameTime += dt
     this.animationTimer += dt
+    this.pathDotTimer += dt
 
     if (this.phase === 'playing') {
       this.updateSpawning(dt)
@@ -133,15 +139,6 @@ class TowerDefenseGame extends GameEngine {
     }
 
     this.effects.update(dt)
-
-    for (let i = this.particles.length - 1; i >= 0; i--) {
-      const p = this.particles[i]!
-      p.x += p.vx * (dt / 16.667)
-      p.y += p.vy * (dt / 16.667)
-      p.life -= dt
-      if (p.life <= 0) this.particles.splice(i, 1)
-    }
-
     this.pushStats()
   }
 
@@ -186,27 +183,114 @@ class TowerDefenseGame extends GameEngine {
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
 
-    drawKawaiiPanel(ctx, this.width * 0.17, this.height * 0.14, this.width * 0.66, this.height * 0.2, {
+    // Animated background gradient mesh
+    const pulse = Math.sin(this.animationTimer * 0.001) * 0.5 + 0.5
+    const menuBg = ctx.createRadialGradient(this.width / 2, this.height / 2, 0, this.width / 2, this.height / 2, Math.max(this.width, this.height) * 0.6)
+    menuBg.addColorStop(0, `${this.theme.ui.accent}33`)
+    menuBg.addColorStop(0.5, `${this.theme.palette.bg}88`)
+    menuBg.addColorStop(1, this.theme.palette.bg)
+    ctx.fillStyle = menuBg
+    ctx.fillRect(0, 0, this.width, this.height)
+
+    // Title glow effect
+    const titleGlow = ctx.createRadialGradient(this.width / 2, this.height * 0.18, 0, this.width / 2, this.height * 0.18, 200 * scale)
+    titleGlow.addColorStop(0, `${this.theme.ui.accent}40`)
+    titleGlow.addColorStop(1, 'transparent')
+    ctx.fillStyle = titleGlow
+    ctx.fillRect(this.width * 0.2, this.height * 0.05, this.width * 0.6, this.height * 0.2)
+
+    drawKawaiiPanel(ctx, this.width * 0.17, this.height * 0.1, this.width * 0.66, this.height * 0.18, {
       fill: this.theme.ui.surface,
       accent: this.theme.ui.accent,
       stroke: this.theme.palette.ink,
       radius: Math.floor(22 * scale),
     })
 
-    ctx.fillStyle = this.theme.palette.ink
-    ctx.font = `bold ${Math.floor(32 * scale)}px ${this.theme.font.family}`
-    ctx.fillText('塔防大戰', this.width / 2, this.height * 0.2)
+    // Animated title with glow
+    ctx.save()
+    const titleScale = 1 + Math.sin(this.animationTimer * 0.002) * 0.03
+    ctx.translate(this.width / 2, this.height * 0.17)
+    ctx.scale(titleScale, titleScale)
+    ctx.translate(-this.width / 2, -this.height * 0.17)
+    
+    ctx.shadowColor = this.theme.ui.accent
+    ctx.shadowBlur = 20 * scale * pulse
+    ctx.fillStyle = this.theme.palette.accent
+    ctx.font = `bold ${Math.floor(36 * scale)}px ${this.theme.font.family}`
+    ctx.fillText('塔防大戰', this.width / 2, this.height * 0.17)
+    ctx.shadowBlur = 0
+    ctx.restore()
 
     ctx.fillStyle = this.theme.palette.ink + '80'
-    ctx.font = `${Math.floor(14 * scale)}px ${this.theme.font.family}`
-    ctx.fillText('Tower Defense', this.width / 2, this.height * 0.2 + Math.floor(40 * scale))
+    ctx.font = `${Math.floor(15 * scale)}px ${this.theme.font.family}`
+    ctx.fillText('Tower Defense', this.width / 2, this.height * 0.17 + Math.floor(38 * scale))
 
-    const startBtnY = this.height * 0.45
+    // Tower preview section
+    const previewY = this.height * 0.32
+    const previewW = Math.floor(this.width * 0.55)
+    const previewH = Math.floor(80 * scale)
+    drawKawaiiPanel(ctx, (this.width - previewW) / 2, previewY, previewW, previewH, {
+      fill: this.theme.ui.surface + '99',
+      accent: this.theme.ui.accent + '66',
+      stroke: this.theme.palette.ink + '44',
+      radius: Math.floor(14 * scale),
+    })
+
+    ctx.fillStyle = this.theme.palette.ink + 'aa'
+    ctx.font = `bold ${Math.floor(12 * scale)}px ${this.theme.font.family}`
+    ctx.fillText('— 塔防預覽 —', this.width / 2, previewY + Math.floor(16 * scale))
+
+    // Show preview towers
+    const towerTypes: { type: 'basic' | 'sniper' | 'splash'; label: string; color: string; cost: number; icon: string }[] = [
+      { type: 'basic', label: '基礎', color: '#3b82f6', cost: 50, icon: '⚡' },
+      { type: 'sniper', label: '狙擊', color: '#8b5cf6', cost: 100, icon: '🎯' },
+      { type: 'splash', label: '範圍', color: '#ef4444', cost: 150, icon: '💥' },
+    ]
+
+    const btnW = Math.floor(previewW / 3) - Math.floor(8 * scale)
+    towerTypes.forEach((t, i) => {
+      const x = (this.width - previewW) / 2 + Math.floor(8 * scale) + i * (btnW + Math.floor(8 * scale))
+      const isActive = this.towerPreviewType === t.type
+      const isSelected = this.selectedTowerType === t.type
+
+      // Mini tower preview
+      const previewX = x + Math.floor(btnW / 2)
+      const previewCY = previewY + Math.floor(42 * scale)
+      
+      ctx.save()
+      ctx.translate(previewX, previewCY)
+      
+      // Tower base preview
+      const towerSize = Math.floor(20 * scale)
+      ctx.shadowColor = isActive ? t.color : 'transparent'
+      ctx.shadowBlur = isActive ? 12 * scale : 0
+      ctx.fillStyle = isActive ? t.color : `${t.color}66`
+      ctx.beginPath()
+      ctx.roundRect(-towerSize / 2, -towerSize / 2, towerSize, towerSize, Math.floor(4 * scale))
+      ctx.fill()
+      ctx.shadowBlur = 0
+      
+      // Tower icon
+      ctx.font = `${Math.floor(10 * scale)}px sans-serif`
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.fillText(t.icon, 0, 0)
+      ctx.restore()
+
+      // Label below
+      ctx.fillStyle = isActive ? t.color : this.theme.palette.ink + '88'
+      ctx.font = `${isActive ? 'bold ' : ''}${Math.floor(10 * scale)}px ${this.theme.font.family}`
+      ctx.textAlign = 'center'
+      ctx.fillText(`${t.label} ${t.cost}g`, previewX, previewY + Math.floor(58 * scale))
+    })
+
+    // Start button with pulse
+    const startBtnY = this.height * 0.52
     const startBtnW = Math.floor(this.width * 0.5)
-    const startBtnH = Math.floor(56 * scale)
+    const startBtnH = Math.floor(52 * scale)
     const startBtnX = (this.width - startBtnW) / 2
 
-    const pulse = Math.sin(this.animationTimer * 0.003) * 0.08 + 0.92
+    const pulse = Math.sin(this.animationTimer * 0.003) * 0.06 + 0.94
     ctx.save()
     ctx.translate(this.width / 2, startBtnY + startBtnH / 2)
     ctx.scale(pulse, pulse)
@@ -216,17 +300,23 @@ class TowerDefenseGame extends GameEngine {
       y: startBtnY,
       width: startBtnW,
       height: startBtnH,
-      label: 'Start Game',
-      iconKind: 'target',
+      label: '🚀 開始遊戲',
+      iconKind: 'rocket',
       fill: this.theme.ui.surface,
       activeFill: this.theme.ui.accent,
     })
     ctx.restore()
 
+    // Instructions
     ctx.fillStyle = this.theme.palette.ink + '66'
     ctx.font = `${Math.floor(12 * scale)}px ${this.theme.font.family}`
-    ctx.fillText('Place towers to stop enemies!', this.width / 2, this.height * 0.65)
-    ctx.fillText('Basic: 50g | Sniper: 100g | Splash: 150g', this.width / 2, this.height * 0.7)
+    ctx.fillText('點擊格子上放塔防，抵禦敵人進攻！', this.width / 2, this.height * 0.68)
+    ctx.fillText('相鄰塔防會獲得加成效果', this.width / 2, this.height * 0.73)
+
+    // Difficulty indicator
+    ctx.fillStyle = this.theme.palette.ink + '44'
+    ctx.font = `${Math.floor(10 * scale)}px ${this.theme.font.family}`
+    ctx.fillText('挑戰無限波次 | 提升塔防等級 | 解鎖強大敵人', this.width / 2, this.height * 0.85)
   }
 
   private renderGame(ctx: CanvasRenderingContext2D): void {
@@ -246,7 +336,11 @@ class TowerDefenseGame extends GameEngine {
       towerCells.add(`${tc},${tr}`)
     }
 
-    // Draw grid
+    // Apply screen shake
+    ctx.save()
+    this.effects.shake.apply(ctx)
+
+    // ---- GRID RENDERING ----
     for (let r = 0; r < this.rows; r++) {
       for (let c = 0; c < this.cols; c++) {
         const x = this.gridOffsetX + c * this.cellSize
@@ -255,21 +349,88 @@ class TowerDefenseGame extends GameEngine {
         const hasTower = towerCells.has(`${c},${r}`)
 
         if (isPath) {
-          ctx.fillStyle = 'rgba(139, 92, 246, 0.1)'
+          // Path cell with subtle glow
+          const pathGlow = ctx.createRadialGradient(
+            x + this.cellSize / 2, y + this.cellSize / 2, 0,
+            x + this.cellSize / 2, y + this.cellSize / 2, this.cellSize * 0.7
+          )
+          pathGlow.addColorStop(0, 'rgba(139, 92, 246, 0.15)')
+          pathGlow.addColorStop(1, 'rgba(139, 92, 246, 0.05)')
+          ctx.fillStyle = pathGlow
+          ctx.fillRect(x, y, this.cellSize, this.cellSize)
+
+          // Animated path dots
+          const dotAlpha = (Math.sin(this.pathDotTimer * 0.003 + c * 0.5 + r * 0.3) * 0.3 + 0.4)
+          ctx.fillStyle = `rgba(168, 85, 247, ${dotAlpha})`
+          const dotSize = Math.floor(3 * scale)
+          ctx.beginPath()
+          ctx.arc(x + this.cellSize / 2, y + this.cellSize / 2, dotSize, 0, Math.PI * 2)
+          ctx.fill()
         } else if (hasTower) {
-          ctx.fillStyle = 'rgba(255,255,255,0.05)'
+          // Tower cell with subtle highlight
+          ctx.fillStyle = 'rgba(255,255,255,0.06)'
+          ctx.fillRect(x + 1, y + 1, this.cellSize - 2, this.cellSize - 2)
         } else {
-          ctx.fillStyle = 'rgba(255,255,255,0.02)'
+          // Buildable cell with subtle pattern
+          const checkerAlpha = ((r + c) % 2 === 0) ? 0.02 : 0.04
+          ctx.fillStyle = `rgba(255,255,255,${checkerAlpha})`
+          ctx.fillRect(x + 1, y + 1, this.cellSize - 2, this.cellSize - 2)
         }
-        ctx.fillRect(x + 1, y + 1, this.cellSize - 2, this.cellSize - 2)
+
+        // Grid cell border
+        ctx.strokeStyle = 'rgba(255,255,255,0.04)'
+        ctx.lineWidth = 0.5
+        ctx.beginPath()
+        ctx.roundRect(x + 0.5, y + 0.5, this.cellSize - 1, this.cellSize - 1, Math.floor(2 * scale))
+        ctx.stroke()
       }
     }
 
-    // Draw path
-    ctx.strokeStyle = 'rgba(139, 92, 246, 0.3)'
-    ctx.lineWidth = Math.floor(this.cellSize * 0.4)
+    // Path entrance and exit markers
+    if (this.path.length > 0) {
+      const start = this.path[0]!
+      const end = this.path[this.path.length - 1]!
+      const startPixel = this.cellToPixel(start.r, start.c)
+      const endPixel = this.cellToPixel(end.r, end.c)
+
+      // Entrance marker (green arrow)
+      const entrancePulse = Math.sin(this.animationTimer * 0.004) * 0.3 + 0.7
+      ctx.save()
+      ctx.globalAlpha = entrancePulse
+      ctx.fillStyle = '#22c55e'
+      ctx.font = `bold ${Math.floor(14 * scale)}px sans-serif`
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.fillText('▶', startPixel.x - this.cellSize * 0.6, startPixel.y)
+      ctx.restore()
+
+      // Exit marker (red X)
+      ctx.save()
+      ctx.globalAlpha = entrancePulse
+      ctx.fillStyle = '#ef4444'
+      ctx.font = `bold ${Math.floor(14 * scale)}px sans-serif`
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'middle'
+      ctx.fillText('✕', endPixel.x + this.cellSize * 0.6, endPixel.y)
+      ctx.restore()
+    }
+
+    // Draw path line
+    ctx.strokeStyle = 'rgba(139, 92, 246, 0.25)'
+    ctx.lineWidth = Math.floor(this.cellSize * 0.45)
     ctx.lineCap = 'round'
     ctx.lineJoin = 'round'
+    ctx.beginPath()
+    this.path.forEach((p, i) => {
+      const pos = this.cellToPixel(p.r, p.c)
+      if (i === 0) ctx.moveTo(pos.x, pos.y)
+      else ctx.lineTo(pos.x, pos.y)
+    })
+    ctx.stroke()
+
+    // Path inner line
+    ctx.strokeStyle = 'rgba(168, 85, 247, 0.15)'
+    ctx.lineWidth = Math.floor(this.cellSize * 0.2)
     ctx.beginPath()
     this.path.forEach((p, i) => {
       const pos = this.cellToPixel(p.r, p.c)
@@ -281,6 +442,9 @@ class TowerDefenseGame extends GameEngine {
     // Draw towers
     this.towers.forEach(t => this.renderTower(ctx, t))
 
+    // Draw range indicator for selected tower (if we track selection)
+    this.renderTowerRange(ctx)
+
     // Draw enemies
     this.enemies.forEach(e => {
       if (!e.alive) return
@@ -290,66 +454,14 @@ class TowerDefenseGame extends GameEngine {
     // Draw projectiles
     this.projectiles.forEach(p => {
       if (!p.active) return
-      const drewProj = drawSprite(ctx, 'td.projectile', {
-        x: p.x,
-        y: p.y,
-        scale: scale,
-      })
-      if (!drewProj) {
-        ctx.fillStyle = p.color
-        ctx.beginPath()
-        ctx.arc(p.x, p.y, Math.floor(3 * scale), 0, Math.PI * 2)
-        ctx.fill()
-      }
+      this.renderProjectile(ctx, p)
     })
 
-    // HUD
-    const hudY = this.gridOffsetY + this.cellSize * this.rows + Math.floor(6 * scale)
-    drawKawaiiPanel(ctx, Math.floor(8 * scale), hudY, Math.floor(108 * scale), Math.floor(42 * scale), {
-      fill: this.theme.ui.surface,
-      accent: this.theme.ui.accent,
-      stroke: this.theme.palette.ink,
-      radius: Math.floor(12 * scale),
-    })
-    drawKawaiiInlineLabel(ctx, {
-      x: Math.floor(18 * scale),
-      y: hudY + Math.floor(15 * scale),
-      text: `Gold ${this.gold}`,
-      iconKind: 'star',
-      color: '#92400e',
-      fontSize: Math.max(10, Math.floor(11 * scale)),
-    })
-    drawKawaiiInlineLabel(ctx, {
-      x: Math.floor(18 * scale),
-      y: hudY + Math.floor(31 * scale),
-      text: `Lives ${this.lives}`,
-      iconKind: 'heart',
-      color: '#7f1d1d',
-      fontSize: Math.max(10, Math.floor(11 * scale)),
-    })
+    // ---- HUD ----
+    this.renderHUD(ctx, scale)
 
-    drawKawaiiPanel(ctx, Math.floor(this.width / 2 - 52 * scale), hudY, Math.floor(104 * scale), Math.floor(42 * scale), {
-      fill: this.theme.ui.surface,
-      accent: this.theme.ui.accent,
-      stroke: this.theme.palette.ink,
-      radius: Math.floor(12 * scale),
-    })
-    drawKawaiiInlineLabel(ctx, {
-      x: Math.floor(this.width / 2 - 36 * scale),
-      y: hudY + Math.floor(16 * scale),
-      text: `Wave ${this.wave}`,
-      iconKind: 'target',
-      color: '#166534',
-      fontSize: Math.max(10, Math.floor(11 * scale)),
-    })
-    drawKawaiiProgressBar(ctx, Math.floor(this.width / 2 - 38 * scale), hudY + Math.floor(25 * scale), Math.floor(76 * scale), Math.floor(8 * scale), Math.min(1, this.enemiesSpawned / Math.max(1, this.enemiesPerWave)), {
-      trackFill: 'rgba(15, 23, 42, 0.12)',
-      fill: this.theme.ui.accent,
-      stroke: 'rgba(15, 23, 42, 0.22)',
-    })
-
-    // Tower selection buttons
-    this.renderTowerButtons(ctx)
+    // ---- Tower buttons ----
+    this.renderTowerButtons(ctx, scale)
 
     // Game over overlay
     if (this.phase === 'gameover') {
@@ -367,103 +479,319 @@ class TowerDefenseGame extends GameEngine {
       })
     }
 
+    ctx.restore() // End screen shake
     this.effects.render(ctx)
+  }
+
+  private renderTowerRange(ctx: CanvasRenderingContext2D): void {
+    // We don't track selection but we can highlight on hover-like behavior
+    // For now, skip range indicator - it would need mouse tracking
   }
 
   private renderTower(ctx: CanvasRenderingContext2D, tower: Tower): void {
     const scale = this.dpr
     const size = this.cellSize * 0.7
+    const halfSize = size / 2
 
-    const spriteScale = size / 56
-    const drewBase = drawSprite(ctx, 'td.tower-base', {
-      x: tower.x,
-      y: tower.y,
-      scale: spriteScale,
-      variant: tower.type,
-    })
-    if (!drewBase) {
-      const x = tower.x - size / 2
-      const y = tower.y - size / 2
-      ctx.fillStyle = tower.color
+    // Flash effect (when firing)
+    const flashIntensity = Math.max(0, tower.flashTimer / 150)
+    
+    // Tower base with shadow and glow ring
+    ctx.save()
+    ctx.translate(tower.x, tower.y)
+    
+    // Shadow underneath
+    ctx.shadowColor = tower.color + '44'
+    ctx.shadowBlur = 8 * scale
+    ctx.shadowOffsetY = 3 * scale
+    
+    // Glow ring matching tower type
+    const glowColor = `${tower.color}${Math.floor(flashIntensity * 80).toString(16).padStart(2, '0')}`
+    ctx.shadowColor = glowColor
+    ctx.shadowBlur = (12 + flashIntensity * 15) * scale
+    
+    // Draw tower base
+    const x = -halfSize
+    const y = -halfSize
+    ctx.fillStyle = tower.color
+    ctx.beginPath()
+    ctx.roundRect(x, y, size, size, Math.floor(6 * scale))
+    ctx.fill()
+    
+    // Flash overlay
+    if (flashIntensity > 0) {
+      ctx.shadowBlur = 0
+      ctx.shadowOffsetY = 0
+      ctx.fillStyle = `rgba(255, 255, 255, ${flashIntensity * 0.6})`
       ctx.beginPath()
-      this.roundRect(ctx, x, y, size, size, Math.floor(4 * scale))
+      ctx.roundRect(x, y, size, size, Math.floor(6 * scale))
       ctx.fill()
     }
+    
+    ctx.restore()
+    
+    // Tower inner detail (smaller inset square)
+    ctx.save()
+    ctx.translate(tower.x, tower.y)
+    const insetSize = size * 0.55
+    ctx.fillStyle = `${tower.color}cc`
+    ctx.beginPath()
+    ctx.roundRect(-insetSize / 2, -insetSize / 2, insetSize, insetSize, Math.floor(3 * scale))
+    ctx.fill()
+    ctx.restore()
 
+    // Barrel rotation with smooth animation
     ctx.save()
     ctx.translate(tower.x, tower.y)
     ctx.rotate(tower.angle)
-    const drewBarrel = drawSprite(ctx, 'td.tower-barrel', {
-      x: 0,
-      y: 0,
-      scale: spriteScale,
-    })
-    if (!drewBarrel) {
-      ctx.fillStyle = '#fff'
-      ctx.fillRect(Math.floor(size * 0.1), Math.floor(-2 * scale), Math.floor(size * 0.5), Math.floor(4 * scale))
-    }
+    
+    const barrelW = size * 0.55
+    const barrelH = size * 0.12
+    ctx.fillStyle = '#f1f5f9'
+    ctx.shadowColor = 'rgba(0,0,0,0.3)'
+    ctx.shadowBlur = 3 * scale
+    ctx.shadowOffsetY = 2 * scale
+    ctx.beginPath()
+    ctx.roundRect(halfSize * 0.1, -barrelH / 2, barrelW, barrelH, Math.floor(2 * scale))
+    ctx.fill()
+    ctx.shadowBlur = 0
     ctx.restore()
 
-    // Level indicator
+    // Level indicator with stars
     if (tower.level > 1) {
+      const stars = '★'.repeat(tower.level) + '☆'.repeat(Math.max(0, 3 - tower.level))
+      
+      ctx.save()
+      ctx.shadowColor = '#fbbf24'
+      ctx.shadowBlur = 4 * scale
+      
       ctx.fillStyle = '#fbbf24'
-      ctx.font = `bold ${Math.floor(10 * scale)}px sans-serif`
+      ctx.font = `bold ${Math.floor(10 * scale)}px ${this.theme.font.family}`
       ctx.textAlign = 'center'
-      ctx.textBaseline = 'top'
-      ctx.fillText(`Lv${tower.level}`, tower.x, tower.y + size / 2 + Math.floor(4 * scale))
+      ctx.textBaseline = 'middle'
+      ctx.fillText(stars, tower.x, tower.y + halfSize + Math.floor(6 * scale))
+      
+      ctx.shadowBlur = 0
+      ctx.fillStyle = '#fde68a'
+      ctx.font = `${Math.floor(8 * scale)}px ${this.theme.font.family}`
+      ctx.fillText(`Lv${tower.level}`, tower.x, tower.y + halfSize + Math.floor(18 * scale))
+      ctx.restore()
     }
   }
 
   private renderEnemy(ctx: CanvasRenderingContext2D, enemy: Enemy): void {
     const scale = this.dpr
-    const variant: 'normal' | 'fast' | 'tank' | 'boss' | 'elite' = enemy.isElite ? 'elite' : enemy.type
-    const spriteScale = (enemy.radius * 2) / 28
-    const drewSprite = drawSprite(ctx, 'td.enemy', {
-      x: enemy.x,
-      y: enemy.y,
-      scale: spriteScale,
-      variant,
-    })
-    if (!drewSprite) {
-      ctx.fillStyle = enemy.color
+    
+    // Bob animation for movement feel
+    const bob = Math.sin(this.animationTimer * 0.005 + enemy.x * 0.1) * 1.5 * scale
+    const bobY = enemy.y + bob
+
+    // Enemy base with shadow
+    ctx.save()
+    ctx.translate(enemy.x, bobY)
+
+    // Shadow
+    ctx.shadowColor = 'rgba(0,0,0,0.3)'
+    ctx.shadowBlur = 6 * scale
+    ctx.shadowOffsetY = 2 * scale
+
+    // Draw enemy body
+    ctx.fillStyle = enemy.color
+    ctx.beginPath()
+    ctx.arc(0, 0, enemy.radius, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.shadowBlur = 0
+
+    // Elite pulsing border
+    if (enemy.isElite) {
+      const pulseAlpha = Math.sin(this.animationTimer * 0.005) * 0.3 + 0.7
+      ctx.strokeStyle = `rgba(255, 215, 0, ${pulseAlpha})`
+      ctx.lineWidth = Math.floor(2 * scale)
+      ctx.shadowColor = '#fbbf24'
+      ctx.shadowBlur = 8 * scale
       ctx.beginPath()
-      ctx.arc(enemy.x, enemy.y, enemy.radius, 0, Math.PI * 2)
-      ctx.fill()
+      ctx.arc(0, 0, enemy.radius + 2 * scale, 0, Math.PI * 2)
+      ctx.stroke()
+      ctx.shadowBlur = 0
     }
 
-    const barW = enemy.radius * 2.5
-    const barH = Math.floor(3 * scale)
+    // Boss label
+    if (enemy.type === 'boss') {
+      ctx.fillStyle = '#ef4444'
+      ctx.font = `bold ${Math.floor(9 * scale)}px ${this.theme.font.family}`
+      ctx.textAlign = 'center'
+      ctx.textBaseline = 'bottom'
+      ctx.fillText('BOSS', 0, -enemy.radius - 4 * scale)
+    }
+
+    ctx.restore()
+
+    // Health bar with gradient fill and shadow
+    const barW = enemy.radius * 3
+    const barH = Math.floor(4 * scale)
     const barX = enemy.x - barW / 2
-    const barY = enemy.y - enemy.radius - Math.floor(6 * scale)
-    ctx.fillStyle = 'rgba(0,0,0,0.5)'
-    ctx.fillRect(barX, barY, barW, barH)
-    ctx.fillStyle = enemy.hp / enemy.maxHp > 0.5 ? '#22c55e' : enemy.hp / enemy.maxHp > 0.25 ? '#fbbf24' : '#ef4444'
-    ctx.fillRect(barX, barY, barW * (enemy.hp / enemy.maxHp), barH)
+    const barY = bobY - enemy.radius - Math.floor(8 * scale)
+    
+    // Health bar background
+    ctx.fillStyle = 'rgba(0,0,0,0.6)'
+    ctx.beginPath()
+    ctx.roundRect(barX - 1, barY - 1, barW + 2, barH + 2, Math.floor(2 * scale))
+    ctx.fill()
+    
+    // Health bar fill with gradient
+    const hpRatio = enemy.hp / enemy.maxHp
+    const hpColor = hpRatio > 0.5 ? '#22c55e' : hpRatio > 0.25 ? '#fbbf24' : '#ef4444'
+    
+    const hpGrad = ctx.createLinearGradient(barX, barY, barX + barW * hpRatio, barY)
+    hpGrad.addColorStop(0, hpColor)
+    hpGrad.addColorStop(1, hpColor + 'cc')
+    ctx.fillStyle = hpGrad
+    ctx.shadowColor = hpColor
+    ctx.shadowBlur = 3 * scale
+    ctx.beginPath()
+    ctx.roundRect(barX, barY, barW * hpRatio, barH, Math.floor(2 * scale))
+    ctx.fill()
+    ctx.shadowBlur = 0
+    
+    // Health bar border
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)'
+    ctx.lineWidth = 0.5
+    ctx.beginPath()
+    ctx.roundRect(barX, barY, barW, barH, Math.floor(2 * scale))
+    ctx.stroke()
   }
 
-  private renderTowerButtons(ctx: CanvasRenderingContext2D): void {
+  private renderProjectile(ctx: CanvasRenderingContext2D, proj: Projectile): void {
     const scale = this.dpr
-    const btnY = this.gridOffsetY + this.cellSize * this.rows + Math.floor(56 * scale)
+
+    // Trail effect (fading particles behind projectile)
+    const trailLen = 3
+    for (let i = 0; i < trailLen; i++) {
+      const t = i / trailLen
+      const trailX = proj.x - (proj.targetX - proj.x) * t * 0.3
+      const trailY = proj.y - (proj.targetY - proj.y) * t * 0.3
+      const trailAlpha = (1 - t) * 0.4
+      const trailSize = (1 - t) * 3 * scale
+      
+      ctx.save()
+      ctx.globalAlpha = trailAlpha
+      ctx.fillStyle = proj.color
+      ctx.beginPath()
+      ctx.arc(trailX, trailY, trailSize, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.restore()
+    }
+
+    // Main projectile
+    const drewProj = drawSprite(ctx, 'td.projectile', {
+      x: proj.x,
+      y: proj.y,
+      scale: scale,
+    })
+    if (!drewProj) {
+      // Glow around projectile
+      ctx.save()
+      ctx.shadowColor = proj.color
+      ctx.shadowBlur = 8 * scale
+      ctx.fillStyle = proj.color
+      ctx.beginPath()
+      ctx.arc(proj.x, proj.y, Math.floor(4 * scale), 0, Math.PI * 2)
+      ctx.fill()
+      // Inner bright core
+      ctx.shadowBlur = 0
+      ctx.fillStyle = '#ffffff'
+      ctx.beginPath()
+      ctx.arc(proj.x, proj.y, Math.floor(1.5 * scale), 0, Math.PI * 2)
+      ctx.fill()
+      ctx.restore()
+    }
+  }
+
+  private renderHUD(ctx: CanvasRenderingContext2D, scale: number): void {
+    const hudY = this.gridOffsetY + this.cellSize * this.rows + Math.floor(4 * scale)
+    const hudH = Math.floor(44 * scale)
+
+    // Gold display
+    const goldW = Math.floor(120 * scale)
+    drawKawaiiPanel(ctx, Math.floor(8 * scale), hudY, goldW, hudH, {
+      fill: this.theme.ui.surface,
+      accent: '#f59e0b',
+      stroke: '#92400e',
+      radius: Math.floor(10 * scale),
+    })
+    drawKawaiiInlineLabel(ctx, {
+      x: Math.floor(20 * scale),
+      y: hudY + Math.floor(16 * scale),
+      text: `💰 ${this.gold}`,
+      color: '#f59e0b',
+      fontSize: Math.max(13, Math.floor(14 * scale)),
+    })
+    drawKawaiiInlineLabel(ctx, {
+      x: Math.floor(20 * scale),
+      y: hudY + Math.floor(33 * scale),
+      text: `💖 ${this.lives}`,
+      color: this.lives <= 5 ? '#ef4444' : '#ef4444',
+      fontSize: Math.max(11, Math.floor(12 * scale)),
+    })
+
+    // Score display
+    const scoreW = Math.floor(100 * scale)
+    const scoreX = Math.floor(8 * scale + goldW + Math.floor(8 * scale))
+    drawKawaiiPanel(ctx, scoreX, hudY, scoreW, hudH, {
+      fill: this.theme.ui.surface,
+      accent: this.theme.ui.accent,
+      stroke: this.theme.palette.ink,
+      radius: Math.floor(10 * scale),
+    })
+    drawKawaiiInlineLabel(ctx, {
+      x: scoreX + Math.floor(14 * scale),
+      y: hudY + Math.floor(16 * scale),
+      text: `🏆 ${this.score}`,
+      color: this.theme.ui.accent,
+      fontSize: Math.max(12, Math.floor(13 * scale)),
+    })
+    drawKawaiiInlineLabel(ctx, {
+      x: scoreX + Math.floor(14 * scale),
+      y: hudY + Math.floor(33 * scale),
+      text: `⚔️ 波次 ${this.wave}`,
+      color: '#166534',
+      fontSize: Math.max(10, Math.floor(11 * scale)),
+    })
+
+    // Wave progress bar
+    const progressX = scoreX + Math.floor(14 * scale)
+    const progressW = Math.floor(scoreW - Math.floor(28 * scale))
+    drawKawaiiProgressBar(ctx, progressX, hudY + Math.floor(26 * scale), progressW, Math.floor(6 * scale),
+      Math.min(1, this.enemiesSpawned / Math.max(1, this.enemiesPerWave)), {
+      trackFill: 'rgba(15, 23, 42, 0.12)',
+      fill: this.theme.ui.accent,
+      stroke: 'rgba(15, 23, 42, 0.22)',
+    })
+  }
+
+  private renderTowerButtons(ctx: CanvasRenderingContext2D, scale: number): void {
+    const btnY = this.gridOffsetY + this.cellSize * this.rows + Math.floor(52 * scale)
     const btnW = Math.floor((this.width - Math.floor(32 * scale)) / 3)
-    const btnH = Math.floor(40 * scale)
+    const btnH = Math.floor(38 * scale)
     const gap = Math.floor(4 * scale)
 
-    const types: { type: 'basic' | 'sniper' | 'splash'; label: string; color: string; cost: number }[] = [
-      { type: 'basic', label: 'Basic', color: '#3b82f6', cost: 50 },
-      { type: 'sniper', label: 'Sniper', color: '#8b5cf6', cost: 100 },
-      { type: 'splash', label: 'Splash', color: '#ef4444', cost: 150 },
+    const types: { type: 'basic' | 'sniper' | 'splash'; label: string; color: string; cost: number; icon: string }[] = [
+      { type: 'basic', label: '基礎', color: '#3b82f6', cost: 50, icon: '⚡' },
+      { type: 'sniper', label: '狙擊', color: '#8b5cf6', cost: 100, icon: '🎯' },
+      { type: 'splash', label: '範圍', color: '#ef4444', cost: 150, icon: '💥' },
     ]
 
     types.forEach((t, i) => {
       const x = Math.floor(12 * scale) + i * (btnW + gap)
       const isActive = this.selectedTowerType === t.type
       const canAfford = this.gold >= t.cost
+      
       drawKawaiiButton(ctx, {
         x,
         y: btnY,
         width: btnW,
         height: btnH,
-        label: t.label,
+        label: `${t.icon} ${t.label}`,
         count: t.cost,
         iconKind: t.type === 'basic' ? 'laser' : t.type === 'sniper' ? 'target' : 'bomb',
         enabled: canAfford,
@@ -481,7 +809,9 @@ class TowerDefenseGame extends GameEngine {
       if (this.enemies.length === 0 && this.enemiesSpawned >= this.enemiesPerWave) {
         this.enemiesSpawned = 0
         this.gold += 50 + this.wave * 10
-        this.effects.triggerConfetti(20)
+        this.effects.triggerConfetti(30)
+        this.effects.spawnFloatingText(this.width / 2, this.height * 0.4, `+${50 + this.wave * 10} 💰`, '#f59e0b')
+        this.effects.shake.trigger({ intensity: 2, duration: 200 })
         this.startWave()
       }
       return
@@ -533,6 +863,7 @@ class TowerDefenseGame extends GameEngine {
       alive: true,
       isElite: type === 'elite',
       eliteModifier: undefined,
+      bobOffset: Math.random() * Math.PI * 2,
     }
 
     if (type === 'elite') {
@@ -639,11 +970,11 @@ class TowerDefenseGame extends GameEngine {
         }
       }
 
-        if (e.pathIndex >= this.path.length - 1) {
-          e.alive = false
-          this.lives--
-          this.effects.triggerShake(3, 150)
-          if (this.lives <= 0) {
+      if (e.pathIndex >= this.path.length - 1) {
+        e.alive = false
+        this.lives--
+        this.effects.triggerShake(3, 150)
+        if (this.lives <= 0) {
           this.lives = 0
           this.phase = 'gameover'
           if (!this.gameOverSent) {
@@ -673,6 +1004,7 @@ class TowerDefenseGame extends GameEngine {
     const speed = dt / 16.667
     for (const tower of this.towers) {
       tower.fireTimer -= dt
+      tower.flashTimer = Math.max(0, tower.flashTimer - dt)
 
       // Find target
       let target: Enemy | null = null
@@ -689,10 +1021,16 @@ class TowerDefenseGame extends GameEngine {
       }
 
       if (target) {
-        tower.angle = Math.atan2(target.y - tower.y, target.x - tower.x)
+        // Smooth barrel rotation toward target
+        const targetAngle = Math.atan2(target.y - tower.y, target.x - tower.x)
+        let angleDiff = targetAngle - tower.angle
+        while (angleDiff > Math.PI) angleDiff -= Math.PI * 2
+        while (angleDiff < -Math.PI) angleDiff += Math.PI * 2
+        tower.angle += angleDiff * 0.2
 
         if (tower.fireTimer <= 0) {
           tower.fireTimer = tower.fireRate
+          tower.flashTimer = 150
           this.fireProjectile(tower, target)
         }
       }
@@ -712,6 +1050,7 @@ class TowerDefenseGame extends GameEngine {
       splashRadius: tower.type === 'splash' ? this.cellSize * 0.8 : 0,
       color: tower.color,
       active: true,
+      trailTimer: 0,
     })
   }
 
@@ -734,13 +1073,28 @@ class TowerDefenseGame extends GameEngine {
       } else {
         p.x += (dx / dist) * p.speed * speed
         p.y += (dy / dist) * p.speed * speed
-        this.effects.burst(p.x, p.y, 1, ['#ffd700'], { min: 0, max: 1 })
+        // Small trail particle
+        this.effects.particles.emit({
+          count: 1,
+          colors: [p.color],
+          speed: { min: 0.5, max: 1.5 },
+          size: { start: 2, end: 0 },
+          lifetime: 200,
+          gravity: 0,
+          opacity: { start: 0.3, end: 0 },
+        }, p.x, p.y)
       }
     }
   }
 
   private hitTarget(proj: Projectile): void {
+    // Impact flash at impact point
+    this.effects.flash.trigger({ color: '#ffffff', alpha: 0.15, duration: 80 })
+
     if (proj.splash) {
+      // Splash explosion ring
+      this.effects.burst(proj.targetX, proj.targetY, 8, [proj.color, '#ffffff'], { min: 3, max: 6 })
+      
       for (const e of this.enemies) {
         if (!e.alive) continue
         const dx = e.x - proj.targetX
@@ -751,6 +1105,9 @@ class TowerDefenseGame extends GameEngine {
         }
       }
     } else {
+      // Small impact flash
+      this.effects.burst(proj.targetX, proj.targetY, 4, ['#ffffff'], { min: 1, max: 3 })
+      
       for (const e of this.enemies) {
         if (!e.alive) continue
         const dx = e.x - proj.targetX
@@ -779,8 +1136,13 @@ class TowerDefenseGame extends GameEngine {
       enemy.alive = false
       this.gold += enemy.reward
       this.score += enemy.reward * 10
-      this.effects.burst(enemy.x, enemy.y, 12, ['#ff5722', '#fff'], { min: 2, max: 5 })
-
+      
+      // Death particle burst
+      this.effects.burst(enemy.x, enemy.y, 12, ['#ff5722', '#fff', '#fbbf24'], { min: 2, max: 6 })
+      
+      // Floating text for reward
+      this.effects.spawnFloatingText(enemy.x, enemy.y - 10, `+${enemy.reward}`, '#f59e0b')
+      
       if (enemy.isElite && enemy.eliteModifier === 'explosive') {
         this.createExplosion(enemy.x, enemy.y)
       }
@@ -788,20 +1150,7 @@ class TowerDefenseGame extends GameEngine {
   }
 
   private createExplosion(x: number, y: number): void {
-    const scale = this.dpr
-    for (let i = 0; i < 16; i++) {
-      const angle = (Math.PI * 2 * i) / 16
-      const speed = 2 + Math.random() * 3
-      this.particles.push({
-        x,
-        y,
-        vx: Math.cos(angle) * speed,
-        vy: Math.sin(angle) * speed,
-        life: 400 + Math.random() * 200,
-        color: ['#f97316', '#ef4444', '#fbbf24'][Math.floor(Math.random() * 3)]!,
-        size: Math.floor(3 * scale),
-      })
-    }
+    this.effects.burst(x, y, 16, ['#f97316', '#ef4444', '#fbbf24'], { min: 2, max: 6 })
   }
 
   private handleTap(clientX: number, clientY: number): void {
@@ -810,9 +1159,9 @@ class TowerDefenseGame extends GameEngine {
     const y = (clientY - rect.top) * this.height / rect.height
 
     if (this.phase === 'menu') {
-      const startBtnY = this.height * 0.45
+      const startBtnY = this.height * 0.52
       const startBtnW = Math.floor(this.width * 0.5)
-      const startBtnH = Math.floor(56 * this.dpr)
+      const startBtnH = Math.floor(52 * this.dpr)
       const startBtnX = (this.width - startBtnW) / 2
       if (x >= startBtnX && x <= startBtnX + startBtnW && y >= startBtnY && y <= startBtnY + startBtnH) {
         this.phase = 'playing'
@@ -833,9 +1182,9 @@ class TowerDefenseGame extends GameEngine {
 
   private handleGameTap(x: number, y: number): void {
     const scale = this.dpr
-    const btnY = this.gridOffsetY + this.cellSize * this.rows + Math.floor(56 * scale)
+    const btnY = this.gridOffsetY + this.cellSize * this.rows + Math.floor(52 * scale)
     const btnW = Math.floor((this.width - Math.floor(32 * scale)) / 3)
-    const btnH = Math.floor(40 * scale)
+    const btnH = Math.floor(38 * scale)
     const gap = Math.floor(4 * scale)
     const types: ('basic' | 'sniper' | 'splash')[] = ['basic', 'sniper', 'splash']
 
@@ -876,10 +1225,12 @@ class TowerDefenseGame extends GameEngine {
             angle: 0,
             synergyBonus: 1,
             adjacentTowers: 0,
+            flashTimer: 0,
           }
           this.towers.push(tower)
           this.synergiesDirty = true
-          this.effects.burst(pos.x, pos.y, 8, ['#4caf50'], { min: 1, max: 3 })
+          this.effects.burst(pos.x, pos.y, 8, ['#4caf50', '#a3e635'], { min: 1, max: 4 })
+          this.effects.sparkle(pos.x, pos.y, '#4caf50')
         }
       }
     }

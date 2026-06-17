@@ -70,8 +70,8 @@ export class EffectsManager {
     this.combo.onHit()
   }
 
-  triggerConfetti(count: number): void {
-    this.confetti.burst(count)
+  triggerConfetti(count: number, originX?: number): void {
+    this.confetti.burst(count, originX)
   }
 
   triggerFlash(color: string = '#ffffff', alpha: number = 0.3, duration: number = 150): void {

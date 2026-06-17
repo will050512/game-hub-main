@@ -135,15 +135,14 @@ function handlePurchase() {
   position: relative;
   background: var(--color-bg-card);
   border-radius: var(--radius-lg);
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  border-left: 3px solid var(--rarity-border, transparent);
-  border: 2px solid var(--color-border);
-  border-left: 3px solid var(--rarity-border, transparent);
-  overflow: hidden;
-  transition:
+   padding: 16px;
+   display: flex;
+   flex-direction: column;
+   gap: 12px;
+   border: 2px solid var(--color-border);
+   border-left: 3px solid var(--rarity-border, transparent);
+   overflow: hidden;
+   transition:
     transform var(--duration-normal) cubic-bezier(0.34, 1.56, 0.64, 1),
     box-shadow var(--duration-normal) ease,
     border-color var(--duration-normal) ease;

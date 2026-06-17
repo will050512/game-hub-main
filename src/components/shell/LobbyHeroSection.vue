@@ -65,27 +65,6 @@ onUnmounted(() => {
     <!-- Decorative Layer -->
     <KawaiiDecorLayer mood="playful" />
 
-    <!-- Ambient Particles -->
-    <AmbientParticles :count="20" :speed="0.3" />
-
-    <!-- Floating Decorative Elements -->
-    <div class="hero-floaters" aria-hidden="true">
-      <div
-        v-for="(pos, i) in badgePositions"
-        :key="i"
-        class="floater"
-        :class="`floater-${i + 1}`"
-        :style="{ '--anim-delay': pos.delay }"
-        v-bind="pos"
-      >
-        <KawaiiIcon
-  :name="['star', 'heart', 'sparkle', 'star'][i] as KawaiiIconId"
-          size="sm"
-          class="floater-icon"
-        />
-      </div>
-    </div>
-
     <!-- Main Content -->
     <div class="hero-content" @mouseenter="isHovered = true" @mouseleave="isHovered = false">
       <!-- Mascot -->
@@ -173,18 +152,6 @@ onUnmounted(() => {
       </div>
       <span class="stat-card__hover-glow"></span>
     </button>
-
-    <!-- Coins Card -->
-    <div class="stat-card" aria-label="金幣持有量">
-      <div class="stat-card__icon-wrap">
-        <KawaiiIcon name="coin" size="md" class="stat-icon" />
-      </div>
-      <div class="stat-card__info">
-        <span class="stat-value">{{ coins.toLocaleString() }}</span>
-        <span class="stat-label">金幣</span>
-      </div>
-      <span class="stat-card__hover-glow"></span>
-    </div>
 
     <!-- Coins Card -->
     <div class="stat-card" aria-label="金幣持有量">

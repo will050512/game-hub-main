@@ -47,6 +47,7 @@ export class CanvasConfetti {
   private pool: ConfettiParticle[] = []
   private active: ConfettiParticle[] = []
   private canvasHeight = 600
+  private canvasWidth = 800
 
   constructor() {
     for (let i = 0; i < MAX_PARTICLES; i++) {
@@ -54,15 +55,16 @@ export class CanvasConfetti {
     }
   }
 
-  /** Set the canvas height (for floor bounce detection). */
-  setCanvasHeight(height: number): void {
+  /** Set the canvas dimensions (for floor bounce detection and confetti origin). */
+  setCanvasSize(width: number, height: number): void {
+    this.canvasWidth = width
     this.canvasHeight = height
   }
 
   /** Spawn a burst of confetti. */
   burst(count: number, originX?: number, originY?: number): void {
-    const ox = originX ?? this.canvasHeight / 2
-    const oy = originY ?? 0
+    const ox = originX ?? this.canvasWidth / 2
+    const oy = originY ?? -10
 
     for (let i = 0; i < count; i++) {
       if (this.pool.length === 0 || this.active.length >= MAX_PARTICLES) {

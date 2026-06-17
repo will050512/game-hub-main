@@ -113,26 +113,9 @@ function onThumbError() { thumbFailed.value = true }
 <template>
   <div v-if="game" class="page">
     <div class="bg">
-      <AmbientParticles
-        :count="15"
-        :colors="particleColors"
-        :speed="0.3"
-        :max-size="5"
-        :min-size="2"
-      />
       <div class="orb o1" :style="{ background: game.color }" />
       <div class="orb o2" :style="{ background: game.color }" />
       <KawaiiDecorLayer :category="game.category" mood="cozy" />
-      <span
-        v-for="i in 6" :key="i"
-        :class="['pt', 'p' + i]"
-        :style="{
-          '--gc': game.color,
-          '--pc': particleChar?.character ?? '✦',
-          '--ps': (particleChar?.size ?? 4) + 'px',
-          '--pc-color': particleChar?.color ?? game.color,
-        }"
-      />
     </div>
 
     <header class="hdr">
@@ -207,25 +190,6 @@ function onThumbError() { thumbFailed.value = true }
               <span class="st">{{ step }}</span>
             </li>
           </ol>
-        </BaseCard>
-
-        <BaseCard v-if="optimizationProfile" variant="default" padding="md">
-          <h2 class="sec-title"><KawaiiIcon :name="optimizationProfile.featuredIcon" size="sm" /> B+C 重構確認</h2>
-          <p class="txt">{{ optimizationProfile.thumbnailFocus }}</p>
-          <div class="audit-grid">
-            <div class="audit-block">
-              <h3 class="audit-title">玩法合理性</h3>
-              <ul class="audit-list">
-                <li v-for="item in optimizationProfile.playabilityChecks" :key="item">{{ item }}</li>
-              </ul>
-            </div>
-            <div class="audit-block">
-              <h3 class="audit-title">深度優化</h3>
-              <ul class="audit-list">
-                <li v-for="item in optimizationProfile.deepPolish" :key="item">{{ item }}</li>
-              </ul>
-            </div>
-          </div>
         </BaseCard>
 
         <div v-if="game.tags?.length" class="tags">

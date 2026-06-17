@@ -370,7 +370,6 @@ function onTutorialEnd() {
 
 <template>
   <div v-if="game" :class="shellClasses" :style="identityVars">
-    <KawaiiDecorLayer class="play-decor" :category="game.category" mood="action" />
 
     <Transition name="fade">
       <div v-if="shellError" class="overlay error-overlay">

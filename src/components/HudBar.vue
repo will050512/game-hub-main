@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, onMounted, onBeforeUnmount } from 'vue'
+import { computed, ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import DoodleCard from '@/components/DoodleCard.vue'
 import type { GameHudData } from '@/types'
 import BuffIcon from '@/components/BuffIcon.vue'
@@ -47,8 +47,6 @@ const isLowHp = computed(() => {
   return props.stats.hp / props.stats.maxHp < 0.25
 })
 
-const prevStatsKey = computed(() => `${props.stats.hp}-${props.stats.xp}-${props.stats.score}`)
-
 onMounted(() => {
   scoreDisplay.value = props.stats.score
   prevScore.value = props.stats.score
@@ -59,7 +57,6 @@ onBeforeUnmount(() => {
 })
 
 let lastWatchedScore = -1
-import { watch } from 'vue'
 watch(
   () => props.stats.score,
   (newScore) => {
