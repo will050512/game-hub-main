@@ -290,10 +290,10 @@ class TowerDefenseGame extends GameEngine {
     const startBtnH = Math.floor(52 * scale)
     const startBtnX = (this.width - startBtnW) / 2
 
-    const pulse = Math.sin(this.animationTimer * 0.003) * 0.06 + 0.94
+    const btnPulse = Math.sin(this.animationTimer * 0.003) * 0.06 + 0.94
     ctx.save()
     ctx.translate(this.width / 2, startBtnY + startBtnH / 2)
-    ctx.scale(pulse, pulse)
+    ctx.scale(btnPulse, btnPulse)
     ctx.translate(-this.width / 2, -(startBtnY + startBtnH / 2))
     drawKawaiiButton(ctx, {
       x: startBtnX,
