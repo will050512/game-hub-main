@@ -137,6 +137,7 @@ export class InputManager {
 
     for (let i = 0; i < e.changedTouches.length; i++) {
       const touch = e.changedTouches[i]
+      if (!touch) continue
       const state = this.touchStates.get(touch.identifier)
       if (!state || !state.active) continue
 
@@ -152,6 +153,7 @@ export class InputManager {
 
     for (let i = 0; i < e.changedTouches.length; i++) {
       const touch = e.changedTouches[i]
+      if (!touch) continue
       const state = this.touchStates.get(touch.identifier)
       if (!state) continue
 
@@ -169,6 +171,7 @@ export class InputManager {
 
     for (let i = 0; i < e.changedTouches.length; i++) {
       const touch = e.changedTouches[i]
+      if (!touch) continue
       const state = this.touchStates.get(touch.identifier)
       if (!state) continue
 
