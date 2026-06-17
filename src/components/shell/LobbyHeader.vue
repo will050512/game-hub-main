@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import KawaiiIcon from '@/components/KawaiiIcon.vue'
-import Mascot from '@/components/Mascot.vue'
 import LobbyHeroSection from './LobbyHeroSection.vue'
 
 defineProps<{
@@ -15,15 +14,7 @@ defineProps<{
 
 defineEmits<{
   'show-quests': []
-  'mascot-click': []
 }>()
-
-const expressionList: ('idle' | 'happy' | 'surprised')[] = ['idle', 'happy', 'surprised']
-let expressionIdx = 0
-
-function onMascotClick() {
-  expressionIdx = (expressionIdx + 1) % 3
-}
 </script>
 
 <template>

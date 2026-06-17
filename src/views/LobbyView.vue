@@ -39,8 +39,6 @@ const searchQuery = ref('')
 const showQuests = ref(false)
 const dailyQuests = ref<DailyQuestDef[]>([])
 const achievementQueue = ref<AchievementDef[]>([])
-const mascotClicks = ref(0)
-
 // --- Computed ---
 const filteredGames = computed(() => {
   let games = getGamesByCategory(activeCategory.value)
@@ -108,10 +106,6 @@ async function initQuests(): Promise<void> {
   }
 }
 
-function handleMascotClick(): void {
-  mascotClicks.value++
-}
-
 onMounted(async () => {
   await Promise.all([currencyStore.loadBalance(), playerStore.loadProfile()])
   await Promise.all(gameRegistry.map(g => db.getHighScore(g.id).then(s => { highScores.value[g.id] = s })))
@@ -137,7 +131,6 @@ onMounted(async () => {
           :unlocked-count="unlockedCount"
           :coins="currencyStore.balance"
           @show-quests="showQuests = !showQuests"
-          @mascot-click="handleMascotClick"
         />
       </Transition>
 
