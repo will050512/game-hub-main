@@ -28,6 +28,7 @@ export interface GameOverlayConfig {
   introProgress: number
   dpr: number
   phaseMessage?: string
+  won?: boolean
 }
 
 /**
@@ -181,12 +182,13 @@ export class GameOverlay {
     const centerY = clampSafeY(height * 0.42, height * 0.85)
 
     // Title
+    const titleText = config.won ? '🎉 勝利！守住 20 波！' : '遊戲結束'
     drawKawaiiInlineLabel(ctx, {
       x: width / 2,
       y: centerY - 48 * dpr,
-      text: '遊戲結束',
-      iconKind: 'target',
-      color: config.gameColor,
+      text: titleText,
+      iconKind: config.won ? 'star' : 'target',
+      color: config.won ? '#22c55e' : config.gameColor,
       fontSize: 24 * dpr,
       align: 'center',
     })

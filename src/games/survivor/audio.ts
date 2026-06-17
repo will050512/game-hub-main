@@ -323,6 +323,36 @@ export class SurvivorAudioManager {
     }
   }
 
+  async playSynthesis(): Promise<void> {
+    try {
+      await this.playSample('level_up', 0.3)
+    } catch {
+      if (!this.isSoundEnabled()) return
+      if (!(await this.ensureAudioContext())) return
+
+      const context = this.audioContext
+      const gainTarget = this.masterGain
+      if (!context || !gainTarget) return
+
+      const notes = [523.25, 659.25, 783.99, 1046.5, 1318.5]
+      for (let i = 0; i < notes.length; i++) {
+        const note = notes[i]
+        const osc = context.createOscillator()
+        const gain = context.createGain()
+        osc.type = 'sine'
+        osc.frequency.value = note
+        const now = context.currentTime + i * 0.06
+        gain.gain.setValueAtTime(0, now)
+        gain.gain.linearRampToValueAtTime(0.15, now + 0.01)
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25)
+        osc.connect(gain)
+        gain.connect(gainTarget)
+        osc.start(now)
+        osc.stop(now + 0.3)
+      }
+    }
+  }
+
   async playBossDeath(): Promise<void> {
     try {
       await this.playSample('boss_death', 0.25)

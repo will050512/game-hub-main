@@ -26,6 +26,7 @@ class MemoryGame extends GameEngine {
   private difficulty: Difficulty = 'medium'
   private score = 0
   private moves = 0
+  private maxMoves = 0
   private matches = 0
   private totalPairs = 0
   private gameTime = 0
@@ -86,6 +87,11 @@ class MemoryGame extends GameEngine {
     else { this.cols = 6; this.rows = 4; }
 
     this.totalPairs = (this.cols * this.rows) / 2
+    switch (this.difficulty) {
+      case 'easy': this.maxMoves = Math.floor(this.totalPairs * 3); break
+      case 'medium': this.maxMoves = Math.floor(this.totalPairs * 2.5); break
+      case 'hard': this.maxMoves = Math.floor(this.totalPairs * 2); break
+    }
     const selected = this.symbols.slice(0, this.totalPairs)
     const pairs = [...selected, ...selected]
 
@@ -257,12 +263,14 @@ class MemoryGame extends GameEngine {
       stroke: this.theme.palette.ink,
       radius: Math.floor(12 * scale),
     })
+    const remainingMoves = this.maxMoves - this.moves
+    const movesColor = remainingMoves <= 5 ? '#ef4444' : this.theme.palette.ink
     drawKawaiiInlineLabel(ctx, {
       x: this.width / 2 - 78 * scale,
       y: topBarY + 4 * scale,
-      text: `步數 ${this.moves} · 配對 ${this.matches}/${this.totalPairs}`,
+      text: `步數 ${this.moves}/${this.maxMoves} · 剩餘 ${remainingMoves} · 配對 ${this.matches}/${this.totalPairs}`,
       iconKind: 'star',
-      color: '#831843',
+      color: movesColor,
       fontSize: Math.max(11, Math.floor(12 * scale)),
     })
 
@@ -361,9 +369,11 @@ class MemoryGame extends GameEngine {
     })
 
     const isWon = this.matches >= this.totalPairs
+    const isTimeout = this.moves >= this.maxMoves && !isWon
+    const title = isWon ? '🎉 恭喜通關！' : isTimeout ? '🏁 次數用盡！' : '🏁 遊戲結束'
     ctx.fillStyle = this.theme.palette.primary
     ctx.font = `bold ${Math.floor(28 * scale)}px ${this.theme.font.family}`
-    ctx.fillText(isWon ? '🎉 恭喜通關！' : '🏁 遊戲結束', this.width / 2, panelY + Math.floor(40 * scale))
+    ctx.fillText(title, this.width / 2, panelY + Math.floor(40 * scale))
 
     ctx.fillStyle = this.theme.palette.ink
     ctx.font = `${Math.floor(16 * scale)}px ${this.theme.font.family}`
@@ -519,6 +529,10 @@ class MemoryGame extends GameEngine {
   }
 
   private handleBoardTap(x: number, y: number): void {
+    if (this.moves >= this.maxMoves && this.matches < this.totalPairs) {
+      this.phase = 'gameover'
+      return
+    }
     const gap = Math.floor(6 * this.dpr)
     for (let r = 0; r < this.rows; r++) {
       for (let c = 0; c < this.cols; c++) {

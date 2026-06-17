@@ -774,6 +774,7 @@ class SurvivorGame extends GameEngine {
     const options = this.generateUpgradeOptions()
     this.callbacks.onLevelUp?.(options, (picked: UpgradeOption) => {
       this.applyUpgrade(picked)
+      this.trySynthesizeWeapons()
       this.pendingLevelUp = false
       this.resume()
     })
@@ -923,6 +924,41 @@ class SurvivorGame extends GameEngine {
       }
       this.recalcPassives()
     }
+  }
+
+  private trySynthesizeWeapons(): boolean {
+    for (let i = 0; i < this.weapons.length; i++) {
+      for (let j = i + 1; j < this.weapons.length; j++) {
+        const w1 = this.weapons[i]
+        const w2 = this.weapons[j]
+        if (w1.def.id === w2.def.id && w1.level === w2.level) {
+          const currentLevel = w1.level
+          const maxLvl = w1.def.maxLevel
+          if (currentLevel < maxLvl) {
+            w1.level++
+            this.weapons.splice(j, 1)
+            this.onWeaponSynthesized(w1)
+            return true
+          }
+        }
+      }
+    }
+    return false
+  }
+
+  private onWeaponSynthesized(weapon: OwnedWeapon) {
+    this.spawnParticles(this.playerX, this.playerY, 25, '#fbbf24', 1.5)
+    this.spawnParticles(this.playerX, this.playerY, 15, '#f59e0b', 1.2)
+    this.triggerScreenShake(10, 200)
+    this.spawnFloatingText(
+      this.playerX,
+      this.playerY - 60,
+      `⚡ ${weapon.def.name} Lv.${weapon.level}！`,
+      '#fbbf24',
+      1.4
+    )
+    this.effects.triggerConfetti(20)
+    void audioManager.playSynthesis()
   }
 
   private updateCollisions() {

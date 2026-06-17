@@ -29,11 +29,14 @@ const SPECIAL_FOOD_TINTS: Record<string, { variant: string; color: string }> = {
   wall_pass: { variant: 'wall_pass', color: '#c084fc' },
   shrink: { variant: 'shrink', color: '#34d399' },
   golden_apple: { variant: 'golden_apple', color: '#fbbf24' },
+  speed_boost: { variant: 'speed', color: '#f59e0b' },
 }
 
 const SNAKE_HEAD_TINTS: Record<string, { variant: string; color: string }> = {
   slow: { variant: 'slow', color: '#60a5fa' },
   wall_pass: { variant: 'wall_pass', color: '#c084fc' },
+  golden_apple: { variant: 'golden_apple', color: '#fbbf24' },
+  speed_boost: { variant: 'slow', color: '#f59e0b' },
 }
 
 const DIRECTION_ROTATION: Record<Direction, number> = {
@@ -397,7 +400,7 @@ class SnakeGame extends GameEngine {
           variant: tint?.variant,
         })
         if (!headDrew) {
-          const headColor = buffId === 'slow' ? '#60a5fa' : buffId === 'wall_pass' ? '#c084fc' : '#5bff74'
+          const headColor = buffId === 'slow' ? '#60a5fa' : buffId === 'wall_pass' ? '#c084fc' : buffId === 'golden_apple' ? '#fbbf24' : buffId === 'speed_boost' ? '#f59e0b' : '#5bff74'
           const inset = Math.max(1, Math.floor(cellSize * 0.08))
           ctx.fillStyle = headColor
           ctx.fillRect(
@@ -548,9 +551,10 @@ class SnakeGame extends GameEngine {
     this.snake.unshift(nextHead)
 
     if (willEat) {
+      const gained = 10 * this.level * (this.activeBuff?.def.scoreMultiplier ?? 1)
       this.foodsEaten += 1
       this.level = Math.floor(this.foodsEaten / this.levelFoodTarget) + 1
-      this.score += 10 * this.level
+      this.score += gained
       this.moveIntervalMs = Math.max(70, this.moveIntervalMs * 0.96)
       this.food = this.createFoodPosition()
       if (!this.specialFood && Math.random() < 0.2) {
@@ -565,7 +569,7 @@ class SnakeGame extends GameEngine {
       const screenX = ox + this.food.x * sz + sz / 2
       const screenY = oy + this.food.y * sz + sz / 2
       this.spawnParticles(screenX, screenY, 15, '#4ade80', 1.2)
-      this.spawnFloatingText(screenX, screenY - 20, `+${10 * this.level}`, '#4ade80', 0.8)
+      this.spawnFloatingText(screenX, screenY - 20, `+${gained}`, '#4ade80', 0.8)
     } else {
       this.snake.pop()
     }
@@ -579,7 +583,8 @@ class SnakeGame extends GameEngine {
       if (nextHead.x === extraFood.x && nextHead.y === extraFood.y) {
         this.extraFoods.splice(i, 1)
         this.foodsEaten += 1
-        this.score += 10 * this.level
+        const gained = 10 * this.level * (this.activeBuff?.def.scoreMultiplier ?? 1)
+        this.score += gained
         this.callbacks.onScoreUpdate?.(this.score)
         const boardSize = Math.floor(Math.min(this.width, this.height) * 0.9)
         const sz = Math.max(8, Math.floor(boardSize / this.gridCols))
@@ -676,6 +681,15 @@ class SnakeGame extends GameEngine {
         break
       }
       case 'golden_apple':
+        this.scoreMultiplier = 3
+        this.baseMoveInterval = this.moveIntervalMs
+        this.moveIntervalMs = this.moveIntervalMs * 0.85
+        this.activeBuff = { def, remainingMs: def.durationMs }
+        break
+      case 'speed_boost':
+        this.baseMoveInterval = this.moveIntervalMs
+        this.moveIntervalMs = this.moveIntervalMs / 1.4
+        this.activeBuff = { def, remainingMs: def.durationMs }
         break
       default:
         break
@@ -701,6 +715,13 @@ class SnakeGame extends GameEngine {
         break
       case 'wall_pass':
         this.wallPassActive = false
+        break
+      case 'golden_apple':
+        this.scoreMultiplier = 1
+        this.moveIntervalMs = this.baseMoveInterval
+        break
+      case 'speed_boost':
+        this.moveIntervalMs = this.baseMoveInterval
         break
       default:
         break

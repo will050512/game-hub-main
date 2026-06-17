@@ -15,7 +15,7 @@ interface Tower {
   fireRate: number
   fireTimer: number
   level: number
-  type: 'basic' | 'sniper' | 'splash'
+  type: 'basic' | 'sniper' | 'splash' | 'frost'
   color: string
   angle: number
   synergyBonus: number
@@ -29,6 +29,7 @@ interface Enemy {
   hp: number
   maxHp: number
   speed: number
+  baseSpeed: number
   pathIndex: number
   reward: number
   type: 'normal' | 'fast' | 'tank' | 'boss' | 'elite'
@@ -38,6 +39,7 @@ interface Enemy {
   isElite: boolean
   eliteModifier?: 'armored' | 'swift' | 'regenerating' | 'explosive'
   bobOffset: number
+  frostTimer: number
 }
 
 interface Projectile {
@@ -49,6 +51,7 @@ interface Projectile {
   damage: number
   splash: boolean
   splashRadius: number
+  frost: boolean
   color: string
   active: boolean
   trailTimer: number
@@ -78,10 +81,10 @@ class TowerDefenseGame extends GameEngine {
   private gridOffsetY = 0
   private cols = 8
   private rows = 6
-  private selectedTowerType: 'basic' | 'sniper' | 'splash' = 'basic'
+  private selectedTowerType: 'basic' | 'sniper' | 'splash' | 'frost' = 'basic'
   private path: { r: number; c: number }[] = []
   private animationTimer = 0
-  private towerCosts: Record<string, number> = { basic: 50, sniper: 100, splash: 150 }
+  private towerCosts: Record<string, number> = { basic: 50, sniper: 100, splash: 150, frost: 120 }
   private eliteWaveInterval = 3
   private effects: EffectsManager = new EffectsManager()
   private synergiesDirty = true
@@ -90,6 +93,10 @@ class TowerDefenseGame extends GameEngine {
   private pathDotTimer = 0
   private menuPulseTimer = 0
   private towerPreviewType = 'basic' as Tower['type']
+  private won = false
+  private selectedTower: Tower | null = null
+  private showUpgradeUI = false
+  private readonly maxWaves = 20
 
   protected init(): void {
     this.phase = 'menu'
@@ -104,6 +111,9 @@ class TowerDefenseGame extends GameEngine {
     this.projectiles = []
     this.enemiesSpawned = 0
     this.animationTimer = 0
+    this.won = false
+    this.selectedTower = null
+    this.showUpgradeUI = false
     this.gameOverlay.setSize(this.width, this.height)
     this.generatePath()
     this.pushStats()
@@ -112,9 +122,18 @@ class TowerDefenseGame extends GameEngine {
 
   private generatePath(): void {
     this.path = []
-    const startRow = Math.floor(this.rows / 2)
-    for (let c = 0; c < this.cols; c++) {
-      this.path.push({ r: startRow, c })
+    const cols = this.cols
+    const rows = this.rows
+    for (let row = 0; row < rows; row++) {
+      if (row % 2 === 0) {
+        for (let col = 0; col < cols; col++) {
+          this.path.push({ r: row, c: col })
+        }
+      } else {
+        for (let col = cols - 1; col >= 0; col--) {
+          this.path.push({ r: row, c: col })
+        }
+      }
     }
   }
 
@@ -241,10 +260,11 @@ class TowerDefenseGame extends GameEngine {
     ctx.fillText('— 塔防預覽 —', this.width / 2, previewY + Math.floor(16 * scale))
 
     // Show preview towers
-    const towerTypes: { type: 'basic' | 'sniper' | 'splash'; label: string; color: string; cost: number; icon: string }[] = [
+    const towerTypes: { type: 'basic' | 'sniper' | 'splash' | 'frost'; label: string; color: string; cost: number; icon: string }[] = [
       { type: 'basic', label: '基礎', color: '#3b82f6', cost: 50, icon: '⚡' },
       { type: 'sniper', label: '狙擊', color: '#8b5cf6', cost: 100, icon: '🎯' },
       { type: 'splash', label: '範圍', color: '#ef4444', cost: 150, icon: '💥' },
+      { type: 'frost', label: '冰霜', color: '#38bdf8', cost: 120, icon: '❄️' },
     ]
 
     const btnW = Math.floor(previewW / 3) - Math.floor(8 * scale)
@@ -463,6 +483,11 @@ class TowerDefenseGame extends GameEngine {
     // ---- Tower buttons ----
     this.renderTowerButtons(ctx, scale)
 
+    // ---- Upgrade UI for selected tower ----
+    if (this.selectedTower) {
+      this.renderUpgradeUI(ctx, scale)
+    }
+
     // Game over overlay
     if (this.phase === 'gameover') {
       this.gameOverlay.render(ctx, {
@@ -476,6 +501,7 @@ class TowerDefenseGame extends GameEngine {
         gameColor: this.theme.ui.accent,
         dpr: scale,
         introProgress: 1,
+        won: this.won,
       })
     }
 
@@ -486,6 +512,115 @@ class TowerDefenseGame extends GameEngine {
   private renderTowerRange(ctx: CanvasRenderingContext2D): void {
     // We don't track selection but we can highlight on hover-like behavior
     // For now, skip range indicator - it would need mouse tracking
+  }
+
+  private renderUpgradeUI(ctx: CanvasRenderingContext2D, scale: number): void {
+    const t = this.selectedTower!
+    const size = this.cellSize * 0.7
+
+    // Selection ring
+    ctx.save()
+    ctx.strokeStyle = '#ffffff'
+    ctx.lineWidth = 2 * scale
+    ctx.shadowColor = '#ffffff'
+    ctx.shadowBlur = 10 * scale
+    ctx.shadowOffsetY = 0
+    ctx.beginPath()
+    ctx.roundRect(
+      t.x - size / 2 - 3 * scale,
+      t.y - size / 2 - 3 * scale,
+      size + 6 * scale,
+      size + 6 * scale,
+      Math.floor(8 * scale)
+    )
+    ctx.stroke()
+    ctx.shadowBlur = 0
+    ctx.restore()
+
+    // Stats panel background
+    const panelW = Math.floor(160 * scale)
+    const panelH = Math.floor(60 * scale)
+    const panelX = t.x - panelW / 2
+    const panelY = t.y + size / 2 + Math.floor(8 * scale)
+
+    drawKawaiiPanel(ctx, panelX, panelY, panelW, panelH, {
+      fill: this.theme.ui.surface + 'ee',
+      accent: t.color,
+      stroke: t.color + '88',
+      radius: Math.floor(8 * scale),
+    })
+
+    // Stats text
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    ctx.fillStyle = this.theme.palette.accent
+    ctx.font = `bold ${Math.floor(11 * scale)}px ${this.theme.font.family}`
+    ctx.fillText(`Lv.${t.level} | 傷害 ${t.damage} | 射程 ${Math.floor(t.range)}`, t.x, panelY + Math.floor(14 * scale))
+
+    // Level stars
+    const stars = '★'.repeat(t.level) + '☆'.repeat(Math.max(0, 3 - t.level))
+    ctx.fillStyle = '#fbbf24'
+    ctx.font = `${Math.floor(10 * scale)}px ${this.theme.font.family}`
+    ctx.fillText(stars, t.x, panelY + Math.floor(30 * scale))
+
+    // Upgrade button
+    if (t.level < 4) {
+      const upgradeCost = this.getUpgradeCost(t)
+      const canAfford = this.gold >= upgradeCost
+
+      const btnW = Math.floor(panelW * 0.45)
+      const btnH = Math.floor(22 * scale)
+      const btnX = panelX + Math.floor(4 * scale)
+      const btnY = panelY + Math.floor(40 * scale)
+
+      drawKawaiiButton(ctx, {
+        x: btnX,
+        y: btnY,
+        width: btnW,
+        height: btnH,
+        label: `升級 ${upgradeCost}g`,
+        iconKind: 'laser',
+        enabled: canAfford,
+        active: false,
+        fill: canAfford ? t.color : 'rgba(226,232,240,0.5)',
+        activeFill: t.color,
+        disabledFill: 'rgba(226,232,240,0.5)',
+        textColor: canAfford ? '#ffffff' : '#64748b',
+      })
+    } else {
+      const maxBtnW = Math.floor(panelW * 0.45)
+      const maxBtnH = Math.floor(22 * scale)
+      const maxBtnX = panelX + Math.floor(4 * scale)
+      const maxBtnY = panelY + Math.floor(40 * scale)
+
+      ctx.fillStyle = '#fbbf24'
+      ctx.font = `bold ${Math.floor(11 * scale)}px ${this.theme.font.family}`
+      ctx.textAlign = 'left'
+      ctx.fillText('MAX Lv.4', maxBtnX + Math.floor(4 * scale), maxBtnY + maxBtnH / 2)
+    }
+
+    // Sell button
+    const sellBtnW = Math.floor(panelW * 0.45)
+    const sellBtnH = Math.floor(22 * scale)
+    const sellBtnX = panelX + panelW * 0.5 + Math.floor(4 * scale)
+    const sellBtnY = panelY + Math.floor(40 * scale)
+    const totalInvestment = this.getTotalInvestment(t)
+    const sellValue = Math.floor(totalInvestment * 0.5)
+
+    drawKawaiiButton(ctx, {
+      x: sellBtnX,
+      y: sellBtnY,
+      width: sellBtnW,
+      height: sellBtnH,
+      label: `X ${sellValue}g`,
+      iconKind: 'shield',
+      enabled: true,
+      active: false,
+      fill: '#ef4444',
+      activeFill: '#ef4444',
+      disabledFill: 'rgba(226,232,240,0.5)',
+      textColor: '#ffffff',
+    })
   }
 
   private renderTower(ctx: CanvasRenderingContext2D, tower: Tower): void {
@@ -769,16 +904,38 @@ class TowerDefenseGame extends GameEngine {
     })
   }
 
+  private triggerGameOver(): void {
+    if (!this.gameOverSent) {
+      this.gameOverSent = true
+      this.callbacks.onRewardEvent?.({
+        schemaVersion: REWARD_EVENT_SCHEMA_VERSION,
+        gameId: 'tower-defense',
+        emittedAt: new Date().toISOString(),
+        score: this.score,
+        rewards: createRewardPayload(),
+        result: {
+          score: this.score,
+          kills: this.towers.length,
+          time: Math.floor(this.gameTime / 1000),
+          level: this.wave,
+          coins: 0,
+        },
+      })
+      this.callbacks.onGameOver?.(this.score)
+    }
+  }
+
   private renderTowerButtons(ctx: CanvasRenderingContext2D, scale: number): void {
     const btnY = this.gridOffsetY + this.cellSize * this.rows + Math.floor(52 * scale)
-    const btnW = Math.floor((this.width - Math.floor(32 * scale)) / 3)
+    const btnW = Math.floor((this.width - Math.floor(40 * scale)) / 4)
     const btnH = Math.floor(38 * scale)
     const gap = Math.floor(4 * scale)
 
-    const types: { type: 'basic' | 'sniper' | 'splash'; label: string; color: string; cost: number; icon: string }[] = [
+    const types: { type: 'basic' | 'sniper' | 'splash' | 'frost'; label: string; color: string; cost: number; icon: string }[] = [
       { type: 'basic', label: '基礎', color: '#3b82f6', cost: 50, icon: '⚡' },
       { type: 'sniper', label: '狙擊', color: '#8b5cf6', cost: 100, icon: '🎯' },
       { type: 'splash', label: '範圍', color: '#ef4444', cost: 150, icon: '💥' },
+      { type: 'frost', label: '冰霜', color: '#38bdf8', cost: 120, icon: '❄️' },
     ]
 
     types.forEach((t, i) => {
@@ -793,7 +950,7 @@ class TowerDefenseGame extends GameEngine {
         height: btnH,
         label: `${t.icon} ${t.label}`,
         count: t.cost,
-        iconKind: t.type === 'basic' ? 'laser' : t.type === 'sniper' ? 'target' : 'bomb',
+        iconKind: t.type === 'basic' ? 'laser' : t.type === 'sniper' ? 'target' : t.type === 'splash' ? 'bomb' : 'shield',
         enabled: canAfford,
         active: isActive,
         fill: 'rgba(255,255,255,0.9)',
@@ -807,6 +964,14 @@ class TowerDefenseGame extends GameEngine {
   private updateSpawning(dt: number): void {
     if (this.enemiesSpawned >= this.enemiesPerWave) {
       if (this.enemies.length === 0 && this.enemiesSpawned >= this.enemiesPerWave) {
+        if (this.wave >= this.maxWaves) {
+          // VICTORY!
+          this.phase = 'gameover'
+          this.won = true
+          this.gameOverSent = false
+          this.triggerGameOver()
+          return
+        }
         this.enemiesSpawned = 0
         this.gold += 50 + this.wave * 10
         this.effects.triggerConfetti(30)
@@ -855,6 +1020,7 @@ class TowerDefenseGame extends GameEngine {
       hp: 0,
       maxHp: 0,
       speed: 0,
+      baseSpeed: 0,
       pathIndex: 0,
       reward: 0,
       type,
@@ -864,6 +1030,7 @@ class TowerDefenseGame extends GameEngine {
       isElite: type === 'elite',
       eliteModifier: undefined,
       bobOffset: Math.random() * Math.PI * 2,
+      frostTimer: 0,
     }
 
     if (type === 'elite') {
@@ -875,6 +1042,7 @@ class TowerDefenseGame extends GameEngine {
           enemy.hp = Math.round(80 * hpMult * 1.5)
           enemy.maxHp = enemy.hp
           enemy.speed = 0.8
+          enemy.baseSpeed = 0.8
           enemy.reward = 40
           enemy.color = '#94a3b8'
           enemy.radius = Math.floor(11 * this.dpr)
@@ -883,6 +1051,7 @@ class TowerDefenseGame extends GameEngine {
           enemy.hp = Math.round(30 * hpMult)
           enemy.maxHp = enemy.hp
           enemy.speed = 3
+          enemy.baseSpeed = 3
           enemy.reward = 35
           enemy.color = '#fbbf24'
           enemy.radius = Math.floor(7 * this.dpr)
@@ -891,6 +1060,7 @@ class TowerDefenseGame extends GameEngine {
           enemy.hp = Math.round(60 * hpMult)
           enemy.maxHp = enemy.hp
           enemy.speed = 0.9
+          enemy.baseSpeed = 0.9
           enemy.reward = 45
           enemy.color = '#10b981'
           enemy.radius = Math.floor(9 * this.dpr)
@@ -899,6 +1069,7 @@ class TowerDefenseGame extends GameEngine {
           enemy.hp = Math.round(40 * hpMult)
           enemy.maxHp = enemy.hp
           enemy.speed = 1.2
+          enemy.baseSpeed = 1.2
           enemy.reward = 50
           enemy.color = '#f97316'
           enemy.radius = Math.floor(8 * this.dpr)
@@ -910,6 +1081,7 @@ class TowerDefenseGame extends GameEngine {
           enemy.hp = Math.round(20 * hpMult)
           enemy.maxHp = enemy.hp
           enemy.speed = 2
+          enemy.baseSpeed = 2
           enemy.reward = 15
           enemy.color = '#22d3ee'
           enemy.radius = Math.floor(6 * this.dpr)
@@ -918,6 +1090,7 @@ class TowerDefenseGame extends GameEngine {
           enemy.hp = Math.round(80 * hpMult)
           enemy.maxHp = enemy.hp
           enemy.speed = 0.6
+          enemy.baseSpeed = 0.6
           enemy.reward = 30
           enemy.color = '#f97316'
           enemy.radius = Math.floor(10 * this.dpr)
@@ -926,6 +1099,7 @@ class TowerDefenseGame extends GameEngine {
           enemy.hp = Math.round(200 * hpMult)
           enemy.maxHp = enemy.hp
           enemy.speed = 0.4
+          enemy.baseSpeed = 0.4
           enemy.reward = 100
           enemy.color = '#dc2626'
           enemy.radius = Math.floor(14 * this.dpr)
@@ -934,6 +1108,7 @@ class TowerDefenseGame extends GameEngine {
           enemy.hp = Math.round(40 * hpMult)
           enemy.maxHp = enemy.hp
           enemy.speed = 1
+          enemy.baseSpeed = 1
           enemy.reward = 10
           enemy.color = '#22c55e'
           enemy.radius = Math.floor(8 * this.dpr)
@@ -951,6 +1126,15 @@ class TowerDefenseGame extends GameEngine {
       if (!e.alive) {
         this.enemies.splice(i, 1)
         continue
+      }
+
+      // Handle frost slow timer
+      if (e.frostTimer > 0) {
+        e.frostTimer -= dt
+        if (e.frostTimer <= 0) {
+          e.speed = e.baseSpeed
+          e.frostTimer = 0
+        }
       }
 
       if (e.pathIndex < this.path.length - 1) {
@@ -1048,6 +1232,7 @@ class TowerDefenseGame extends GameEngine {
       damage: effectiveDamage,
       splash: tower.type === 'splash',
       splashRadius: tower.type === 'splash' ? this.cellSize * 0.8 : 0,
+      frost: tower.type === 'frost',
       color: tower.color,
       active: true,
       trailTimer: 0,
@@ -1102,6 +1287,9 @@ class TowerDefenseGame extends GameEngine {
         const dist = Math.sqrt(dx * dx + dy * dy)
         if (dist < proj.splashRadius) {
           this.damageEnemy(e, proj.damage * (1 - dist / proj.splashRadius * 0.5))
+          if (proj.frost) {
+            this.applyFrostSlow(e, 3000)
+          }
         }
       }
     } else {
@@ -1115,10 +1303,19 @@ class TowerDefenseGame extends GameEngine {
         const dist = Math.sqrt(dx * dx + dy * dy)
         if (dist < e.radius + 10) {
           this.damageEnemy(e, proj.damage)
+          if (proj.frost) {
+            this.applyFrostSlow(e, 3000)
+          }
           break
         }
       }
     }
+  }
+
+  private applyFrostSlow(enemy: Enemy, durationMs: number): void {
+    enemy.speed = enemy.baseSpeed * 0.5
+    enemy.frostTimer = durationMs
+    this.effects.spawnFloatingText(enemy.x, enemy.y - 10, '❄️', '#7dd3fc')
   }
 
   private damageEnemy(enemy: Enemy, damage: number): void {
@@ -1183,12 +1380,12 @@ class TowerDefenseGame extends GameEngine {
   private handleGameTap(x: number, y: number): void {
     const scale = this.dpr
     const btnY = this.gridOffsetY + this.cellSize * this.rows + Math.floor(52 * scale)
-    const btnW = Math.floor((this.width - Math.floor(32 * scale)) / 3)
+    const btnW = Math.floor((this.width - Math.floor(40 * scale)) / 4)
     const btnH = Math.floor(38 * scale)
     const gap = Math.floor(4 * scale)
-    const types: ('basic' | 'sniper' | 'splash')[] = ['basic', 'sniper', 'splash']
+    const types: ('basic' | 'sniper' | 'splash' | 'frost')[] = ['basic', 'sniper', 'splash', 'frost']
 
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 4; i++) {
       const bx = Math.floor(12 * scale) + i * (btnW + gap)
       if (x >= bx && x <= bx + btnW && y >= btnY && y <= btnY + btnH) {
         this.selectedTowerType = types[i]!
@@ -1201,39 +1398,118 @@ class TowerDefenseGame extends GameEngine {
 
     if (row >= 0 && row < this.rows && col >= 0 && col < this.cols) {
       const isPath = this.path.some(p => p.r === row && p.c === col)
-      const hasTower = this.towers.some(t => {
+
+      // Check if tapping an existing tower for upgrade/sell
+      const existingTower = this.towers.find(t => {
         const tc = Math.floor((t.x - this.gridOffsetX) / this.cellSize)
         const tr = Math.floor((t.y - this.gridOffsetY) / this.cellSize)
         return tc === col && tr === row
       })
 
-      if (!isPath && !hasTower) {
-        const cost = this.towerCosts[this.selectedTowerType] ?? 50
-        if (this.gold >= cost) {
-          this.gold -= cost
-          const pos = this.cellToPixel(row, col)
-          const tower: Tower = {
-            x: pos.x,
-            y: pos.y,
-            range: this.cellSize * (this.selectedTowerType === 'sniper' ? 3 : 2),
-            damage: this.selectedTowerType === 'sniper' ? 30 : this.selectedTowerType === 'splash' ? 15 : 10,
-            fireRate: this.selectedTowerType === 'sniper' ? 2000 : this.selectedTowerType === 'splash' ? 1500 : 800,
-            fireTimer: 0,
-            level: 1,
-            type: this.selectedTowerType,
-            color: this.selectedTowerType === 'sniper' ? '#8b5cf6' : this.selectedTowerType === 'splash' ? '#ef4444' : '#3b82f6',
-            angle: 0,
-            synergyBonus: 1,
-            adjacentTowers: 0,
-            flashTimer: 0,
+      if (existingTower) {
+        // Upgrade button tap detection
+        const upgradeBtnY = this.gridOffsetY + this.cellSize * this.rows + Math.floor(90 * scale)
+        const upgradeBtnW = Math.floor((this.width - Math.floor(40 * scale)) / 3)
+        const upgradeBtnH = Math.floor(32 * scale)
+        const upgradeGap = Math.floor(4 * scale)
+
+        // Sell button is to the right
+        const sellBtnX = Math.floor(12 * scale) + upgradeBtnW + upgradeGap
+        const sellBtnW = Math.floor((this.width - Math.floor(40 * scale)) / 3)
+
+        // Upgrade button is in the middle
+        const upgradeBtnX = Math.floor(12 * scale) + Math.floor((this.width - Math.floor(40 * scale)) / 3) + upgradeGap
+
+        if (existingTower.level < 4) {
+          const upgradeCost = this.getUpgradeCost(existingTower)
+          if (x >= upgradeBtnX && x <= upgradeBtnX + upgradeBtnW && y >= upgradeBtnY && y <= upgradeBtnY + upgradeBtnH) {
+            if (this.gold >= upgradeCost) {
+              this.gold -= upgradeCost
+              existingTower.level++
+              existingTower.damage = Math.floor(existingTower.damage * 1.5)
+              existingTower.range *= 1.15
+              existingTower.fireRate *= 0.9
+            }
+            return
           }
-          this.towers.push(tower)
+        }
+
+        // Sell button
+        if (x >= sellBtnX && x <= sellBtnX + sellBtnW && y >= upgradeBtnY && y <= upgradeBtnY + upgradeBtnH) {
+          const totalInvestment = this.getTotalInvestment(existingTower)
+          const sellValue = Math.floor(totalInvestment * 0.5)
+          this.gold += sellValue
+          const idx = this.towers.indexOf(existingTower)
+          this.towers.splice(idx, 1)
+          this.selectedTower = null
+          this.showUpgradeUI = false
+          this.effects.burst(existingTower.x, existingTower.y, 6, ['#fbbf24', '#f59e0b'], { min: 1, max: 3 })
+          this.effects.spawnFloatingText(existingTower.x, existingTower.y - 10, `+${sellValue} 💰`, '#f59e0b')
           this.synergiesDirty = true
-          this.effects.burst(pos.x, pos.y, 8, ['#4caf50', '#a3e635'], { min: 1, max: 4 })
-          this.effects.sparkle(pos.x, pos.y, '#4caf50')
+          return
+        }
+
+        // Select tower for upgrade UI
+        this.selectedTower = existingTower
+        this.showUpgradeUI = true
+        return
+      }
+
+      // Place tower on empty cell
+      if (!isPath) {
+        const hasTower = this.towers.some(t => {
+          const tc = Math.floor((t.x - this.gridOffsetX) / this.cellSize)
+          const tr = Math.floor((t.y - this.gridOffsetY) / this.cellSize)
+          return tc === col && tr === row
+        })
+
+        if (!hasTower) {
+          const cost = this.towerCosts[this.selectedTowerType] ?? 50
+          if (this.gold >= cost) {
+            this.gold -= cost
+            const pos = this.cellToPixel(row, col)
+            const tower: Tower = {
+              x: pos.x,
+              y: pos.y,
+              range: this.cellSize * (this.selectedTowerType === 'sniper' ? 3 : 2),
+              damage: this.selectedTowerType === 'sniper' ? 30 : this.selectedTowerType === 'splash' ? 15 : this.selectedTowerType === 'frost' ? 8 : 10,
+              fireRate: this.selectedTowerType === 'sniper' ? 2000 : this.selectedTowerType === 'splash' ? 1500 : this.selectedTowerType === 'frost' ? 1000 : 800,
+              fireTimer: 0,
+              level: 1,
+              type: this.selectedTowerType,
+              color: this.selectedTowerType === 'sniper' ? '#8b5cf6' : this.selectedTowerType === 'splash' ? '#ef4444' : this.selectedTowerType === 'frost' ? '#38bdf8' : '#3b82f6',
+              angle: 0,
+              synergyBonus: 1,
+              adjacentTowers: 0,
+              flashTimer: 0,
+            }
+            this.towers.push(tower)
+            this.synergiesDirty = true
+            this.effects.burst(pos.x, pos.y, 8, ['#4caf50', '#a3e635'], { min: 1, max: 4 })
+            this.effects.sparkle(pos.x, pos.y, '#4caf50')
+          }
         }
       }
     }
+  }
+
+  private getUpgradeCost(tower: Tower): number {
+    const baseCost = this.towerCosts[tower.type] ?? 50
+    switch (tower.level) {
+      case 1: return Math.floor(baseCost * 0.6)
+      case 2: return Math.floor(baseCost * 1.0)
+      case 3: return Math.floor(baseCost * 1.5)
+      default: return 0
+    }
+  }
+
+  private getTotalInvestment(tower: Tower): number {
+    let total = 0
+    for (let i = 1; i < tower.level; i++) {
+      const tempTower: Tower = { ...tower, level: i }
+      total += this.getUpgradeCost(tempTower)
+    }
+    return total + (this.towerCosts[tower.type] ?? 50)
   }
 
   protected override onResize(w: number, h: number): void {

@@ -5,6 +5,7 @@ import { drawKawaiiButton, drawKawaiiInlineLabel, drawKawaiiPanel } from '@/engi
 import { EffectsManager } from '@/engine/effects'
 import { computeResponsiveGridLayout } from '@/games/shared/responsiveGridLayout'
 import { getTheme } from '@/engine/art/KawaiiTheme'
+import { SudokuGenerator } from './generator'
 
 type Cell = number | 0
 type Board = Cell[][]
@@ -176,20 +177,41 @@ class SudokuGame extends GameEngine {
 
   private loadPuzzle(): void {
     const puzzles = PUZZLES[this.difficulty]
-    let puzzleIndex = Math.floor(Math.random() * puzzles.length)
-    
-    if (this.dailyChallenge && this.dailyChallenge.difficulty === this.difficulty) {
-      puzzleIndex = this.dailyChallenge.puzzleIndex % puzzles.length
-    }
-    
-    const puzzleData = puzzles[puzzleIndex]
-    if (!puzzleData) return
-    const puzzleStr = puzzleData.puzzle
-    const solutionStr = puzzleData.solution
+    let usedCount = this.getPuzzlesUsedCount()
 
-    this.board = []
-    this.solution = []
-    this.given = []
+    // Use hardcoded puzzles while available, then fall back to generator
+    if (this.dailyChallenge && this.dailyChallenge.difficulty === this.difficulty) {
+      // Daily challenge always uses hardcoded
+      const puzzleIndex = this.dailyChallenge.puzzleIndex % puzzles.length
+      const puzzleData = puzzles[puzzleIndex]
+      if (puzzleData) {
+        this.board = this.parsePuzzleString(puzzleData.puzzle, puzzleData.solution)
+        return
+      }
+    }
+
+    if (usedCount < puzzles.length) {
+      // Use hardcoded puzzle
+      const puzzleIndex = usedCount % puzzles.length
+      const puzzleData = puzzles[puzzleIndex]
+      if (puzzleData) {
+        this.board = this.parsePuzzleString(puzzleData.puzzle, puzzleData.solution)
+        this.setPuzzlesUsedCount(usedCount + 1)
+        return
+      }
+    }
+
+    // Generate puzzle from scratch
+    const solution = SudokuGenerator.generateSolution()
+    const { puzzle } = SudokuGenerator.generatePuzzle(solution, this.difficulty)
+    this.board = this.parseGeneratedPuzzle(puzzle, solution)
+    this.setPuzzlesUsedCount(usedCount + 1)
+  }
+
+  private parsePuzzleString(puzzleStr: string, solutionStr: string): Board {
+    const board: Cell[][] = []
+    const solution: Cell[][] = []
+    const given: boolean[][] = []
 
     for (let r = 0; r < 9; r++) {
       const boardRow: Cell[] = []
@@ -203,10 +225,47 @@ class SudokuGame extends GameEngine {
         solRow.push(parseInt(sVal, 10))
         givenRow.push(pVal !== '0')
       }
-      this.board.push(boardRow)
-      this.solution.push(solRow)
-      this.given.push(givenRow)
+      board.push(boardRow)
+      solution.push(solRow)
+      given.push(givenRow)
     }
+
+    this.solution = solution
+    this.given = given
+    return board
+  }
+
+  private parseGeneratedPuzzle(puzzle: number[][], solution: number[][]): Board {
+    const board: Cell[][] = []
+    const given: boolean[][] = []
+
+    for (let r = 0; r < 9; r++) {
+      const boardRow: Cell[] = []
+      const givenRow: boolean[] = []
+      for (let c = 0; c < 9; c++) {
+        const val = puzzle[r]![c] ?? 0
+        boardRow.push(val as Cell)
+        givenRow.push(val !== 0)
+      }
+      board.push(boardRow)
+      given.push(givenRow)
+    }
+
+    this.board = board
+    this.solution = solution
+    this.given = given
+    return board
+  }
+
+  private getPuzzlesUsedCount(): number {
+    const key = `sudoku_used_${this.difficulty}`
+    const stored = localStorage.getItem(key)
+    return stored ? parseInt(stored, 10) : 0
+  }
+
+  private setPuzzlesUsedCount(count: number): void {
+    const key = `sudoku_used_${this.difficulty}`
+    localStorage.setItem(key, count.toString())
   }
 
   protected update(dt: number): void {

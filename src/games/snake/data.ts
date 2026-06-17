@@ -40,10 +40,19 @@ export const SPECIAL_FOOD_DEFS: Record<string, SpecialFoodDef> = {
     id: 'golden_apple',
     name: '黃金蘋果',
     icon: 'apple',
-    description: '分數 ×3',
+    description: '分數 ×3 (8秒)',
     color: '#fbbf24',
-    durationMs: 0,
+    durationMs: 8000,
     scoreMultiplier: 3,
+  },
+  speed_boost: {
+    id: 'speed_boost',
+    name: '加速果',
+    icon: 'speed',
+    description: '移動速度 ×1.4',
+    color: '#f59e0b',
+    durationMs: 10000,
+    scoreMultiplier: 1,
   },
 }
 
