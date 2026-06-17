@@ -129,7 +129,8 @@ export function createBreakoutLaunchVelocity(options: {
 }): { vx: number; vy: number } {
   const random = options.random ?? Math.random
   const dpr = Math.max(1, options.dpr)
-  const levelBoost = Math.min(1.75, 1 + (Math.max(1, options.level) - 1) * 0.09)
+  // Exponential difficulty curve: 1.08^(level-1) for better late-game tension
+  const levelBoost = Math.min(2.0, Math.pow(1.08, Math.max(0, options.level - 1)))
   const speed = 4.5 * dpr * levelBoost
   const launchSpread = Math.PI / 3.4
   const angle = (random() - 0.5) * launchSpread

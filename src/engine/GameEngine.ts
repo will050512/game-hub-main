@@ -183,7 +183,7 @@ export abstract class GameEngine {
     this.render(this.ctx)
 
     // Update and render shared effects (on top of game layer, below overlay)
-    this._effectsManager.update(0)
+    this._effectsManager.update(delta)
     this._effectsManager.render(this.ctx, this.width, this.height)
 
     // Render unified overlay on top (intro countdown, game-over)

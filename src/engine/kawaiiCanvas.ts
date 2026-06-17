@@ -120,7 +120,7 @@ export function drawPixelText(
   color: string,
   align: CanvasTextAlign = 'center',
 ) {
-  ctx.font = `${size}px 'Press Start 2P', monospace`
+  ctx.font = `${Math.max(size, 12)}px 'Silkscreen', monospace`
   ctx.textAlign = align
   ctx.textBaseline = 'middle'
   // Pixel text shadow
@@ -982,7 +982,7 @@ export function drawKawaiiInlineLabel(ctx: CanvasRenderingContext2D, options: Ka
   ctx.save()
   ctx.textAlign = options.align ?? 'left'
   ctx.textBaseline = 'middle'
-  ctx.font = `bold ${options.fontSize}px "Noto Sans KR", sans-serif`
+  ctx.font = `bold ${options.fontSize}px "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif`
   ctx.fillStyle = options.color ?? defaultKawaiiTheme.ink
   ctx.shadowColor = options.color ?? defaultKawaiiTheme.ink
   ctx.shadowBlur = 2

@@ -74,7 +74,7 @@ export class CanvasComboText {
     const fontSize = this.config.baseFontSize + this.combo * this.config.fontSizeStep
 
     ctx.save()
-    ctx.font = `bold ${fontSize}px "Nunito", "Segoe UI", sans-serif`
+    ctx.font = `bold ${fontSize}px "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "Nunito", sans-serif`
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
 

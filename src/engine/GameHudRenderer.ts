@@ -23,9 +23,9 @@ export interface HudConfig {
  */
 export function renderGameHud(ctx: CanvasRenderingContext2D, config: HudConfig): void {
   const { score, level, lives, maxLives, time, gameColor, dpr, width, height } = config
-  const fontSize = 16 * dpr
-  const hudY = height * 0.04
-  const hMargin = width * 0.05
+  const fontSize = 18 * dpr
+  const hudY = height * 0.06
+  const hMargin = width * 0.04
 
   // Hearts (top left, 5% from left edge)
   for (let i = 0; i < maxLives; i++) {

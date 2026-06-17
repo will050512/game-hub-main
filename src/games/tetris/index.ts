@@ -792,7 +792,9 @@ class TetrisGame extends GameEngine {
   }
 
   private getFallInterval(): number {
-    return Math.max(120, 920 - (this.level - 1) * 48)
+    // Exponential difficulty: drops faster as levels increase
+    // Base 920ms, decays by 8% per level, minimum 100ms
+    return Math.max(100, 920 * Math.pow(0.92, this.level - 1))
   }
 
   private hasCollision(matrix: Matrix, offsetX: number, offsetY: number): boolean {

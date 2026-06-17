@@ -120,7 +120,7 @@ export class CanvasFloatingText {
 
       ctx.save()
       ctx.globalAlpha = Math.max(0, t.opacity)
-      ctx.font = `bold ${t.size}px "Nunito", "Segoe UI", sans-serif`
+      ctx.font = `bold ${t.size}px "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "Nunito", sans-serif`
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
 

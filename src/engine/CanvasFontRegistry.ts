@@ -2,6 +2,8 @@
  * CanvasFontRegistry — Unified font specifications for all canvas rendering.
  * Replaces ad-hoc ctx.font = '...' strings with typed, consistent specs.
  *
+ * CJK font stack: Noto Sans TC → PingFang TC → Microsoft JhengHei (matches CSS tokens)
+ *
  * Usage in game code:
  *   getFont(ctx, FONTS.title, this.dpr)
  *   ctx.fillText('Title', x, y)
@@ -13,14 +15,16 @@ export interface FontSpec {
   weight: string
 }
 
+const cjkStack = '"Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif'
+
 export const FONTS: Record<string, FontSpec> = {
-  title:   { name: '"Noto Sans KR", sans-serif', size: 28, weight: 'bold' },
-  subtitle:{ name: '"Noto Sans KR", sans-serif', size: 18, weight: 'bold' },
-  hud:     { name: '"Noto Sans KR", sans-serif', size: 12, weight: 'bold' },
-  label:   { name: '"Noto Sans KR", sans-serif', size: 10, weight: 'normal' },
-  score:   { name: '"Noto Sans KR", sans-serif', size: 32, weight: '900' },
-  button:  { name: '"Noto Sans KR", sans-serif', size: 14, weight: 'bold' },
-  small:   { name: '"Noto Sans KR", sans-serif', size: 9, weight: 'normal' },
+  title:   { name: cjkStack, size: 32, weight: 'bold' },
+  subtitle:{ name: cjkStack, size: 22, weight: 'bold' },
+  hud:     { name: cjkStack, size: 16, weight: 'bold' },
+  label:   { name: cjkStack, size: 14, weight: 'normal' },
+  score:   { name: cjkStack, size: 36, weight: '900' },
+  button:  { name: cjkStack, size: 16, weight: 'bold' },
+  small:   { name: cjkStack, size: 12, weight: 'normal' },
 }
 
 /**

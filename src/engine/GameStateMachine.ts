@@ -1,24 +1,15 @@
 /**
  * GameStateMachine — Manages game state transitions:
- * menu → intro (countdown) → playing → gameover
+ * menu → intro (countdown) → playing → paused → gameover
  *
- * Usage (in each game's init):
- *   this.stateMachine = new GameStateMachine()
- *   this.stateMachine.startIntro()
- *
- * In update(dt):
- *   this.stateMachine.update(dt)
- *   if (this.stateMachine.shouldTriggerEffects()) { ... }
- *
- * In render:
- *   const state = this.stateMachine.getState()
- *   // use state to draw appropriate overlay
- *
- * Event-based usage (optional, additive):
- *   this.stateMachine.onStateChange((phase, transition) => { ... })
+ * Features:
+ * - Pause/resume mechanics with input blocking
+ * - Smooth intro countdown with effects trigger
+ * - Event-based state change notifications
+ * - Game over restart handling
  */
 
-export type GamePhase = 'menu' | 'intro' | 'playing' | 'gameover'
+export type GamePhase = 'menu' | 'intro' | 'playing' | 'paused' | 'gameover'
 
 export type StateTransition = {
   from: GamePhase
@@ -41,6 +32,9 @@ export class GameStateMachine {
     return Math.min(1, this._introTimer / (this._introPhaseDuration * 4))
   }
   get introPhase(): number { return this._introPhase }
+  get isPlaying(): boolean { return this._state === 'playing' }
+  get isPaused(): boolean { return this._state === 'paused' }
+  get isGameOver(): boolean { return this._state === 'gameover' }
 
   getState(): GamePhase { return this._state }
 
@@ -52,6 +46,7 @@ export class GameStateMachine {
     this._state = 'intro'
     this._introTimer = 0
     this._introPhase = 0
+    this.emitStateChange('intro')
   }
 
   update(dt: number): void {
@@ -81,16 +76,37 @@ export class GameStateMachine {
     this.emitStateChange('playing')
   }
 
+  pause(): void {
+    if (this._state !== 'playing') return
+    this._state = 'paused'
+    this.emitStateChange('paused')
+  }
+
+  resume(): void {
+    if (this._state !== 'paused') return
+    this._state = 'playing'
+    this.emitStateChange('playing')
+  }
+
+  togglePause(): void {
+    if (this.isPlaying) this.pause()
+    else if (this.isPaused) this.resume()
+  }
+
   setGameOver(): void {
     this._state = 'gameover'
     this.emitStateChange('gameover')
   }
 
-  reset(): void {
+  restart(): void {
     this._state = 'intro'
     this._introTimer = 0
     this._introPhase = 0
     this.emitStateChange('intro')
+  }
+
+  reset(): void {
+    this.restart()
   }
 
   onStateChange(handler: GameStateHandler): () => void {

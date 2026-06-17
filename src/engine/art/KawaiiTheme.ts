@@ -97,7 +97,7 @@ export function drawKawaiiText(
   opts: KawaiiTextOpts = {},
 ): void {
   ctx.save()
-  ctx.font = `${opts.weight ?? 700} ${opts.size ?? 14}px "Nunito", "Segoe UI", sans-serif`
+  ctx.font = `${opts.weight ?? 700} ${opts.size ?? 16}px "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "Nunito", sans-serif`
   ctx.textAlign = opts.align ?? 'left'
   ctx.textBaseline = 'middle'
   if (opts.shadowColor) {

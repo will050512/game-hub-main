@@ -1,4 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Nunito:wght@500;700;900&display=swap');
+/*
+ * Font loading strategy:
+ * - Baloo 2: heading/display (400, 500, 700, 800)
+ * - Nunito: body text (400, 500, 700, 900)
+ * - Silkscreen: monospace/arcade accents (400, 700)
+ * - Noto Sans TC: CJK Traditional Chinese (web fallback for Android/Linux)
+ *   PingFang TC / Microsoft JhengHei are system fonts (no Google Fonts import needed)
+ */
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;700;800&family=Nunito:wght@400;500;700;900&family=Silkscreen:wght@400;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
 
 :root {
   /* =============================================
@@ -224,23 +232,41 @@
   --color-glow-strong-gold: 0 0 20px rgba(255, 170, 0, 0.6), 0 0 40px rgba(255, 170, 0, 0.3);
 
   /* === Typography === */
-  --font-family-base: 'Nunito', 'Microsoft JhengHei', system-ui, sans-serif;
-  --font-family-heading: 'Baloo 2', 'Nunito', 'Microsoft JhengHei', system-ui, sans-serif;
+  /*
+   * CJK font stack order:
+   * 1. Google Fonts (Nunito, Baloo 2) — Latin glyphs only
+   * 2. Noto Sans TC — Android/Linux CJK Traditional
+   * 3. PingFang TC — macOS/iOS native (best CJK-TW rendering)
+   * 4. Microsoft JhengHei — Windows native
+   * 5. system-ui — platform fallback
+   * 6. sans-serif — ultimate fallback
+   */
+  --font-family-base: 'Nunito', 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', system-ui, sans-serif;
+  --font-family-heading: 'Baloo 2', 'Nunito', 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', system-ui, sans-serif;
   --font-family-mono: 'Silkscreen', 'Courier New', monospace;
 
   /* === Pixel Alt Font (for accents/headlines) === */
   --font-family-pixel: 'Baloo 2', 'Nunito', system-ui, sans-serif;
   --font-family-pixel-alt: 'Silkscreen', monospace;
 
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.875rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: 1.25rem;
-  --font-size-2xl: 1.5rem;
-  --font-size-3xl: 1.875rem;
-  --font-size-4xl: 2.25rem;
-  --font-size-5xl: 3rem;
+  /*
+   * Responsive font scale using clamp(min, preferred, max):
+   * - min = mobile (320px) minimum readable size
+   * - preferred = fluid scale based on viewport width
+   * - max = desktop (1440px+) cap
+   *
+   * Breakpoints: 320px | 768px | 1440px
+   * Formula: clamp(MIN, BASE + ((1vw - 0.32vw) * SLOPE), MAX)
+   */
+  --font-size-xs: clamp(0.8125rem, 0.7rem + 0.3vw, 0.875rem);    /* 13px → 14px */
+  --font-size-sm: clamp(0.9375rem, 0.825rem + 0.5vw, 1.0625rem);  /* 15px → 17px */
+  --font-size-base: clamp(1rem, 0.925rem + 0.4vw, 1.125rem);      /* 16px → 18px */
+  --font-size-lg: clamp(1.125rem, 1rem + 0.6vw, 1.375rem);       /* 18px → 22px */
+  --font-size-xl: clamp(1.375rem, 1.175rem + 1vw, 1.75rem);      /* 22px → 28px */
+  --font-size-2xl: clamp(1.625rem, 1.325rem + 1.5vw, 2.25rem);   /* 26px → 36px */
+  --font-size-3xl: clamp(2rem, 1.6rem + 2vw, 2.875rem);          /* 32px → 46px */
+  --font-size-4xl: clamp(2.5rem, 1.9rem + 3vw, 3.75rem);         /* 40px → 60px */
+  --font-size-5xl: clamp(3rem, 2.2rem + 4vw, 5rem);              /* 48px → 80px */
 
   --font-weight-normal: 400;
   --font-weight-medium: 500;

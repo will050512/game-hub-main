@@ -1,8 +1,8 @@
 export const FONT = {
-  family: '"Nunito", "Segoe UI", sans-serif',
+  family: '"Noto Sans TC", "PingFang TC", "Microsoft JhengHei", "Nunito", sans-serif',
   weights: { normal: 600, semibold: 700, bold: 800 },
   sizes: {
-    xs: 10, sm: 12, base: 14, lg: 18, xl: 24, xxl: 32, xxxl: 44,
+    xs: 13, sm: 14, base: 16, lg: 18, xl: 24, xxl: 32, xxxl: 44,
   },
 } as const
 

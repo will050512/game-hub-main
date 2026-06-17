@@ -85,7 +85,8 @@ class SnakeGame extends GameEngine {
   private safeZoneActive = false
 
   private analogInputCooldownMs = 0
-  private readonly analogInputIntervalMs = 85
+  // Reduced from 85ms to 40ms for snappier touch response
+  private readonly analogInputIntervalMs = 40
 
   private gameOver = false
   private gameOverNotified = false

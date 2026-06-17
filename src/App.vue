@@ -16,9 +16,6 @@ import '@/assets/styles/tokens.css'
 </template>
 
 <style>
-/* ===== Arcade Accent Font Import ===== */
-@import url('https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap');
-
 /* ===== Global Reset ===== */
 
 *,
@@ -29,7 +26,12 @@ import '@/assets/styles/tokens.css'
   box-sizing: border-box;
 }
 
-html,
+html {
+  font-size: 100%;
+  width: 100%;
+  height: 100%;
+}
+
 body {
   width: 100%;
   height: 100%;

@@ -5,7 +5,7 @@ import { drawKawaiiButton, drawKawaiiInlineLabel, drawKawaiiPanel, drawKawaiiPro
 import { EffectsManager } from '@/engine/effects'
 import { getTheme } from '@/engine/art/KawaiiTheme'
 import { GameOverlay } from '@/engine/GameOverlay'
-
+import { getFont, FONTS } from '@/engine/CanvasFontRegistry'
 interface Tower {
   x: number
   y: number
