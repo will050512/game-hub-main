@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { resolveGamePlatformLayout } from '@/composables/useGamePlatformLayout'
+import { resolveGamePlatformLayout, detectSafeArea } from '@/composables/useGamePlatformLayout'
 
 describe('resolveGamePlatformLayout', () => {
   it('keeps narrow phones in handheld fullscreen layout', () => {
@@ -47,5 +47,19 @@ describe('resolveGamePlatformLayout', () => {
     expect(layout.mode).toBe('desktop')
     expect(layout.shellClass).toBe('game-layout-wide')
     expect(layout.usesSideHud).toBe(true)
+  })
+})
+
+describe('detectSafeArea', () => {
+  it('should return 0 for empty CSS values (NaN bug fix)', () => {
+    const insets = detectSafeArea()
+    expect(Number.isNaN(insets.top)).toBe(false)
+    expect(Number.isNaN(insets.right)).toBe(false)
+    expect(Number.isNaN(insets.bottom)).toBe(false)
+    expect(Number.isNaN(insets.left)).toBe(false)
+    expect(insets.top).toBe(0)
+    expect(insets.right).toBe(0)
+    expect(insets.bottom).toBe(0)
+    expect(insets.left).toBe(0)
   })
 })

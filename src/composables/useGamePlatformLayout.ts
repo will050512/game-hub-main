@@ -1,5 +1,6 @@
 import { computed, onMounted, onUnmounted, shallowRef } from 'vue'
 import { Capacitor } from '@capacitor/core'
+import { useBreakpoints } from './useBreakpoints'
 
 export type GamePlatformMode = 'handheld' | 'tablet' | 'desktop'
 export type ScreenOrientation = 'landscape' | 'portrait'
@@ -35,7 +36,7 @@ function getViewportSize() {
   }
 }
 
-function detectSafeArea(): SafeAreaInsets {
+export function detectSafeArea(): SafeAreaInsets {
   const computedStyle = getComputedStyle(document.documentElement)
   return {
     top: parseFloat(computedStyle.getPropertyValue('--safe-top')) || 0,
@@ -121,6 +122,18 @@ export function useGamePlatformLayout() {
   return {
     layout,
     snapshot,
+    refreshLayout,
+  }
+}
+
+export function useResponsiveLayout() {
+  const { layout, snapshot, refreshLayout } = useGamePlatformLayout()
+  const breakpoints = useBreakpoints()
+
+  return {
+    layout,
+    snapshot,
+    breakpoints,
     refreshLayout,
   }
 }
