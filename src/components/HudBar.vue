@@ -138,13 +138,18 @@ watch(
 <style scoped>
 .hud-top {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 10px;
+  inset: 0;
+  display: grid;
+  grid-template-areas:
+    "bars  ... score"
+    "buffs items ...";
+  grid-template-rows: auto auto;
+  grid-template-columns: 1fr auto;
+  padding: max(8px, env(safe-area-inset-top))
+           max(8px, env(safe-area-inset-right))
+           max(8px, env(safe-area-inset-bottom))
+           max(8px, env(safe-area-inset-left));
+  gap: 6px;
   pointer-events: none;
   z-index: 10;
 }
@@ -152,6 +157,7 @@ watch(
 .hud-top > * { pointer-events: auto; }
 
 .hud-left {
+  grid-area: bars;
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
@@ -256,6 +262,7 @@ watch(
 }
 
 .hud-right {
+  grid-area: score;
   display: flex;
   align-items: center;
   gap: 5px;
@@ -312,10 +319,8 @@ watch(
 
 /* ===== Item Slots ===== */
 .hud-items {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
+  grid-area: items;
+  justify-self: center;
   display: flex;
   gap: 6px;
 }
@@ -353,9 +358,7 @@ watch(
 
 /* ===== Buffs ===== */
 .hud-buffs {
-  position: absolute;
-  right: 10px;
-  top: 55px;
+  grid-area: buffs;
   display: flex;
   flex-direction: column;
   gap: 6px;
