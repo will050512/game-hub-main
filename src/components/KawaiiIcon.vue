@@ -300,13 +300,13 @@ const isControllerFamily = computed(() => ['arcade', 'controller'].includes(prop
   width: var(--icon-size);
   height: var(--icon-size);
   vertical-align: middle;
-  transform: rotate(var(--icon-tilt, -2deg));
 }
 
 .icon-svg {
   width: 100%;
   height: 100%;
   overflow: visible;
+  contain: layout size;
   filter: drop-shadow(0 2px 0 rgba(27, 21, 26, 0.12));
 }
 
@@ -315,30 +315,4 @@ const isControllerFamily = computed(() => ['arcade', 'controller'].includes(prop
 .kawaii-icon-md { --icon-size: 24px; }
 .kawaii-icon-lg { --icon-size: 36px; }
 .kawaii-icon-xl { --icon-size: 56px; }
-
-.kawaii-icon-heart,
-.kawaii-icon-coin,
-.kawaii-icon-trophy,
-.kawaii-icon-crown,
-.kawaii-icon-star,
-.kawaii-icon-sparkle,
-.kawaii-icon-action {
-  --icon-tilt: -4deg;
-}
-
-.kawaii-icon-back,
-.kawaii-icon-speed,
-.kawaii-icon-boomerang,
-.kawaii-icon-undo,
-.kawaii-icon-laser {
-  --icon-tilt: -6deg;
-}
-
-.kawaii-icon-controller,
-.kawaii-icon-arcade,
-.kawaii-icon-book,
-.kawaii-icon-board,
-.kawaii-icon-cards {
-  --icon-tilt: 2deg;
-}
 </style>
