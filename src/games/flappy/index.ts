@@ -10,7 +10,7 @@ import {
   type GameHudData,
 } from '@/types'
 import { getTheme } from '@/engine/art/KawaiiTheme'
-import { GameOverlay } from '@/engine/GameOverlay'
+
 import { drawKawaiiBackground } from '@/engine/kawaiiCanvas'
 import { drawKawaiiPanel } from '@/engine/kawaiiCanvas'
 import type { GamePhase } from '@/engine/GameStateMachine'
@@ -76,8 +76,6 @@ class FlappyGame extends GameEngine {
   private readonly gameOverDelay = 700
 
   private theme = getTheme('flappy')
-  /** Separate overlay instance for game-specific state/scores (not the base class's unified overlay) */
-  private gameOverlay = new GameOverlay()
 
   private state: GameState = 'ready'
   private score = 0
@@ -127,7 +125,7 @@ class FlappyGame extends GameEngine {
     this.birdRadius = Math.max(9 * this.dpr, this.width * 0.026)
     this.pipeWidth = Math.max(44 * this.dpr, this.width * 0.14)
 
-    this.gameOverlay.setSize(this.width, this.height)
+
 
     this.birdX = this.width * 0.3
     this.birdY = this.height * 0.42
@@ -322,20 +320,7 @@ class FlappyGame extends GameEngine {
       ctx.fillText('Space / ArrowUp / Tap', this.width / 2, this.height * 0.36)
     }
 
-    if (this.state === 'gameover') {
-      this.gameOverlay.render(ctx, {
-        state: 'gameover' as GamePhase,
-        score: this.score,
-        level: 1,
-        lives: 1,
-        maxLives: 1,
-        gameTime: Math.floor(this.elapsedMs / 1000),
-        gameName: 'Flappy Bird',
-        gameColor: this.theme.ui.accent,
-        dpr: this.dpr,
-        introProgress: 0,
-      })
-    }
+
 
     this.renderParticles(ctx)
     this.renderFloatingTexts(ctx)
@@ -986,9 +971,6 @@ class FlappyGame extends GameEngine {
     }
   }
 
-  protected override onResize(w: number, h: number): void {
-    this.gameOverlay.setSize(w, h)
-  }
 }
 
 export function createFlappyGame(): GameInstance {

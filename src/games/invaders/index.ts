@@ -1,4 +1,4 @@
-import { GameEngine } from '@/engine/GameEngine'
+﻿import { GameEngine } from '@/engine/GameEngine'
 import { ObjectPool } from '@/engine/ObjectPool'
 import { drawSprite, preloadGameSprites } from '@/engine/sprites/spriteLoader'
 import { drawKenneySprite, preloadKenneySprites } from '@/engine/sprites/kenneySpriteLoader'
@@ -417,7 +417,6 @@ class InvadersGame extends GameEngine {
     this.renderParticles(ctx)
     this.renderFloatingTexts(ctx)
     this.renderComboDisplay(ctx)
-    this.renderHud(ctx)
 
     if (this.gameOver) {
       ctx.fillStyle = `rgba(${hexToRgb(this.theme.palette.bg)}, 0.6)`
@@ -1306,103 +1305,6 @@ class InvadersGame extends GameEngine {
     }
   }
 
-  private renderHud(ctx: CanvasRenderingContext2D): void {
-    const margin = 12 * this.dpr
-    const line = 16 * this.dpr
-    const panelH = 58 * this.dpr
-    const leftPanelW = 146 * this.dpr
-    const rightEffects: Array<{ id: string; remainingMs: number }> = [...this.activeEffects]
-    if (this.shieldActive) {
-      rightEffects.push({ id: 'shield', remainingMs: 1 })
-    }
-    const rightPanelW = 170 * this.dpr
-    const rightPanelH = Math.max(panelH, 42 * this.dpr + rightEffects.length * 18 * this.dpr)
-    const rightPanelX = this.width - margin - rightPanelW
-
-    drawKawaiiPanel(ctx, margin, margin, leftPanelW, panelH, {
-      fill: 'rgba(244, 255, 248, 0.96)',
-      accent: '#86efac',
-      stroke: '#0f172a',
-    })
-    drawKawaiiInlineLabel(ctx, {
-      x: margin + 12 * this.dpr,
-      y: margin + 16 * this.dpr,
-      text: `得分 ${this.score}`,
-      iconKind: 'star',
-      color: '#14532d',
-      fontSize: Math.max(10, Math.floor(11 * this.dpr)),
-    })
-    drawKawaiiInlineLabel(ctx, {
-      x: margin + 12 * this.dpr,
-      y: margin + 16 * this.dpr + line,
-      text: `波次 ${this.wave}`,
-      iconKind: 'target',
-      color: '#14532d',
-      fontSize: Math.max(10, Math.floor(11 * this.dpr)),
-    })
-    drawKawaiiInlineLabel(ctx, {
-      x: margin + 12 * this.dpr,
-      y: margin + 16 * this.dpr + line * 2,
-      text: `擊毀 ${this.totalKills}`,
-      iconKind: 'laser',
-      color: '#14532d',
-      fontSize: Math.max(10, Math.floor(11 * this.dpr)),
-    })
-
-    drawKawaiiPanel(ctx, rightPanelX, margin, rightPanelW, rightPanelH, {
-      fill: 'rgba(240, 253, 250, 0.96)',
-      accent: '#22d3ee',
-      stroke: '#0f172a',
-    })
-    drawKawaiiInlineLabel(ctx, {
-      x: rightPanelX + 12 * this.dpr,
-      y: margin + 16 * this.dpr,
-      text: `生命 ${this.lives}`,
-      iconKind: 'heart',
-      color: '#155e75',
-      fontSize: Math.max(10, Math.floor(11 * this.dpr)),
-    })
-    drawKawaiiInlineLabel(ctx, {
-      x: rightPanelX + 12 * this.dpr,
-      y: margin + 16 * this.dpr + line,
-      text: `時間 ${Math.floor(this.elapsedMs / 1000)}s`,
-      iconKind: 'timer',
-      color: '#155e75',
-      fontSize: Math.max(10, Math.floor(11 * this.dpr)),
-    })
-
-    const effectStartY = margin + 16 * this.dpr + line * 2 + 4 * this.dpr
-    rightEffects.forEach((effect, index) => {
-      const def = POWERUP_DEFS[effect.id]
-      const iconKind = effect.id === 'shield' && !def ? 'shield' : canvasIconKindForItem(def?.icon ?? effect.id)
-      const label = def?.name ?? '護盾'
-      const color = def?.color ?? '#22d3ee'
-      const y = effectStartY + index * 18 * this.dpr
-      drawKawaiiInlineLabel(ctx, {
-        x: rightPanelX + 12 * this.dpr,
-        y,
-        text: def?.durationMs ? `${label} ${Math.ceil(effect.remainingMs / 1000)}s` : label,
-        iconKind,
-        color,
-        fontSize: Math.max(9, Math.floor(10 * this.dpr)),
-      })
-      if (def?.durationMs) {
-        drawKawaiiProgressBar(
-          ctx,
-          rightPanelX + rightPanelW - 56 * this.dpr,
-          y - 4 * this.dpr,
-          44 * this.dpr,
-          8 * this.dpr,
-          Math.max(0, effect.remainingMs / def.durationMs),
-          {
-            trackFill: 'rgba(15, 23, 42, 0.1)',
-            fill: color,
-            stroke: 'rgba(15, 23, 42, 0.22)',
-          },
-        )
-      }
-    })
-  }
 
   private renderFloatingTexts(ctx: CanvasRenderingContext2D): void {
     ctx.textAlign = 'center'

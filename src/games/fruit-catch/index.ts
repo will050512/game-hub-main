@@ -1,4 +1,4 @@
-import { GameEngine } from '@/engine/GameEngine'
+﻿import { GameEngine } from '@/engine/GameEngine'
 import {
   REWARD_EVENT_SCHEMA_VERSION,
   createRewardPayload,
@@ -290,9 +290,7 @@ class FruitCatchGame extends GameEngine {
     if (this.shieldActive) {
       this.renderShieldGlow(ctx)
     }
-    this.renderHud(ctx)
     this.renderWeatherIndicator(ctx)
-    this.renderActiveEffectIndicators(ctx)
 
     if (this.gameOver) {
       this.renderGameOver(ctx)
@@ -1314,44 +1312,6 @@ class FruitCatchGame extends GameEngine {
     ctx.globalAlpha = 1
   }
 
-  private renderHud(ctx: CanvasRenderingContext2D): void {
-    const panelX = 10 * this.dpr
-    const panelY = 10 * this.dpr
-    const panelW = 182 * this.dpr
-    const panelH = 58 * this.dpr
-    drawKawaiiPanel(ctx, panelX, panelY, panelW, panelH, {
-      fill: 'rgba(255, 250, 246, 0.92)',
-      accent: '#f59e0b',
-      stroke: '#0f172a',
-    })
-    drawKawaiiInlineLabel(ctx, {
-      x: panelX + 12 * this.dpr,
-      y: panelY + 18 * this.dpr,
-      text: `分數 ${this.score}`,
-      iconKind: 'star',
-      color: '#7c2d12',
-      fontSize: Math.max(10, Math.floor(11 * this.dpr)),
-    })
-    drawKawaiiInlineLabel(ctx, {
-      x: panelX + 12 * this.dpr,
-      y: panelY + 36 * this.dpr,
-      text: `等級 ${this.level}`,
-      iconKind: 'target',
-      color: '#7c2d12',
-      fontSize: Math.max(10, Math.floor(11 * this.dpr)),
-    })
-
-    const heartSize = 9 * this.dpr
-    const spacing = 22 * this.dpr
-    const startX = this.width - (this.maxLives * spacing + 16 * this.dpr)
-    const y = 22 * this.dpr
-
-    for (let i = 0; i < this.maxLives; i += 1) {
-      const x = startX + i * spacing
-      const active = i < this.lives
-      this.drawHeart(ctx, x, y, heartSize, active)
-    }
-  }
 
   private renderShieldGlow(ctx: CanvasRenderingContext2D): void {
     const pad = 5 * this.dpr
@@ -1370,60 +1330,6 @@ class FruitCatchGame extends GameEngine {
     ctx.restore()
   }
 
-  private renderActiveEffectIndicators(ctx: CanvasRenderingContext2D): void {
-    const effectsToRender = [...this.activeEffects]
-    if (this.shieldActive) {
-      effectsToRender.push({ id: 'shield', remainingMs: 1, totalMs: 1 })
-    }
-    if (effectsToRender.length === 0) {
-      return
-    }
-
-    const startX = this.width - 22 * this.dpr
-    const startY = 44 * this.dpr
-    const itemGap = 24 * this.dpr
-
-    ctx.save()
-    for (let i = 0; i < effectsToRender.length; i += 1) {
-      const effect = effectsToRender[i]!
-      const def = ITEM_DEFS[effect.id]
-      if (!def) {
-        continue
-      }
-
-      const x = startX
-      const y = startY + i * itemGap
-      const progress = def.durationMs > 0 ? Math.max(0, effect.remainingMs / effect.totalMs) : 1
-
-      drawKawaiiPanel(ctx, x - 13 * this.dpr, y - 11 * this.dpr, 26 * this.dpr, 22 * this.dpr, {
-        fill: 'rgba(255, 250, 246, 0.88)',
-        accent: def.color,
-        stroke: '#0f172a',
-        radius: 8 * this.dpr,
-        shadow: 'rgba(15, 23, 42, 0.12)',
-      })
-      drawKawaiiCanvasIcon(
-        ctx,
-        x,
-        y,
-        11 * this.dpr,
-        canvasIconKindForItem(def.icon),
-        { color: def.color, ink: '#0f172a' },
-      )
-
-      const barW = 28 * this.dpr
-      const barH = 5 * this.dpr
-      const barX = x - barW / 2
-      const barY = y + 11 * this.dpr
-
-      drawKawaiiProgressBar(ctx, barX, barY, barW, barH, progress, {
-        trackFill: 'rgba(15, 23, 42, 0.14)',
-        fill: def.color,
-        stroke: 'rgba(15, 23, 42, 0.22)',
-      })
-    }
-    ctx.restore()
-  }
 
   private drawHeart(ctx: CanvasRenderingContext2D, x: number, y: number, size: number, active: boolean): void {
     ctx.save()

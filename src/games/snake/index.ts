@@ -444,17 +444,7 @@ class SnakeGame extends GameEngine {
       this.renderArenaModifierIndicator(ctx, offsetX, offsetY, gridWidth, gridHeight)
     }
 
-    if (this.gameOver) {
-      ctx.fillStyle = this.theme.ui.surface
-      ctx.fillRect(offsetX, offsetY, gridWidth, gridHeight)
-      ctx.fillStyle = this.theme.palette.ink
-      ctx.textAlign = 'center'
-      ctx.textBaseline = 'middle'
-      ctx.font = `bold ${Math.max(22, Math.floor(cellSize * 1.1))}px ${this.theme.font.family}`
-      ctx.fillText('遊戲結束', offsetX + gridWidth / 2, offsetY + gridHeight * 0.46)
-      ctx.font = `${Math.max(12, Math.floor(cellSize * 0.5))}px ${this.theme.font.family}`
-      ctx.fillText('滑動或按方向鍵再玩一次', offsetX + gridWidth / 2, offsetY + gridHeight * 0.56)
-    }
+
 
     this.renderParticles(ctx)
     this.renderFloatingTexts(ctx)

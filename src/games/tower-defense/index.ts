@@ -1,4 +1,4 @@
-import { GameEngine } from '@/engine/GameEngine'
+﻿import { GameEngine } from '@/engine/GameEngine'
 import { REWARD_EVENT_SCHEMA_VERSION, createRewardPayload, type PlayerStats, type GameHudData, type GameInstance } from '@/types'
 import { drawSprite, preloadGameSprites } from '@/engine/sprites/spriteLoader'
 import { drawKawaiiButton, drawKawaiiInlineLabel, drawKawaiiPanel, drawKawaiiProgressBar } from '@/engine/kawaiiCanvas'
@@ -478,7 +478,6 @@ class TowerDefenseGame extends GameEngine {
     })
 
     // ---- HUD ----
-    this.renderHUD(ctx, scale)
 
     // ---- Tower buttons ----
     this.renderTowerButtons(ctx, scale)
@@ -842,67 +841,6 @@ class TowerDefenseGame extends GameEngine {
     }
   }
 
-  private renderHUD(ctx: CanvasRenderingContext2D, scale: number): void {
-    const hudY = this.gridOffsetY + this.cellSize * this.rows + Math.floor(4 * scale)
-    const hudH = Math.floor(44 * scale)
-
-    // Gold display
-    const goldW = Math.floor(120 * scale)
-    drawKawaiiPanel(ctx, Math.floor(8 * scale), hudY, goldW, hudH, {
-      fill: this.theme.ui.surface,
-      accent: '#f59e0b',
-      stroke: '#92400e',
-      radius: Math.floor(10 * scale),
-    })
-    drawKawaiiInlineLabel(ctx, {
-      x: Math.floor(20 * scale),
-      y: hudY + Math.floor(16 * scale),
-      text: `💰 ${this.gold}`,
-      color: '#f59e0b',
-      fontSize: Math.max(13, Math.floor(14 * scale)),
-    })
-    drawKawaiiInlineLabel(ctx, {
-      x: Math.floor(20 * scale),
-      y: hudY + Math.floor(33 * scale),
-      text: `💖 ${this.lives}`,
-      color: this.lives <= 5 ? '#ef4444' : '#ef4444',
-      fontSize: Math.max(11, Math.floor(12 * scale)),
-    })
-
-    // Score display
-    const scoreW = Math.floor(100 * scale)
-    const scoreX = Math.floor(8 * scale + goldW + Math.floor(8 * scale))
-    drawKawaiiPanel(ctx, scoreX, hudY, scoreW, hudH, {
-      fill: this.theme.ui.surface,
-      accent: this.theme.ui.accent,
-      stroke: this.theme.palette.ink,
-      radius: Math.floor(10 * scale),
-    })
-    drawKawaiiInlineLabel(ctx, {
-      x: scoreX + Math.floor(14 * scale),
-      y: hudY + Math.floor(16 * scale),
-      text: `🏆 ${this.score}`,
-      color: this.theme.ui.accent,
-      fontSize: Math.max(12, Math.floor(13 * scale)),
-    })
-    drawKawaiiInlineLabel(ctx, {
-      x: scoreX + Math.floor(14 * scale),
-      y: hudY + Math.floor(33 * scale),
-      text: `⚔️ 波次 ${this.wave}`,
-      color: '#166534',
-      fontSize: Math.max(10, Math.floor(11 * scale)),
-    })
-
-    // Wave progress bar
-    const progressX = scoreX + Math.floor(14 * scale)
-    const progressW = Math.floor(scoreW - Math.floor(28 * scale))
-    drawKawaiiProgressBar(ctx, progressX, hudY + Math.floor(26 * scale), progressW, Math.floor(6 * scale),
-      Math.min(1, this.enemiesSpawned / Math.max(1, this.enemiesPerWave)), {
-      trackFill: 'rgba(15, 23, 42, 0.12)',
-      fill: this.theme.ui.accent,
-      stroke: 'rgba(15, 23, 42, 0.22)',
-    })
-  }
 
   private triggerGameOver(): void {
     if (!this.gameOverSent) {

@@ -1,4 +1,4 @@
-import { GameEngine } from '@/engine/GameEngine'
+﻿import { GameEngine } from '@/engine/GameEngine'
 import { EffectsManager } from '@/engine/effects'
 import {
   REWARD_EVENT_SCHEMA_VERSION,
@@ -860,13 +860,8 @@ class BreakoutGame extends GameEngine {
     this.renderBalls(ctx)
     this.renderPowerUps(ctx)
     this.renderLasers(ctx)
-    this.renderLives(ctx)
-    this.renderActiveEffects(ctx)
     this.effects.render(ctx)
-    this.renderHudText(ctx)
     this.renderLevelText(ctx)
-    this.renderComboText(ctx)
-    this.renderGameOver(ctx)
 
     ctx.restore()
   }
@@ -1018,27 +1013,8 @@ class BreakoutGame extends GameEngine {
     }
   }
 
-  private renderActiveEffects(ctx: CanvasRenderingContext2D): void {
-    let y = 40 * this.dpr
-    for (const effect of this.activeEffects) {
-      const progress = effect.remainingMs / effect.totalMs
-      ctx.fillStyle = 'rgba(0,0,0,0.5)'
-      ctx.fillRect(10 * this.dpr, y, 100 * this.dpr * progress, 8 * this.dpr)
-      y += 14 * this.dpr
-    }
-  }
 
-  private renderComboText(ctx: CanvasRenderingContext2D): void {
-    if (this.comboCount < 3) return
-    const scale = 1 + this.comboCount * 0.08
-    ctx.globalAlpha = 0.8
-    ctx.fillStyle = '#fbbf24'
-    ctx.font = `bold ${Math.floor(24 * this.dpr * scale)}px ${this.theme.font.family}`
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
-    ctx.fillText(`${this.comboCount}x 連擊!`, this.width / 2, this.height * 0.2)
-    ctx.globalAlpha = 1
-  }
+
 
   private addBallTrail(x: number, y: number) {
     this.ballTrails.push({ x, y, alpha: 1 })
@@ -1074,31 +1050,7 @@ class BreakoutGame extends GameEngine {
     ctx.globalAlpha = 1
   }
 
-  private renderLives(ctx: CanvasRenderingContext2D) {
-    const radius = 5 * this.dpr
-    const spacing = 16 * this.dpr
-    const xStart = 20 * this.dpr
-    const y = 20 * this.dpr
 
-    const displayMax = Math.max(this.maxLivesBase, this.lives)
-    for (let i = 0; i < displayMax; i++) {
-      const x = xStart + i * spacing
-      ctx.globalAlpha = i < this.lives ? 1 : 0.25
-      ctx.fillStyle = '#f8fafc'
-      ctx.beginPath()
-      ctx.arc(x, y, radius, 0, Math.PI * 2)
-      ctx.fill()
-    }
-
-    ctx.globalAlpha = 1
-  }
-
-  private renderHudText(ctx: CanvasRenderingContext2D) {
-    ctx.fillStyle = 'rgba(248, 250, 252, 0.92)'
-    ctx.font = `${12 * this.dpr}px ${this.theme.font.family}`
-    ctx.textAlign = 'right'
-    ctx.fillText(`分數 ${this.score}`, this.width - 14 * this.dpr, 24 * this.dpr)
-  }
 
   private renderLevelText(ctx: CanvasRenderingContext2D) {
     if (this.levelTextTimer <= 0) return
@@ -1124,18 +1076,6 @@ class BreakoutGame extends GameEngine {
     ctx.globalAlpha = 1
   }
 
-  private renderGameOver(ctx: CanvasRenderingContext2D) {
-    if (!this.gameOver) return
-
-    ctx.fillStyle = this.theme.ui.surface
-    ctx.fillRect(0, 0, this.width, this.height)
-    ctx.fillStyle = '#f8fafc'
-    ctx.textAlign = 'center'
-    ctx.font = `bold ${32 * this.dpr}px ${this.theme.font.family}`
-    ctx.fillText('遊戲結束', this.width / 2, this.height * 0.48)
-    ctx.font = `${16 * this.dpr}px ${this.theme.font.family}`
-    ctx.fillText(`最終分數 ${this.score}`, this.width / 2, this.height * 0.54)
-  }
 
   private drawRoundedRect(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number): void {
     const r = Math.max(0, Math.min(radius, Math.min(width, height) / 2))
