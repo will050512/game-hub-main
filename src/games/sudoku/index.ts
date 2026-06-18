@@ -495,6 +495,19 @@ class SudokuGame extends GameEngine {
     this.boardOffsetX = layout.boardX
     this.boardOffsetY = layout.boardY
 
+    // Draw 3x3 box background fills (alternating tint for clarity)
+    for (let br = 0; br < 3; br++) {
+      for (let bc = 0; bc < 3; bc++) {
+        const boxX = this.boardOffsetX + bc * 3 * this.cellSize
+        const boxY = this.boardOffsetY + br * 3 * this.cellSize
+        const boxW = 3 * this.cellSize
+        const boxH = 3 * this.cellSize
+        const isLight = (br + bc) % 2 === 0
+        ctx.fillStyle = isLight ? 'rgba(20, 184, 166, 0.04)' : 'rgba(20, 184, 166, 0.01)'
+        ctx.fillRect(boxX, boxY, boxW, boxH)
+      }
+    }
+
     for (let r = 0; r < 9; r++) {
       for (let c = 0; c < 9; c++) {
         const x = this.boardOffsetX + c * this.cellSize
@@ -538,9 +551,9 @@ class SudokuGame extends GameEngine {
         ctx.lineTo(x + this.cellSize, y)
         ctx.stroke()
 
-        // Thick 3x3 box boundary lines
+        // Thick 3x3 box boundary lines — ALL 4 sides
         if (c % 3 === 0) {
-          ctx.strokeStyle = 'rgba(20, 184, 166, 0.6)'
+          ctx.strokeStyle = 'rgba(20, 184, 166, 0.8)'
           ctx.lineWidth = Math.floor(3 * scale)
           ctx.beginPath()
           ctx.moveTo(x, y)
@@ -548,11 +561,28 @@ class SudokuGame extends GameEngine {
           ctx.stroke()
         }
         if (r % 3 === 0) {
-          ctx.strokeStyle = 'rgba(20, 184, 166, 0.6)'
+          ctx.strokeStyle = 'rgba(20, 184, 166, 0.8)'
           ctx.lineWidth = Math.floor(3 * scale)
           ctx.beginPath()
           ctx.moveTo(x, y)
           ctx.lineTo(x + this.cellSize, y)
+          ctx.stroke()
+        }
+        // Right and bottom edges of each 3x3 box
+        if ((c + 1) % 3 === 0) {
+          ctx.strokeStyle = 'rgba(20, 184, 166, 0.8)'
+          ctx.lineWidth = Math.floor(3 * scale)
+          ctx.beginPath()
+          ctx.moveTo(x + this.cellSize, y)
+          ctx.lineTo(x + this.cellSize, y + this.cellSize)
+          ctx.stroke()
+        }
+        if ((r + 1) % 3 === 0) {
+          ctx.strokeStyle = 'rgba(20, 184, 166, 0.8)'
+          ctx.lineWidth = Math.floor(3 * scale)
+          ctx.beginPath()
+          ctx.moveTo(x, y + this.cellSize)
+          ctx.lineTo(x + this.cellSize, y + this.cellSize)
           ctx.stroke()
         }
 
