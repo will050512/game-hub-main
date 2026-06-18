@@ -1,4 +1,4 @@
-import { computed, onUnmounted } from 'vue'
+import { computed, onUnmounted, reactive } from 'vue'
 
 export type BreakpointName = 'sm' | 'md' | 'lg' | 'xl' | '2xl'
 
@@ -11,7 +11,7 @@ const breakpoints: Record<BreakpointName, number> = {
 }
 
 export function useBreakpoints() {
-  const matches: Record<BreakpointName, boolean> = {} as Record<BreakpointName, boolean>
+  const matches = reactive<Record<BreakpointName, boolean>>({} as Record<BreakpointName, boolean>)
   const listeners: Array<{ mq: MediaQueryList; handler: (e: MediaQueryListEvent) => void }> = []
 
   for (const [name, width] of Object.entries(breakpoints) as [BreakpointName, number][]) {
