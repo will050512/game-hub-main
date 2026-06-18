@@ -402,13 +402,7 @@ function onTutorialEnd() {
 
     <HudBar :stats="hudData" @toggle-pause="togglePause" />
 
-    <div class="game-canvas-frame"
-         :style="{
-           paddingTop: platformLayout.safeArea.top + 'px',
-           paddingBottom: platformLayout.safeArea.bottom + 'px',
-           paddingLeft: platformLayout.safeArea.left + 'px',
-           paddingRight: platformLayout.safeArea.right + 'px',
-         }">
+    <div class="game-canvas-frame">
       <canvas ref="canvasRef" class="game-canvas"></canvas>
     </div>
 
@@ -594,7 +588,7 @@ function onTutorialEnd() {
 .game-screen {
   position: relative;
   width: 100%;
-  height: calc(100dvh - var(--safe-top, 0px) - var(--safe-bottom, 0px));
+  height: 100dvh;
   min-height: 100%;
   overflow: hidden;
   background:
@@ -608,11 +602,12 @@ function onTutorialEnd() {
 }
 
 .game-canvas-frame {
-  position: relative;
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
-  min-width: 0;
-  min-height: 0;
+  padding: var(--safe-top, 0px) var(--safe-right, 0px) var(--safe-bottom, 0px) var(--safe-left, 0px);
+  box-sizing: border-box;
 }
 
 .game-canvas {
@@ -878,16 +873,8 @@ function onTutorialEnd() {
 }
 
 /* === Phone Landscape (< 640px, landscape) === */
+/* Safe area is now handled by .game-canvas-frame padding (CSS vars) */
 @media (max-width: 639px) and (orientation: landscape) {
-  .game-screen.game-orientation-landscape {
-    height: calc(100dvh - var(--safe-left, 0px) - var(--safe-right, 0px));
-  }
-
-  .game-layout-handheld.game-orientation-landscape .game-canvas-frame {
-    padding-left: max(8px, var(--safe-left, 0px));
-    padding-right: max(8px, var(--safe-right, 0px));
-  }
-
   .game-layout-handheld.game-orientation-landscape .overlay {
     padding-left: var(--safe-left, 0px);
     padding-right: var(--safe-right, 0px);

@@ -31,10 +31,6 @@ body {
     radial-gradient(ellipse at 82% 18%, rgba(245, 168, 194, 0.14) 0%, transparent 45%);
   background-size: 20px 20px, 20px 20px, auto, auto;
   overflow-x: hidden;
-  padding-top: var(--safe-top, 0px);
-  padding-bottom: var(--safe-bottom, 0px);
-  padding-left: var(--safe-left, 0px);
-  padding-right: var(--safe-right, 0px);
 }
 
 /* ================================================

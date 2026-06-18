@@ -189,8 +189,8 @@ function isActiveGame(gameId: string, query: string): boolean {
 /* Grid: TransitionGroup wrapper IS the grid container */
 .games-container.view-grid > .games-list {
   display: grid !important;
-  grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr)) !important;
-  gap: var(--space-6);
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
+  gap: var(--space-4);
 }
 
 .games-container.view-list > .games-list {

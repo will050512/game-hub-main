@@ -1,6 +1,9 @@
 import './assets/main.css'
 import './styles/kawaii-tokens.css'
 
+import { initSafeArea } from './composables/useSafeArea'
+initSafeArea()
+
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 

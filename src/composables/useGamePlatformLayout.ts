@@ -90,13 +90,15 @@ export function resolveGamePlatformLayout(snapshot: GamePlatformSnapshot): GameP
 }
 
 export function useGamePlatformLayout() {
+  // Initialize with actual viewport dimensions to avoid desktop-default flash
+  const viewport = getViewportSize()
   const snapshot = shallowRef<GamePlatformSnapshot>({
-    width: 1024,
-    height: 768,
-    isCoarsePointer: false,
+    width: viewport.width,
+    height: viewport.height,
+    isCoarsePointer: window.matchMedia?.('(pointer: coarse)').matches ?? false,
     isNativePlatform: false,
     isStandalone: false,
-    orientation: 'landscape',
+    orientation: detectOrientation(viewport.width, viewport.height),
     safeArea: { top: 0, right: 0, bottom: 0, left: 0 },
   })
 

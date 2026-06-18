@@ -305,7 +305,7 @@ const isControllerFamily = computed(() => ['arcade', 'controller'].includes(prop
 .icon-svg {
   width: 100%;
   height: 100%;
-  overflow: visible;
+  overflow: hidden;
   contain: layout size;
   filter: drop-shadow(0 2px 0 rgba(27, 21, 26, 0.12));
 }

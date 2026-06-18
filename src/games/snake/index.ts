@@ -7,6 +7,7 @@ import {
   type PlayerStats,
   type GameHudData,
 } from '@/types'
+import { GridGameLayout } from '@/games/shared/GridGameLayout'
 import { SPECIAL_FOOD_DEFS, ARENA_MODIFIER_DEFS, type SpecialFoodDef, type ArenaModifierDef } from './data'
 import {
   preloadCoreSprites,
@@ -59,6 +60,7 @@ class SnakeGame extends GameEngine {
   private readonly gridCols = 20
   private readonly gridRows = 20
   private theme = getTheme('snake')
+  private gridLayout!: GridGameLayout
   private readonly levelFoodTarget = 5
 
   private snake: Cell[] = []
@@ -147,11 +149,23 @@ class SnakeGame extends GameEngine {
     this.gameOver = false
     this.gameOverNotified = false
 
+    this.gridLayout = new GridGameLayout({
+      rows: this.gridRows,
+      cols: this.gridCols,
+      topReservedRatio: 0.15,
+      bottomReservedRatio: 0.05,
+    })
+    this.gridLayout.setSize(this.width, this.height, this.dpr)
+
     this.bindInputListeners()
     this.callbacks.onScoreUpdate?.(this.score)
     this.pushStats()
 
     void this.preloadSprites()
+  }
+
+  override onResize(width: number, height: number): void {
+    this.gridLayout.setSize(width, height, this.dpr)
   }
 
   private async preloadSprites(): Promise<void> {
@@ -236,12 +250,8 @@ class SnakeGame extends GameEngine {
   }
 
   protected render(ctx: CanvasRenderingContext2D): void {
-    const boardSize = Math.floor(Math.min(this.width, this.height) * 0.9)
-    const cellSize = Math.max(8, Math.floor(boardSize / this.gridCols))
-    const gridWidth = cellSize * this.gridCols
-    const gridHeight = cellSize * this.gridRows
-    const offsetX = Math.floor((this.width - gridWidth) / 2)
-    const offsetY = Math.floor((this.height - gridHeight) / 2)
+    this.gridLayout.setSize(this.width, this.height, this.dpr)
+    const { cellSize, boardX: offsetX, boardY: offsetY, boardWidth: gridWidth, boardHeight: gridHeight } = this.gridLayout.layout
 
     ctx.clearRect(0, 0, this.width, this.height)
     ctx.fillStyle = '#05180d'

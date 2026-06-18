@@ -83,8 +83,10 @@ body::after {
   z-index: 1;
   width: 100%;
   height: 100%;
-  padding-top: var(--safe-top);
-  padding-bottom: var(--safe-bottom);
+  padding-top: var(--safe-top, 0px);
+  padding-right: var(--safe-right, 0px);
+  padding-bottom: var(--safe-bottom, 0px);
+  padding-left: var(--safe-left, 0px);
 }
 
 button {

@@ -161,7 +161,9 @@ watch(
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  min-width: 110px;
+  min-width: 0;
+  width: max-content;
+  max-width: 45%;
 }
 
 .simple-hud-left {
@@ -174,7 +176,7 @@ watch(
 .life-dot { font-size: 0.85rem; }
 
 .hud-panel {
-  min-width: 120px;
+  min-width: 80px;
 }
 
 .bar-panel {
@@ -365,6 +367,14 @@ watch(
 }
 
 /* ===== Responsive ===== */
+@media (max-width: 400px) {
+  .hud-top { gap: 3px; }
+  .hud-panel { min-width: 60px; }
+  .hp-bar, .xp-bar { height: 12px; }
+  .pause-btn { width: 36px; height: 36px; }
+  .stat-pill { font-size: var(--font-size-xs); min-height: 30px; }
+}
+
 @media (min-width: 640px) {
   .hud-top { padding: 12px; }
   .hp-bar, .xp-bar { height: 18px; }

@@ -1,4 +1,5 @@
 import { GameEngine } from '@/engine/GameEngine'
+import { GridGameLayout } from '@/games/shared/GridGameLayout'
 import { EffectsManager } from '@/engine/effects'
 import { drawSprite, preloadGameSprites } from '@/engine/sprites/spriteLoader'
 import { drawKenneySprite, preloadKenneySprites } from '@/engine/sprites/kenneySpriteLoader'
@@ -134,6 +135,7 @@ class TetrisGame extends GameEngine {
   private activeTouch: TouchTrack | null = null
 
   private theme = getTheme('tetris')
+  private gridLayout!: GridGameLayout
   private effects: EffectsManager = new EffectsManager()
   private lineClearEffects: LineClearEffect[] = []
   private comboCount = 0
@@ -185,6 +187,18 @@ class TetrisGame extends GameEngine {
 
     this.callbacks.onScoreUpdate?.(this.score)
     this.bindInputListeners()
+
+    this.gridLayout = new GridGameLayout({
+      rows: BOARD_HEIGHT,
+      cols: BOARD_WIDTH,
+      topReservedRatio: 0.12,
+      bottomReservedRatio: 0.05,
+    })
+    this.gridLayout.setSize(this.width, this.height, this.dpr)
+  }
+
+  override onResize(width: number, height: number): void {
+    this.gridLayout.setSize(width, height, this.dpr)
   }
 
   private selectRandomMission(): void {
@@ -351,11 +365,8 @@ class TetrisGame extends GameEngine {
   }
 
   protected render(ctx: CanvasRenderingContext2D): void {
-    const cellSize = Math.max(8, Math.floor(Math.min(this.width / 14, this.height / 22)))
-    const boardPixelWidth = BOARD_WIDTH * cellSize
-    const boardPixelHeight = BOARD_HEIGHT * cellSize
-    const boardX = Math.floor((this.width - boardPixelWidth) / 2)
-    const boardY = Math.floor((this.height - boardPixelHeight) / 2)
+    this.gridLayout.setSize(this.width, this.height, this.dpr)
+    const { cellSize, boardX, boardY, boardWidth: boardPixelWidth, boardHeight: boardPixelHeight } = this.gridLayout.layout
 
     ctx.clearRect(0, 0, this.width, this.height)
     ctx.fillStyle = this.theme.palette.bg

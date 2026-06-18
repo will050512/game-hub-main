@@ -3,7 +3,7 @@ import { getTheme } from '@/engine/art/KawaiiTheme'
 import { REWARD_EVENT_SCHEMA_VERSION, createRewardPayload, type GameInstance, type PlayerStats, type GameHudData } from '@/types'
 import { drawSprite, preloadGameSprites } from '@/engine/sprites/spriteLoader'
 import { drawKawaiiButton, drawKawaiiInlineLabel, drawKawaiiPanel } from '@/engine/kawaiiCanvas'
-import { computeResponsiveGridLayout } from '@/games/shared/responsiveGridLayout'
+import { computeResponsiveGridLayout, classifyDevice, getDeviceGridPreset } from '@/games/shared/responsiveGridLayout'
 
 interface Card {
   id: number
@@ -295,6 +295,10 @@ class MemoryGame extends GameEngine {
     }
 
     // Board layout
+    const preset = getDeviceGridPreset(
+      classifyDevice(this.width / scale, this.height / scale),
+      scale,
+    )
     const layout = computeResponsiveGridLayout({
       canvasWidth: this.width,
       canvasHeight: this.height,
@@ -303,9 +307,9 @@ class MemoryGame extends GameEngine {
       dpr: scale,
       topReserved: topBarY + Math.floor(52 * scale) + (this.phase === 'gameover' ? Math.floor(20 * scale) : 0),
       bottomReserved: Math.floor(22 * scale),
-      minCellSize: Math.floor(34 * scale),
-      maxCellSize: Math.floor(86 * scale),
-      gap: Math.floor(6 * scale),
+      minCellSize: preset.minCellSize,
+      maxCellSize: preset.maxCellSize,
+      gap: preset.gap,
       horizontalPadding: Math.floor(16 * scale),
     })
     const gap = layout.gap
