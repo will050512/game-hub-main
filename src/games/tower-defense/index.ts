@@ -4,7 +4,6 @@ import { drawSprite, preloadGameSprites } from '@/engine/sprites/spriteLoader'
 import { drawKawaiiButton, drawKawaiiInlineLabel, drawKawaiiPanel, drawKawaiiProgressBar } from '@/engine/kawaiiCanvas'
 import { EffectsManager } from '@/engine/effects'
 import { getTheme } from '@/engine/art/KawaiiTheme'
-import { GameOverlay } from '@/engine/GameOverlay'
 import { getFont, FONTS } from '@/engine/CanvasFontRegistry'
 
 interface Tower {
@@ -57,13 +56,13 @@ interface Projectile {
   trailTimer: number
 }
 
-type GamePhase = 'menu' | 'playing' | 'gameover' | 'waveComplete'
+type GamePhase = 'playing' | 'gameover'
 
 class TowerDefenseGame extends GameEngine {
   private towers: Tower[] = []
   private enemies: Enemy[] = []
   private projectiles: Projectile[] = []
-  private phase: GamePhase = 'menu'
+  private phase: GamePhase = 'playing'
   private gold = 200
   private lives = 20
   private wave = 0
@@ -89,17 +88,16 @@ class TowerDefenseGame extends GameEngine {
   private effects: EffectsManager = new EffectsManager()
   private synergiesDirty = true
   private theme = getTheme('tower-defense')
-  private gameOverlay = new GameOverlay()
+  private isTouchDevice = false
+  private enemiesKilled = 0
   private pathDotTimer = 0
-  private menuPulseTimer = 0
-  private towerPreviewType = 'basic' as Tower['type']
   private won = false
   private selectedTower: Tower | null = null
   private showUpgradeUI = false
   private readonly maxWaves = 20
 
   protected init(): void {
-    this.phase = 'menu'
+    this.phase = 'playing'
     this.gold = 200
     this.lives = 20
     this.wave = 0
@@ -110,14 +108,16 @@ class TowerDefenseGame extends GameEngine {
     this.enemies = []
     this.projectiles = []
     this.enemiesSpawned = 0
+    this.enemiesKilled = 0
     this.animationTimer = 0
     this.won = false
     this.selectedTower = null
     this.showUpgradeUI = false
-    this.gameOverlay.setSize(this.width, this.height)
+    this.isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0
     this.generatePath()
     this.pushStats()
     void preloadGameSprites('tower-defense')
+    this.startWave()
   }
 
   private generatePath(): void {
@@ -189,154 +189,7 @@ class TowerDefenseGame extends GameEngine {
     bg.addColorStop(1, this.theme.palette.bgAlt)
     ctx.fillStyle = bg
     ctx.fillRect(0, 0, this.width, this.height)
-
-    if (this.phase === 'menu') {
-      this.renderMenu(ctx)
-    } else {
-      this.renderGame(ctx)
-    }
-  }
-
-  private renderMenu(ctx: CanvasRenderingContext2D): void {
-    const scale = this.dpr
-    ctx.textAlign = 'center'
-    ctx.textBaseline = 'middle'
-
-    // Animated background gradient mesh
-    const pulse = Math.sin(this.animationTimer * 0.001) * 0.5 + 0.5
-    const menuBg = ctx.createRadialGradient(this.width / 2, this.height / 2, 0, this.width / 2, this.height / 2, Math.max(this.width, this.height) * 0.6)
-    menuBg.addColorStop(0, `${this.theme.ui.accent}33`)
-    menuBg.addColorStop(0.5, `${this.theme.palette.bg}88`)
-    menuBg.addColorStop(1, this.theme.palette.bg)
-    ctx.fillStyle = menuBg
-    ctx.fillRect(0, 0, this.width, this.height)
-
-    // Title glow effect
-    const titleGlow = ctx.createRadialGradient(this.width / 2, this.height * 0.18, 0, this.width / 2, this.height * 0.18, 200 * scale)
-    titleGlow.addColorStop(0, `${this.theme.ui.accent}40`)
-    titleGlow.addColorStop(1, 'transparent')
-    ctx.fillStyle = titleGlow
-    ctx.fillRect(this.width * 0.2, this.height * 0.05, this.width * 0.6, this.height * 0.2)
-
-    drawKawaiiPanel(ctx, this.width * 0.17, this.height * 0.1, this.width * 0.66, this.height * 0.18, {
-      fill: this.theme.ui.surface,
-      accent: this.theme.ui.accent,
-      stroke: this.theme.palette.ink,
-      radius: Math.floor(22 * scale),
-    })
-
-    // Animated title with glow
-    ctx.save()
-    const titleScale = 1 + Math.sin(this.animationTimer * 0.002) * 0.03
-    ctx.translate(this.width / 2, this.height * 0.17)
-    ctx.scale(titleScale, titleScale)
-    ctx.translate(-this.width / 2, -this.height * 0.17)
-    
-    ctx.shadowColor = this.theme.ui.accent
-    ctx.shadowBlur = 20 * scale * pulse
-    ctx.fillStyle = this.theme.palette.accent
-    ctx.font = `bold ${Math.floor(36 * scale)}px ${this.theme.font.family}`
-    ctx.fillText('塔防大戰', this.width / 2, this.height * 0.17)
-    ctx.shadowBlur = 0
-    ctx.restore()
-
-    ctx.fillStyle = this.theme.palette.ink + '80'
-    ctx.font = `${Math.floor(15 * scale)}px ${this.theme.font.family}`
-    ctx.fillText('Tower Defense', this.width / 2, this.height * 0.17 + Math.floor(38 * scale))
-
-    // Tower preview section
-    const previewY = this.height * 0.32
-    const previewW = Math.floor(this.width * 0.55)
-    const previewH = Math.floor(80 * scale)
-    drawKawaiiPanel(ctx, (this.width - previewW) / 2, previewY, previewW, previewH, {
-      fill: this.theme.ui.surface + '99',
-      accent: this.theme.ui.accent + '66',
-      stroke: this.theme.palette.ink + '44',
-      radius: Math.floor(14 * scale),
-    })
-
-    ctx.fillStyle = this.theme.palette.ink + 'aa'
-    ctx.font = `bold ${Math.floor(12 * scale)}px ${this.theme.font.family}`
-    ctx.fillText('— 塔防預覽 —', this.width / 2, previewY + Math.floor(16 * scale))
-
-    // Show preview towers
-    const towerTypes: { type: 'basic' | 'sniper' | 'splash' | 'frost'; label: string; color: string; cost: number; icon: string }[] = [
-      { type: 'basic', label: '基礎', color: '#3b82f6', cost: 50, icon: '⚡' },
-      { type: 'sniper', label: '狙擊', color: '#8b5cf6', cost: 100, icon: '🎯' },
-      { type: 'splash', label: '範圍', color: '#ef4444', cost: 150, icon: '💥' },
-      { type: 'frost', label: '冰霜', color: '#38bdf8', cost: 120, icon: '❄️' },
-    ]
-
-    const btnW = Math.floor(previewW / 3) - Math.floor(8 * scale)
-    towerTypes.forEach((t, i) => {
-      const x = (this.width - previewW) / 2 + Math.floor(8 * scale) + i * (btnW + Math.floor(8 * scale))
-      const isActive = this.towerPreviewType === t.type
-      const isSelected = this.selectedTowerType === t.type
-
-      // Mini tower preview
-      const previewX = x + Math.floor(btnW / 2)
-      const previewCY = previewY + Math.floor(42 * scale)
-      
-      ctx.save()
-      ctx.translate(previewX, previewCY)
-      
-      // Tower base preview
-      const towerSize = Math.floor(20 * scale)
-      ctx.shadowColor = isActive ? t.color : 'transparent'
-      ctx.shadowBlur = isActive ? 12 * scale : 0
-      ctx.fillStyle = isActive ? t.color : `${t.color}66`
-      ctx.beginPath()
-      ctx.roundRect(-towerSize / 2, -towerSize / 2, towerSize, towerSize, Math.floor(4 * scale))
-      ctx.fill()
-      ctx.shadowBlur = 0
-      
-      // Tower icon
-      ctx.font = `${Math.floor(10 * scale)}px sans-serif`
-      ctx.textAlign = 'center'
-      ctx.textBaseline = 'middle'
-      ctx.fillText(t.icon, 0, 0)
-      ctx.restore()
-
-      // Label below
-      ctx.fillStyle = isActive ? t.color : this.theme.palette.ink + '88'
-      ctx.font = `${isActive ? 'bold ' : ''}${Math.floor(10 * scale)}px ${this.theme.font.family}`
-      ctx.textAlign = 'center'
-      ctx.fillText(`${t.label} ${t.cost}g`, previewX, previewY + Math.floor(58 * scale))
-    })
-
-    // Start button with pulse
-    const startBtnY = this.height * 0.52
-    const startBtnW = Math.floor(this.width * 0.5)
-    const startBtnH = Math.floor(52 * scale)
-    const startBtnX = (this.width - startBtnW) / 2
-
-    const btnPulse = Math.sin(this.animationTimer * 0.003) * 0.06 + 0.94
-    ctx.save()
-    ctx.translate(this.width / 2, startBtnY + startBtnH / 2)
-    ctx.scale(btnPulse, btnPulse)
-    ctx.translate(-this.width / 2, -(startBtnY + startBtnH / 2))
-    drawKawaiiButton(ctx, {
-      x: startBtnX,
-      y: startBtnY,
-      width: startBtnW,
-      height: startBtnH,
-      label: '🚀 開始遊戲',
-      iconKind: 'rocket',
-      fill: this.theme.ui.surface,
-      activeFill: this.theme.ui.accent,
-    })
-    ctx.restore()
-
-    // Instructions
-    ctx.fillStyle = this.theme.palette.ink + '66'
-    ctx.font = `${Math.floor(12 * scale)}px ${this.theme.font.family}`
-    ctx.fillText('點擊格子上放塔防，抵禦敵人進攻！', this.width / 2, this.height * 0.68)
-    ctx.fillText('相鄰塔防會獲得加成效果', this.width / 2, this.height * 0.73)
-
-    // Difficulty indicator
-    ctx.fillStyle = this.theme.palette.ink + '44'
-    ctx.font = `${Math.floor(10 * scale)}px ${this.theme.font.family}`
-    ctx.fillText('挑戰無限波次 | 提升塔防等級 | 解鎖強大敵人', this.width / 2, this.height * 0.85)
+    this.renderGame(ctx)
   }
 
   private renderGame(ctx: CanvasRenderingContext2D): void {
@@ -479,29 +332,14 @@ class TowerDefenseGame extends GameEngine {
 
     // ---- HUD ----
 
-    // ---- Tower buttons ----
-    this.renderTowerButtons(ctx, scale)
+    // ---- Tower buttons (touch devices only) ----
+    if (this.isTouchDevice) {
+      this.renderTowerButtons(ctx, scale)
+    }
 
     // ---- Upgrade UI for selected tower ----
     if (this.selectedTower) {
       this.renderUpgradeUI(ctx, scale)
-    }
-
-    // Game over overlay
-    if (this.phase === 'gameover') {
-      this.gameOverlay.render(ctx, {
-        state: 'gameover',
-        score: this.score,
-        level: this.wave,
-        lives: this.lives,
-        maxLives: 20,
-        gameTime: this.gameTime,
-        gameName: '塔防大戰',
-        gameColor: this.theme.ui.accent,
-        dpr: scale,
-        introProgress: 1,
-        won: this.won,
-      })
     }
 
     ctx.restore() // End screen shake
@@ -853,7 +691,7 @@ class TowerDefenseGame extends GameEngine {
         rewards: createRewardPayload(),
         result: {
           score: this.score,
-          kills: this.towers.length,
+          kills: this.enemiesKilled,
           time: Math.floor(this.gameTime / 1000),
           level: this.wave,
           coins: 0,
@@ -1114,7 +952,7 @@ class TowerDefenseGame extends GameEngine {
               rewards: createRewardPayload(),
               result: {
                 score: this.score,
-                kills: this.towers.length,
+                kills: this.enemiesKilled,
                 time: Math.floor(this.gameTime / 1000),
                 level: this.wave,
                 coins: 0,
@@ -1274,6 +1112,7 @@ class TowerDefenseGame extends GameEngine {
     
     if (enemy.hp <= 0) {
       enemy.alive = false
+      this.enemiesKilled++
       this.gold += enemy.reward
       this.score += enemy.reward * 10
       
@@ -1297,27 +1136,7 @@ class TowerDefenseGame extends GameEngine {
     const rect = this.canvas.getBoundingClientRect()
     const x = (clientX - rect.left) * this.width / rect.width
     const y = (clientY - rect.top) * this.height / rect.height
-
-    if (this.phase === 'menu') {
-      const startBtnY = this.height * 0.52
-      const startBtnW = Math.floor(this.width * 0.5)
-      const startBtnH = Math.floor(52 * this.dpr)
-      const startBtnX = (this.width - startBtnW) / 2
-      if (x >= startBtnX && x <= startBtnX + startBtnW && y >= startBtnY && y <= startBtnY + startBtnH) {
-        this.phase = 'playing'
-        this.startWave()
-      }
-    } else if (this.phase === 'playing') {
-      this.handleGameTap(x, y)
-    } else if (this.phase === 'gameover') {
-      const btnW = Math.floor(this.width * 0.5)
-      const btnH = Math.floor(44 * this.dpr)
-      const btnY = this.height * 0.55
-      const btnX = (this.width - btnW) / 2
-      if (x >= btnX && x <= btnX + btnW && y >= btnY && y <= btnY + btnH) {
-        this.init()
-      }
-    }
+    this.handleGameTap(x, y)
   }
 
   private handleGameTap(x: number, y: number): void {
@@ -1454,8 +1273,8 @@ class TowerDefenseGame extends GameEngine {
     return total + (this.towerCosts[tower.type] ?? 50)
   }
 
-  protected override onResize(w: number, h: number): void {
-    this.gameOverlay.setSize(w, h)
+  protected override onResize(_w: number, _h: number): void {
+    // No-op — HUD is managed by Vue shell
   }
 
   private pushStats(): void {
@@ -1465,7 +1284,7 @@ class TowerDefenseGame extends GameEngine {
       level: this.wave,
       xp: this.enemiesSpawned,
       xpToNext: this.enemiesPerWave,
-      kills: this.towers.length,
+      kills: this.enemiesKilled,
       time: Math.floor(this.gameTime / 1000),
       score: this.score,
     }
@@ -1480,12 +1299,12 @@ class TowerDefenseGame extends GameEngine {
       level: this.wave,
       xp: this.enemiesSpawned,
       xpToNext: this.enemiesPerWave,
-      kills: this.towers.length,
+      kills: this.enemiesKilled,
       time: Math.floor(this.gameTime / 1000),
       score: this.score,
       activeBuffs: [],
       itemSlots: [],
-      currency: 0,
+      currency: this.gold,
     }
     this.callbacks.onHudUpdate?.(hudData)
   }
