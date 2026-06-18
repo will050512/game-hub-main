@@ -57,7 +57,10 @@ const containerPosition = computed(() => {
   }
 })
 
-const buttonSize = computed(() => props.size)
+const buttonSize = computed(() => {
+  const base = props.size || 72
+  return Math.min(base, Math.max(56, Math.round(window.innerWidth * 0.14)))
+})
 
 async function triggerHaptic() {
   if (!props.hapticEnabled) return

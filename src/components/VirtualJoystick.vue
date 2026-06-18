@@ -44,10 +44,11 @@ const touchId = ref<number | null>(null)
 const thumbTransform = computed(() => `translate(${thumbX.value}px, ${thumbY.value}px)`)
 
 const baseStyle = computed(() => {
-  const size = joystickBaseSize.value
+  const base = joystickBaseSize.value
+  const responsiveSize = Math.min(base, Math.max(96, Math.round(window.innerWidth * 0.25)))
   return {
-    width: `${size}px`,
-    height: `${size}px`,
+    width: `${responsiveSize}px`,
+    height: `${responsiveSize}px`,
   }
 })
 
@@ -69,15 +70,19 @@ const thumbStyle = computed(() => {
 })
 
 const containerPosition = computed(() => {
+  const safeBottom = `max(8px, env(safe-area-inset-bottom, 8px))`
+  const safeLeft = `max(8px, env(safe-area-inset-left, 8px))`
+  const safeRight = `max(8px, env(safe-area-inset-right, 8px))`
+
   switch (props.position) {
     case 'right':
-      return { bottom: 'max(20px, env(safe-area-inset-bottom, 20px))', right: '24px', left: 'auto' }
+      return { bottom: safeBottom, right: safeRight, left: 'auto' }
     case 'bottom-left':
-      return { bottom: 'max(20px, env(safe-area-inset-bottom, 20px))', left: '24px' }
+      return { bottom: safeBottom, left: safeLeft }
     case 'bottom-right':
-      return { bottom: 'max(20px, env(safe-area-inset-bottom, 20px))', right: '24px' }
+      return { bottom: safeBottom, right: safeRight }
     default:
-      return { bottom: 'max(20px, env(safe-area-inset-bottom, 20px))', left: '24px' }
+      return { bottom: safeBottom, left: safeLeft }
   }
 })
 
