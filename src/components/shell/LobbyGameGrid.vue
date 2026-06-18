@@ -189,7 +189,7 @@ function isActiveGame(gameId: string, query: string): boolean {
 /* Grid: TransitionGroup wrapper IS the grid container */
 .games-container.view-grid > .games-list {
   display: grid !important;
-  grid-template-columns: repeat(3, 1fr) !important;
+  grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr)) !important;
   gap: var(--space-6);
 }
 
@@ -338,42 +338,6 @@ function isActiveGame(gameId: string, query: string): boolean {
 @keyframes sparkle-float {
   0%, 100% { transform: translateY(0) scale(1); opacity: 0.3; }
   50% { transform: translateY(-10px) scale(1.2); opacity: 0.6; }
-}
-
-/* Responsive */
-@media (max-width: 480px) {
-  .games-container.view-grid > .games-list {
-    grid-template-columns: 1fr !important;
-    gap: var(--space-4);
-  }
-}
-
-@media (min-width: 481px) and (max-width: 768px) {
-  .games-container.view-grid > .games-list {
-    grid-template-columns: repeat(2, 1fr) !important;
-    gap: var(--space-4);
-  }
-}
-
-@media (min-width: 769px) and (max-width: 1024px) {
-  .games-container.view-grid > .games-list {
-    grid-template-columns: repeat(3, 1fr) !important;
-    gap: var(--space-5);
-  }
-}
-
-@media (min-width: 1025px) and (max-width: 1399px) {
-  .games-container.view-grid > .games-list {
-    grid-template-columns: repeat(4, 1fr) !important;
-    gap: var(--space-6);
-  }
-}
-
-@media (min-width: 1400px) {
-  .games-container.view-grid > .games-list {
-    grid-template-columns: repeat(4, 1fr) !important;
-    gap: var(--space-7);
-  }
 }
 
 @media (max-width: 768px) {
