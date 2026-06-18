@@ -17,14 +17,14 @@ describe('CanvasFontRegistry', () => {
   })
 
   it('should have correct font sizes', () => {
-    expect(FONTS.title?.size).toBe(28)
-    expect(FONTS.hud?.size).toBe(12)
-    expect(FONTS.score?.size).toBe(32)
-    expect(FONTS.label?.size).toBe(10)
+    expect(FONTS.title?.size).toBe(32)
+    expect(FONTS.hud?.size).toBe(16)
+    expect(FONTS.score?.size).toBe(36)
+    expect(FONTS.label?.size).toBe(14)
   })
 
   it('should have correct font names', () => {
-    expect(FONTS.title?.name).toContain('Noto Sans KR')
-    expect(FONTS.score?.name).toContain('Noto Sans KR')
+    expect(FONTS.title?.name).toContain('Noto Sans TC')
+    expect(FONTS.score?.name).toContain('Noto Sans TC')
   })
 })

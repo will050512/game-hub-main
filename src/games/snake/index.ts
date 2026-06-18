@@ -1,4 +1,4 @@
-import { GameEngine } from '@/engine/GameEngine'
+﻿import { GameEngine } from '@/engine/GameEngine'
 import {
   REWARD_EVENT_SCHEMA_VERSION,
   createRewardPayload,
@@ -68,6 +68,7 @@ class SnakeGame extends GameEngine {
   private queuedDirection: Direction = 'right'
 
   private score = 0
+  private scoreMultiplier = 1
   private level = 1
   private foodsEaten = 0
   private elapsedMs = 0
@@ -85,6 +86,7 @@ class SnakeGame extends GameEngine {
   private arenaModifierCooldown = 0
   private extraFoods: Cell[] = []
   private portals: [Cell, Cell] | null = null
+  private arenaBaseMoveInterval = 170
   private safeZoneActive = false
 
   private analogInputCooldownMs = 0
@@ -532,12 +534,32 @@ class SnakeGame extends GameEngine {
     }
 
     if (this.portals) {
-      if (nextHead.x === this.portals[0].x && nextHead.y === this.portals[0].y) {
-        nextHead.x = this.portals[1].x
-        nextHead.y = this.portals[1].y
-      } else if (nextHead.x === this.portals[1].x && nextHead.y === this.portals[1].y) {
-        nextHead.x = this.portals[0].x
-        nextHead.y = this.portals[0].y
+      const portal1 = this.portals[0]
+      const portal2 = this.portals[1]
+      if (nextHead.x === portal1.x && nextHead.y === portal1.y) {
+        const dx = portal2.x - portal1.x
+        const dy = portal2.y - portal1.y
+        nextHead.x = portal2.x
+        nextHead.y = portal2.y
+        for (let i = 1; i < this.snake.length; i += 1) {
+          const seg = this.snake[i]
+          if (seg) {
+            seg.x += dx
+            seg.y += dy
+          }
+        }
+      } else if (nextHead.x === portal2.x && nextHead.y === portal2.y) {
+        const dx = portal1.x - portal2.x
+        const dy = portal1.y - portal2.y
+        nextHead.x = portal1.x
+        nextHead.y = portal1.y
+        for (let i = 1; i < this.snake.length; i += 1) {
+          const seg = this.snake[i]
+          if (seg) {
+            seg.x += dx
+            seg.y += dy
+          }
+        }
       }
     }
 
@@ -678,6 +700,7 @@ class SnakeGame extends GameEngine {
         for (let i = 0; i < removeCount; i += 1) {
           this.snake.pop()
         }
+        this.foodsEaten = Math.max(0, this.foodsEaten - removeCount)
         break
       }
       case 'golden_apple':
@@ -722,6 +745,7 @@ class SnakeGame extends GameEngine {
         break
       case 'speed_boost':
         this.moveIntervalMs = this.baseMoveInterval
+        this.baseMoveInterval = this.arenaBaseMoveInterval
         break
       default:
         break
@@ -737,6 +761,7 @@ class SnakeGame extends GameEngine {
 
     switch (chosen.id) {
       case 'speed_boost':
+        this.arenaBaseMoveInterval = this.baseMoveInterval
         this.baseMoveInterval = this.moveIntervalMs
         this.moveIntervalMs = this.moveIntervalMs / 1.5
         break
@@ -777,6 +802,7 @@ class SnakeGame extends GameEngine {
     switch (this.activeArenaModifier.def.id) {
       case 'speed_boost':
         this.moveIntervalMs = this.baseMoveInterval
+        this.baseMoveInterval = this.arenaBaseMoveInterval
         break
       case 'food_frenzy':
         this.extraFoods = []
@@ -1021,7 +1047,7 @@ class SnakeGame extends GameEngine {
     if (this.gameOver) {
       return
     }
-    if (this.isOpposite(next, this.direction) || next === this.direction) {
+    if (this.isOpposite(next, this.direction)) {
       return
     }
     this.queuedDirection = next

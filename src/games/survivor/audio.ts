@@ -337,6 +337,7 @@ export class SurvivorAudioManager {
       const notes = [523.25, 659.25, 783.99, 1046.5, 1318.5]
       for (let i = 0; i < notes.length; i++) {
         const note = notes[i]
+        if (note === undefined) continue
         const osc = context.createOscillator()
         const gain = context.createGain()
         osc.type = 'sine'

@@ -694,7 +694,7 @@ class TowerDefenseGame extends GameEngine {
 
     // Level indicator with stars
     if (tower.level > 1) {
-      const stars = '★'.repeat(tower.level) + '☆'.repeat(Math.max(0, 3 - tower.level))
+      const stars = '★'.repeat(tower.level) + '☆'.repeat(Math.max(0, 4 - tower.level))
       
       ctx.save()
       ctx.shadowColor = '#fbbf24'
@@ -965,6 +965,11 @@ class TowerDefenseGame extends GameEngine {
     if (this.enemiesSpawned >= this.enemiesPerWave) {
       if (this.enemies.length === 0 && this.enemiesSpawned >= this.enemiesPerWave) {
         if (this.wave >= this.maxWaves) {
+          // Award final wave gold bonus before victory
+          this.gold += 50 + this.wave * 10
+          this.effects.triggerConfetti(30)
+          this.effects.spawnFloatingText(this.width / 2, this.height * 0.4, `+${50 + this.wave * 10} 💰`, '#f59e0b')
+          this.effects.shake.trigger({ intensity: 2, duration: 200 })
           // VICTORY!
           this.phase = 'gameover'
           this.won = true
@@ -1407,22 +1412,21 @@ class TowerDefenseGame extends GameEngine {
       })
 
       if (existingTower) {
-        // Upgrade button tap detection
-        const upgradeBtnY = this.gridOffsetY + this.cellSize * this.rows + Math.floor(90 * scale)
-        const upgradeBtnW = Math.floor((this.width - Math.floor(40 * scale)) / 3)
-        const upgradeBtnH = Math.floor(32 * scale)
-        const upgradeGap = Math.floor(4 * scale)
-
-        // Sell button is to the right
-        const sellBtnX = Math.floor(12 * scale) + upgradeBtnW + upgradeGap
-        const sellBtnW = Math.floor((this.width - Math.floor(40 * scale)) / 3)
-
-        // Upgrade button is in the middle
-        const upgradeBtnX = Math.floor(12 * scale) + Math.floor((this.width - Math.floor(40 * scale)) / 3) + upgradeGap
+        // Button tap detection — match renderUpgradeUI panel positions
+        const size = this.cellSize * 0.7
+        const panelW = Math.floor(160 * scale)
+        const panelH = Math.floor(60 * scale)
+        const panelX = existingTower.x - panelW / 2
+        const panelY = existingTower.y + size / 2 + Math.floor(8 * scale)
+        const btnW = Math.floor(panelW * 0.45)
+        const btnH = Math.floor(22 * scale)
+        const upgradeBtnX = panelX + Math.floor(4 * scale)
+        const sellBtnX = panelX + panelW * 0.5 + Math.floor(4 * scale)
+        const btnY = panelY + Math.floor(40 * scale)
 
         if (existingTower.level < 4) {
           const upgradeCost = this.getUpgradeCost(existingTower)
-          if (x >= upgradeBtnX && x <= upgradeBtnX + upgradeBtnW && y >= upgradeBtnY && y <= upgradeBtnY + upgradeBtnH) {
+          if (x >= upgradeBtnX && x <= upgradeBtnX + btnW && y >= btnY && y <= btnY + btnH) {
             if (this.gold >= upgradeCost) {
               this.gold -= upgradeCost
               existingTower.level++
@@ -1435,7 +1439,7 @@ class TowerDefenseGame extends GameEngine {
         }
 
         // Sell button
-        if (x >= sellBtnX && x <= sellBtnX + sellBtnW && y >= upgradeBtnY && y <= upgradeBtnY + upgradeBtnH) {
+        if (x >= sellBtnX && x <= sellBtnX + btnW && y >= btnY && y <= btnY + btnH) {
           const totalInvestment = this.getTotalInvestment(existingTower)
           const sellValue = Math.floor(totalInvestment * 0.5)
           this.gold += sellValue

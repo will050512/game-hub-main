@@ -1,4 +1,4 @@
-export interface SpecialFoodDef {
+﻿export interface SpecialFoodDef {
   id: string
   name: string
   icon: string
@@ -13,7 +13,7 @@ export const SPECIAL_FOOD_DEFS: Record<string, SpecialFoodDef> = {
     id: 'slow',
     name: '減速果',
     icon: 'slow',
-    description: '移動速度 ×0.7',
+    description: '移動速度 −30%',
     color: '#3b82f6',
     durationMs: 8000,
     scoreMultiplier: 1,

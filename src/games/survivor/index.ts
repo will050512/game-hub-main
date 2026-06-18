@@ -601,9 +601,6 @@ class SurvivorGame extends GameEngine {
           if (e.shootTimer <= 0) {
             e.shootTimer = 4000
             const aoeDamage = Math.round(15 + this.waveNumber * 2)
-            for (const other of this.enemies) {
-              if (!other.active || other === e) continue
-            }
             const pdx = this.playerX - e.x
             const pdy = this.playerY - e.y
             const pDist = Math.sqrt(pdx * pdx + pdy * pdy)
@@ -786,11 +783,11 @@ class SurvivorGame extends GameEngine {
     for (const wid of BASE_WEAPONS) {
       if (!this.weapons.find((w) => w.def.id === wid)) {
         const def = WEAPON_DEFS[wid]!
-        const synthInfo = def.synthTarget ? ` (可合成 ${WEAPON_DEFS[def.synthTarget]?.icon})` : ''
+        const synthInfo = def.synthTarget ? ` (?��???${WEAPON_DEFS[def.synthTarget]?.icon})` : ''
         pool.push({
           id: `weapon_new_${wid}`,
           name: def.name,
-          description: `獲得新武器 • 傷害 ${def.damage} • 射速 ${(1000/def.fireRate).toFixed(1)}/s${synthInfo}`,
+          description: `?��??�武?????�害 ${def.damage} ??射�?${(1000/def.fireRate).toFixed(1)}/s${synthInfo}`,
           icon: def.icon,
           type: 'weapon',
           rarity: 'rare',
@@ -806,7 +803,7 @@ class SurvivorGame extends GameEngine {
         pool.push({
           id: `weapon_up_${w.def.id}`,
           name: `${w.def.name} Lv.${w.level + 1}`,
-          description: `傷害 ${currentDmg} 到 ${nextDmg} (+${dmgIncrease})`,
+          description: `?�害 ${currentDmg} ??${nextDmg} (+${dmgIncrease})`,
           icon: w.def.icon,
           type: 'weapon',
           rarity: w.level >= 3 ? 'epic' : 'common',
@@ -818,7 +815,7 @@ class SurvivorGame extends GameEngine {
           pool.push({
             id: `weapon_synth_${w.def.id}`,
             name: synthDef.name,
-            description: `${w.def.name} 進化為 ${synthDef.name}`,
+            description: `${w.def.name} ?��???${synthDef.name}`,
             icon: synthDef.icon,
             type: 'synthesis',
             rarity: 'legendary',
@@ -847,7 +844,7 @@ class SurvivorGame extends GameEngine {
         pool.push({
           id: `passive_up_${p.id}`,
           name: `${def.name} Lv.${p.level + 1}`,
-          description: `${def.description} (強化效果)`,
+          description: `${def.description} (強�??��?)`,
           icon: def.icon,
           type: 'passive',
           rarity: p.level >= 3 ? 'epic' : 'common',
@@ -931,6 +928,7 @@ class SurvivorGame extends GameEngine {
       for (let j = i + 1; j < this.weapons.length; j++) {
         const w1 = this.weapons[i]
         const w2 = this.weapons[j]
+        if (!w1 || !w2) continue
         if (w1.def.id === w2.def.id && w1.level === w2.level) {
           const currentLevel = w1.level
           const maxLvl = w1.def.maxLevel
@@ -953,7 +951,7 @@ class SurvivorGame extends GameEngine {
     this.spawnFloatingText(
       this.playerX,
       this.playerY - 60,
-      `⚡ ${weapon.def.name} Lv.${weapon.level}！`,
+      `??${weapon.def.name} Lv.${weapon.level}！`,
       '#fbbf24',
       1.4
     )
@@ -1679,3 +1677,5 @@ class SurvivorGame extends GameEngine {
 export function createSurvivorGame(): GameInstance {
   return new SurvivorGame()
 }
+
+

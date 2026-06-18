@@ -482,6 +482,7 @@ class TicTacToeGame extends GameEngine {
 
   private startNewGame(): void {
     this.resetBoard()
+    this.initPowerCards()
     this.phase = 'playing'
     this.currentPlayer = 'X'
     this.gameOverSent = false

@@ -774,7 +774,7 @@ class TetrisGame extends GameEngine {
     }
 
     if (specialRowCleared && this.specialRowType) {
-      const bonusPoints = this.getLineClearPoints(cleared) * this.level * (this.specialRowType.scoreMultiplier - 1)
+      const bonusPoints = this.getLineClearPoints(1) * this.level * (this.specialRowType.scoreMultiplier - 1)
       this.score += bonusPoints
       this.spawnFloatingText(this.width / 2, this.height / 2 + 40, `+${bonusPoints} 黃金!`, this.specialRowType.color, 1.2)
       this.specialRowType = null
@@ -938,7 +938,7 @@ class TetrisGame extends GameEngine {
       return
     }
     const ghostY = this.computeGhostY()
-    if (ghostY === null || ghostY === this.currentPiece.y) {
+    if (ghostY === null) {
       return
     }
 
