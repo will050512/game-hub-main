@@ -123,7 +123,7 @@ const actionButtons = computed<VirtualButtonConfig[]>(() => {
 
 .input-companion {
   position: absolute;
-  right: max(10px, env(safe-area-inset-right));
+  right: max(10px, env(safe-area-inset-right, 0px));
   top: clamp(72px, 10dvh, 112px);
   display: flex;
   flex-direction: column;
