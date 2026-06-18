@@ -3,6 +3,7 @@ import { REWARD_EVENT_SCHEMA_VERSION, createRewardPayload, type GameInstance, ty
 import { drawSprite, preloadGameSprites } from '@/engine/sprites/spriteLoader'
 import { drawKawaiiButton, drawKawaiiInlineLabel, drawKawaiiPanel } from '@/engine/kawaiiCanvas'
 import { EffectsManager } from '@/engine/effects'
+import { drawKawaiiBackground } from '@/engine/kawaiiCanvas'
 import { computeResponsiveGridLayout } from '@/games/shared/responsiveGridLayout'
 import { getTheme } from '@/engine/art/KawaiiTheme'
 import { SudokuGenerator } from './generator'
@@ -277,17 +278,89 @@ class SudokuGame extends GameEngine {
 
   protected render(ctx: CanvasRenderingContext2D): void {
     const scale = this.dpr
-    const bg = ctx.createLinearGradient(0, 0, 0, this.height)
-    bg.addColorStop(0, '#0a1628')
-    bg.addColorStop(1, '#0f2027')
-    ctx.fillStyle = bg
-    ctx.fillRect(0, 0, this.width, this.height)
+    drawKawaiiBackground(ctx, this.width, this.height, this.frameTick, {
+      base: '#0f172a',
+      soft: '#1e293b',
+      accent: '#14b8a6',
+      ink: '#f0fdfa',
+      blush: '#0d9488',
+    })
 
     if (this.phase === 'menu') {
       this.renderMenu(ctx)
     } else {
       this.renderGame(ctx)
+      if (this.phase === 'gameover') {
+        this.renderGameOverOverlay(ctx)
+      }
     }
+  }
+
+  private renderGameOverOverlay(ctx: CanvasRenderingContext2D): void {
+    const scale = this.dpr
+    ctx.save()
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.65)'
+    ctx.fillRect(0, 0, this.width, this.height)
+
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+
+    const panelW = Math.floor(this.width * 0.7)
+    const panelH = Math.floor(180 * scale)
+    const panelX = (this.width - panelW) / 2
+    const panelY = (this.height - panelH) / 2
+    const r = Math.floor(20 * scale)
+
+    ctx.beginPath()
+    ctx.moveTo(panelX + r, panelY)
+    ctx.lineTo(panelX + panelW - r, panelY)
+    ctx.quadraticCurveTo(panelX + panelW, panelY, panelX + panelW, panelY + r)
+    ctx.lineTo(panelX + panelW, panelY + panelH - r)
+    ctx.quadraticCurveTo(panelX + panelW, panelY + panelH, panelX + panelW - r, panelY + panelH)
+    ctx.lineTo(panelX + r, panelY + panelH)
+    ctx.quadraticCurveTo(panelX, panelY + panelH, panelX, panelY + panelH - r)
+    ctx.lineTo(panelX, panelY + r)
+    ctx.quadraticCurveTo(panelX, panelY, panelX + r, panelY)
+    ctx.closePath()
+    ctx.fillStyle = 'rgba(255, 250, 246, 0.95)'
+    ctx.fill()
+    ctx.strokeStyle = '#14b8a6'
+    ctx.lineWidth = Math.floor(3 * scale)
+    ctx.stroke()
+
+    ctx.fillStyle = '#134e4a'
+    ctx.font = `bold ${Math.floor(28 * scale)}px ${this.theme.font.family}`
+    ctx.fillText('🎉 恭喜完成！', this.width / 2, panelY + 40 * scale)
+
+    ctx.fillStyle = '#475569'
+    ctx.font = `${Math.floor(16 * scale)}px ${this.theme.font.family}`
+    ctx.fillText(`得分：${this.score}  ·  错误：${this.errors}/${this.maxErrors}  ·  提示：${this.hintsUsed}`, this.width / 2, panelY + 80 * scale)
+
+    const btnW = Math.floor(160 * scale)
+    const btnH = Math.floor(42 * scale)
+    const btnX = (this.width - btnW) / 2
+    const btnY = panelY + panelH - 70 * scale
+
+    ctx.beginPath()
+    ctx.moveTo(btnX + 10 * scale, btnY)
+    ctx.lineTo(btnX + btnW - 10 * scale, btnY)
+    ctx.quadraticCurveTo(btnX + btnW, btnY, btnX + btnW, btnY + 10 * scale)
+    ctx.lineTo(btnX + btnW, btnY + btnH - 10 * scale)
+    ctx.quadraticCurveTo(btnX + btnW, btnY + btnH, btnX + btnW - 10 * scale, btnY + btnH)
+    ctx.lineTo(btnX + 10 * scale, btnY + btnH)
+    ctx.quadraticCurveTo(btnX, btnY + btnH, btnX, btnY + btnH - 10 * scale)
+    ctx.lineTo(btnX, btnY + 10 * scale)
+    ctx.quadraticCurveTo(btnX, btnY, btnX + 10 * scale, btnY)
+    ctx.closePath()
+    ctx.fillStyle = '#14b8a6'
+    ctx.fill()
+    ctx.strokeStyle = '#134e4a'
+    ctx.lineWidth = Math.floor(1.5 * scale)
+    ctx.stroke()
+
+    ctx.fillStyle = '#f0fdfa'
+    ctx.font = `bold ${Math.floor(16 * scale)}px ${this.theme.font.family}`
+    ctx.fillText('返回菜单', this.width / 2, btnY + btnH / 2)
   }
 
   private renderMenu(ctx: CanvasRenderingContext2D): void {
@@ -432,31 +505,29 @@ class SudokuGame extends GameEngine {
         const isError = !isGiven && val !== 0 && val !== (this.solution[r]?.[c] ?? 0)
         const shouldHighlight = this.highlightMode && this.selectedCell && val !== 0 && val === this.board[this.selectedCell.r]?.[this.selectedCell.c]
 
-        const cellAlpha = isSelected ? 1 : shouldHighlight ? 0.92 : isError ? 0.9 : isGiven ? 0.84 : 0.78
-        const cellDrawn = drawSprite(ctx, 'sudoku.cell', {
-          x,
-          y,
-          scaleX: this.cellSize / 56,
-          scaleY: this.cellSize / 56,
-          alpha: cellAlpha,
-        })
-        if (!cellDrawn) {
-          if (isSelected) {
-            ctx.fillStyle = this.theme.palette.glow
-          } else if (shouldHighlight) {
-            ctx.fillStyle = 'rgba(34, 197, 94, 0.2)'
-          } else if (isError) {
-            ctx.fillStyle = this.theme.ui.danger
-          } else if (isGiven) {
-            ctx.fillStyle = 'rgba(255,255,255,0.12)'
-          } else {
-            ctx.fillStyle = 'rgba(255,255,255,0.18)'
-          }
+        // Cell background fill
+        if (isSelected) {
+          ctx.shadowColor = '#14b8a6'
+          ctx.shadowBlur = 12
+          ctx.fillStyle = 'rgba(20, 184, 166, 0.18)'
+          ctx.fillRect(x, y, this.cellSize, this.cellSize)
+          ctx.shadowBlur = 0
+        } else if (shouldHighlight) {
+          ctx.fillStyle = 'rgba(20, 184, 166, 0.12)'
+          ctx.fillRect(x, y, this.cellSize, this.cellSize)
+        } else if (isError) {
+          ctx.fillStyle = 'rgba(239, 68, 68, 0.15)'
+          ctx.fillRect(x, y, this.cellSize, this.cellSize)
+        } else if (isGiven) {
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.08)'
+          ctx.fillRect(x, y, this.cellSize, this.cellSize)
+        } else {
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.04)'
           ctx.fillRect(x, y, this.cellSize, this.cellSize)
         }
 
         // Thin cell grid lines
-        ctx.strokeStyle = this.theme.palette.glow
+        ctx.strokeStyle = 'rgba(20, 184, 166, 0.3)'
         ctx.lineWidth = Math.floor(1 * scale)
         ctx.beginPath()
         ctx.moveTo(x, y)
@@ -469,7 +540,7 @@ class SudokuGame extends GameEngine {
 
         // Thick 3x3 box boundary lines
         if (c % 3 === 0) {
-          ctx.strokeStyle = this.theme.palette.accent
+          ctx.strokeStyle = 'rgba(20, 184, 166, 0.6)'
           ctx.lineWidth = Math.floor(3 * scale)
           ctx.beginPath()
           ctx.moveTo(x, y)
@@ -477,7 +548,7 @@ class SudokuGame extends GameEngine {
           ctx.stroke()
         }
         if (r % 3 === 0) {
-          ctx.strokeStyle = this.theme.palette.accent
+          ctx.strokeStyle = 'rgba(20, 184, 166, 0.6)'
           ctx.lineWidth = Math.floor(3 * scale)
           ctx.beginPath()
           ctx.moveTo(x, y)
@@ -486,14 +557,20 @@ class SudokuGame extends GameEngine {
         }
 
         if (val !== 0) {
-          ctx.fillStyle = isGiven ? this.theme.palette.ink : isError ? this.theme.ui.danger : this.theme.palette.glow
+          if (isGiven) {
+            ctx.fillStyle = '#5eead4'
+          } else if (isError) {
+            ctx.fillStyle = '#f87171'
+          } else {
+            ctx.fillStyle = '#99f6e4'
+          }
           ctx.font = `bold ${Math.floor(this.cellSize * 0.55)}px ${this.theme.font.family}`
           ctx.fillText(val.toString(), x + this.cellSize / 2, y + this.cellSize / 2)
         } else {
           const key = `${r},${c}`
           const notes = this.cellNotes.get(key)
           if (notes && notes.size > 0) {
-            ctx.fillStyle = this.theme.palette.secondary
+            ctx.fillStyle = 'rgba(20, 184, 166, 0.5)'
             ctx.font = `${Math.floor(this.cellSize * 0.24)}px ${this.theme.font.family}`
             const noteArr = Array.from(notes).sort()
             noteArr.forEach((n, idx) => {
@@ -722,7 +799,7 @@ class SudokuGame extends GameEngine {
     if (num !== 0) {
       const x = this.boardOffsetX + c * this.cellSize + this.cellSize / 2
       const y = this.boardOffsetY + r * this.cellSize + this.cellSize / 2
-      this.effects.burst(x, y, 4, ['#00bcd4'], { min: 0.5, max: 1.5 })
+      this.effects.burst(x, y, 6, ['#5eead4', '#99f6e4'], { min: 0.5, max: 1.5 })
     }
     
     if (num !== 0) {
@@ -732,7 +809,7 @@ class SudokuGame extends GameEngine {
 
     if (num !== 0 && num !== this.solution[r]![c]) {
       this.errors++
-      this.effects.triggerShake(2, 100)
+      this.effects.triggerShake(5, 150)
       if (this.errors >= this.maxErrors) {
         this.phase = 'gameover'
         this.updateMastery(false, false)
@@ -759,7 +836,7 @@ class SudokuGame extends GameEngine {
       this.score += 10
       const x = this.boardOffsetX + c * this.cellSize + this.cellSize / 2
       const y = this.boardOffsetY + r * this.cellSize + this.cellSize / 2
-      this.effects.burst(x, y, 8, ['#4caf50'], { min: 1, max: 2 })
+      this.effects.burst(x, y, 8, ['#5eead4', '#99f6e4'], { min: 1, max: 2 })
     }
 
     this.checkWin()
@@ -783,7 +860,7 @@ class SudokuGame extends GameEngine {
     this.hintsUsed++
     const x = this.boardOffsetX + c * this.cellSize + this.cellSize / 2
     const y = this.boardOffsetY + r * this.cellSize + this.cellSize / 2
-    this.effects.burst(x, y, 6, ['#ffeb3b'], { min: 1, max: 2 })
+    this.effects.burst(x, y, 6, ['#5eead4', '#99f6e4'], { min: 1, max: 2 })
     this.score = Math.max(0, this.score - 20)
     this.checkWin()
   }
@@ -795,7 +872,8 @@ class SudokuGame extends GameEngine {
       }
     }
     this.phase = 'gameover'
-    this.effects.triggerConfetti(40)
+    this.effects.confetti.burst(100)
+    this.effects.triggerShake(6, 250)
     const isPerfect = this.errors === 0 && this.hintsUsed === 0
     this.score += Math.max(0, 500 - this.errors * 50 - this.hintsUsed * 30) + (isPerfect ? 300 : 0)
     this.updateMastery(true, isPerfect)

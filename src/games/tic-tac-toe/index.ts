@@ -341,19 +341,10 @@ class TicTacToeGame extends GameEngine {
         const cx = ox + c * (cs + gap)
         const cy = oy + r * (cs + gap)
         const isWinCell = this.winLine.some(w => w.r === r && w.c === c)
+        const isSelectedCell = this.phase === 'playing' && this.currentPlayer === 'X' && this.isCellPlayable(r, c) && this.board[r]![c] === null
 
-        const cellDrawn = drawSprite(ctx, 'ttt.cell', {
-          x: cx,
-          y: cy,
-          scale: cs / 96,
-          alpha: isWinCell ? 0.6 : 1,
-        })
-        if (!cellDrawn) {
-          ctx.fillStyle = isWinCell ? `${this.theme.palette.glow}50` : `${this.theme.palette.bgAlt}10`
-          ctx.beginPath()
-          this.roundRect(ctx, cx, cy, cs, cs, Math.floor(8 * scale))
-          ctx.fill()
-        }
+        // Frosted glass cell background
+        this.drawFrostedCell(ctx, cx, cy, cs, gap, isWinCell, isSelectedCell)
 
         const cell = this.board[r]![c]
         if (cell) {
@@ -382,11 +373,67 @@ class TicTacToeGame extends GameEngine {
     this.effects.render(ctx)
   }
 
+  private drawFrostedCell(ctx: CanvasRenderingContext2D, x: number, y: number, size: number, gap: number, isWin: boolean, isSelected: boolean): void {
+    const scale = this.dpr
+    const r = Math.floor(8 * scale)
+
+    if (isWin) {
+      // Pulsing glow behind win cells
+      const pulse = (Math.sin(this.animationTimer * 0.008) + 1) * 0.5
+      const winColor = this.currentPlayer === 'X' ? 'rgba(124, 58, 237' : 'rgba(8, 145, 178'
+      const grad = ctx.createRadialGradient(x + size / 2, y + size / 2, 0, x + size / 2, y + size / 2, size * 0.7)
+      grad.addColorStop(0, `${winColor}, ${0.25 * pulse})`)
+      grad.addColorStop(0.6, `${winColor}, ${0.12 * pulse})`)
+      grad.addColorStop(1, `${winColor}, 0)`)
+      ctx.fillStyle = grad
+      this.roundRect(ctx, x, y, size, size, r)
+      ctx.fill()
+
+      // Glowing border
+      ctx.strokeStyle = `${winColor}, ${0.5 + 0.3 * pulse})`
+      ctx.lineWidth = Math.max(2, size * 0.03)
+      ctx.shadowColor = winColor
+      ctx.shadowBlur = 12 * pulse
+      this.roundRect(ctx, x, y, size, size, r)
+      ctx.stroke()
+      ctx.shadowBlur = 0
+    } else if (isSelected) {
+      // Selected cell glow
+      ctx.save()
+      ctx.shadowColor = '#7c3aed'
+      ctx.shadowBlur = 15
+      ctx.fillStyle = 'rgba(124, 58, 237, 0.08)'
+      this.roundRect(ctx, x, y, size, size, r)
+      ctx.fill()
+      ctx.shadowBlur = 0
+
+      // Frosted glass fill
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.12)'
+      this.roundRect(ctx, x, y, size, size, r)
+      ctx.fill()
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)'
+      ctx.lineWidth = Math.max(1, scale)
+      this.roundRect(ctx, x, y, size, size, r)
+      ctx.stroke()
+      ctx.restore()
+    } else {
+      // Normal frosted glass cell
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.06)'
+      this.roundRect(ctx, x, y, size, size, r)
+      ctx.fill()
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)'
+      ctx.lineWidth = Math.max(1, scale * 0.5)
+      this.roundRect(ctx, x, y, size, size, r)
+      ctx.stroke()
+    }
+  }
+
   private renderCell(ctx: CanvasRenderingContext2D, x: number, y: number, size: number, cell: Cell, isWin: boolean): void {
     const scale = this.dpr
     const cx = x + size / 2
     const cy = y + size / 2
     const s = size * 0.3
+    const strokeW = Math.max(4, size * 0.08)
     const pulse = 1 + Math.sin(this.animationTimer * 0.005) * 0.04
 
     if (cell === 'X') {
@@ -398,15 +445,20 @@ class TicTacToeGame extends GameEngine {
       })
       if (drawn) return
 
-      ctx.strokeStyle = isWin ? '#22c55e' : '#8b5cf6'
-      ctx.lineWidth = Math.floor(4 * scale)
+      const xColor = isWin ? '#22c55e' : '#7c3aed'
+      ctx.save()
+      ctx.strokeStyle = xColor
+      ctx.lineWidth = strokeW
       ctx.lineCap = 'round'
+      ctx.shadowColor = xColor
+      ctx.shadowBlur = isWin ? 14 : 8
       ctx.beginPath()
       ctx.moveTo(cx - s, cy - s)
       ctx.lineTo(cx + s, cy + s)
       ctx.moveTo(cx + s, cy - s)
       ctx.lineTo(cx - s, cy + s)
       ctx.stroke()
+      ctx.restore()
     } else if (cell === 'O') {
       const drawn = drawSprite(ctx, 'ttt.o', {
         x: cx,
@@ -416,11 +468,16 @@ class TicTacToeGame extends GameEngine {
       })
       if (drawn) return
 
-      ctx.strokeStyle = isWin ? '#ef4444' : '#06b6d4'
-      ctx.lineWidth = Math.floor(4 * scale)
+      const oColor = isWin ? '#ef4444' : '#0891b2'
+      ctx.save()
+      ctx.strokeStyle = oColor
+      ctx.lineWidth = strokeW
+      ctx.shadowColor = oColor
+      ctx.shadowBlur = isWin ? 14 : 8
       ctx.beginPath()
       ctx.arc(cx, cy, s, 0, Math.PI * 2)
       ctx.stroke()
+      ctx.restore()
     }
   }
 
@@ -586,7 +643,8 @@ class TicTacToeGame extends GameEngine {
     const cellY = this.boardOffsetY + r * (this.cellSize + Math.floor(4 * this.dpr))
     const cx = cellX + this.cellSize / 2
     const cy = cellY + this.cellSize / 2
-    this.effects.burst(cx, cy, 5, ['#2196f3'], { min: 0.5, max: 2 })
+    const moveColor = this.currentPlayer === 'X' ? '#7c3aed' : '#0891b2'
+    this.effects.burst(cx, cy, 6, [moveColor, '#ffffff'], { min: 0.5, max: 2 })
     const result = this.checkWinner()
     if (result) {
       this.endGame(result)
@@ -784,8 +842,18 @@ class TicTacToeGame extends GameEngine {
         const cellY = this.boardOffsetY + cell.r * (this.cellSize + Math.floor(4 * this.dpr))
         this.effects.burst(cellX + this.cellSize / 2, cellY + this.cellSize / 2, 15, ['#ffd700', '#ff9800'], { min: 2, max: 4 })
       }
+      // Big confetti celebration
+      this.effects.triggerConfetti(80)
+      this.effects.triggerShake(5, 200)
+      // Floating result text
+      if (result.winner === 'X') {
+        this.effects.spawnFloatingText(this.width / 2, this.boardOffsetY + this.cellSize * 1.5, 'WIN!', '#22c55e')
+      } else {
+        this.effects.spawnFloatingText(this.width / 2, this.boardOffsetY + this.cellSize * 1.5, 'LOSE', '#ef4444')
+      }
     } else {
-      this.effects.triggerShake(2, 200)
+      // Draw - subtle shake
+      this.effects.triggerShake(3, 120)
     }
 
     if (result.winner === 'X') {

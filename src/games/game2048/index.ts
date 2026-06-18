@@ -1,4 +1,4 @@
-import { GameEngine } from '@/engine/GameEngine'
+﻿import { GameEngine } from '@/engine/GameEngine'
 import {
   REWARD_EVENT_SCHEMA_VERSION,
   createRewardPayload,
@@ -139,6 +139,21 @@ const TILE_COLORS: Record<number, string> = {
   512: '#edc850',
   1024: '#edc53f',
   2048: '#edc22e',
+}
+
+const TILE_COLOR_MAP: Record<number, { bg: string; fg: string; border: string }> = {
+  0: { bg: 'rgba(60, 53, 69, 0.15)', fg: '#7c6f7b', border: 'transparent' },
+  2: { bg: '#2d2438', fg: '#f1f5f9', border: '#4a3f5a' },
+  4: { bg: '#37304d', fg: '#f1f5f9', border: '#5b4d7a' },
+  8: { bg: '#dc2626', fg: '#ffffff', border: '#f87171' },
+  16: { bg: '#ea580c', fg: '#ffffff', border: '#fb923c' },
+  32: { bg: '#ca8a04', fg: '#ffffff', border: '#facc15' },
+  64: { bg: '#16a34a', fg: '#ffffff', border: '#4ade80' },
+  128: { bg: '#0891b2', fg: '#ffffff', border: '#22d3ee' },
+  256: { bg: '#7c3aed', fg: '#ffffff', border: '#a78bfa' },
+  512: { bg: '#db2777', fg: '#ffffff', border: '#f472b6' },
+  1024: { bg: '#0d9488', fg: '#ffffff', border: '#2dd4bf' },
+  2048: { bg: '#f59e0b', fg: '#ffffff', border: '#fbbf24' },
 }
 
 class Game2048 extends GameEngine {
@@ -424,15 +439,6 @@ class Game2048 extends GameEngine {
       this.renderObjectiveIndicator(ctx, layout)
     }
 
-    if (this.gameOver) {
-      ctx.fillStyle = this.theme.ui.surface
-      ctx.fillRect(boardX, boardY, boardSize, boardSize)
-      ctx.fillStyle = this.theme.palette.ink
-      ctx.textAlign = 'center'
-      ctx.textBaseline = 'middle'
-      ctx.font = `bold ${Math.floor(24 * this.dpr)}px ${this.theme.font.family}`
-      ctx.fillText('遊戲結束', boardX + boardSize / 2, boardY + boardSize / 2)
-    }
 
     this.drawItemButton(
       ctx,
@@ -656,19 +662,26 @@ class Game2048 extends GameEngine {
 
     if (result.merges > 0) {
       const layout = this.computeLayout()
+
+      // First merge triggers a screen shake
+      if (result.merges === 1) {
+        this.triggerScreenShake(3, 120)
+      }
+
       for (const anim of result.animations) {
         if (anim.from.col !== anim.to.col || anim.from.row !== anim.to.row) {
           const tx = layout.boardX + anim.to.col * (layout.tileSize + layout.gap) + layout.tileSize / 2
           const ty = layout.boardY + anim.to.row * (layout.tileSize + layout.gap) + layout.tileSize / 2
-          this.spawnParticles(tx, ty, 12, '#fbbf24', 1.2)
+          const tileColor = TILE_COLOR_MAP[anim.value]?.bg ?? '#fbbf24'
+          this.effects.burst(tx, ty, 8, [tileColor, '#ffffff'])
           this.spawnMergeEffect(anim.to.row, anim.to.col, anim.value)
         }
       }
-      if (result.merges >= 2) {
-        this.triggerScreenShake(4, 150)
-      }
+
       if (this.highestTile >= 2048 && this.highestTile > oldHighestTile) {
-        this.effects.floatingText.spawn({ x: this.width / 2, y: this.height / 2, text: '2048!', color: '#fbbf24' })
+        this.effects.confetti.burst(80, this.width / 2)
+        this.triggerScreenShake(5, 200)
+        this.effects.floatingText.spawn({ x: this.width / 2, y: this.height / 2, text: '🎉 2048!', color: '#fbbf24' })
       }
     }
 
@@ -1158,13 +1171,41 @@ class Game2048 extends GameEngine {
     const variant = value in TILE_COLORS ? String(value) : 'max'
     this.drawTileRect(ctx, x, y, size, radius, color, variant)
 
+    const colors = TILE_COLOR_MAP[value]
+    const borderColor = colors?.border ?? 'transparent'
+    if (borderColor !== 'transparent') {
+      ctx.save()
+      ctx.lineWidth = Math.max(2, this.dpr)
+      ctx.strokeStyle = borderColor
+      ctx.beginPath()
+      const pad = Math.max(2, size * 0.02)
+      const r = Math.max(0, Math.min(radius - pad, (size - pad * 2) / 2))
+      ctx.moveTo(x + pad + r, y + pad)
+      ctx.lineTo(x + size - pad - r, y + pad)
+      ctx.quadraticCurveTo(x + size - pad, y + pad, x + size - pad, y + pad + r)
+      ctx.lineTo(x + size - pad, y + size - pad - r)
+      ctx.quadraticCurveTo(x + size - pad, y + size - pad, x + size - pad - r, y + size - pad)
+      ctx.lineTo(x + pad + r, y + size - pad)
+      ctx.quadraticCurveTo(x + pad, y + size - pad, x + pad, y + size - pad - r)
+      ctx.lineTo(x + pad, y + pad + r)
+      ctx.quadraticCurveTo(x + pad, y + pad, x + pad + r, y + pad)
+      ctx.closePath()
+      ctx.stroke()
+      ctx.restore()
+    }
+
     const text = String(value)
     const fontSize = this.getTileFontSize(value, size)
-    ctx.fillStyle = value <= 4 ? this.theme.palette.ink : this.theme.palette.highlight
+    ctx.save()
+    ctx.shadowColor = 'rgba(0,0,0,0.5)'
+    ctx.shadowBlur = 4
+    ctx.shadowOffsetY = 2
+    ctx.fillStyle = colors?.fg ?? (value <= 4 ? this.theme.palette.ink : this.theme.palette.highlight)
     ctx.textAlign = 'center'
     ctx.textBaseline = 'middle'
     ctx.font = `bold ${fontSize}px ${this.theme.font.family}`
     ctx.fillText(text, x + size / 2, y + size / 2)
+    ctx.restore()
   }
 
   private getTileFontSize(value: number, size: number): number {
