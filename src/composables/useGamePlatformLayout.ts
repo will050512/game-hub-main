@@ -38,10 +38,10 @@ function getViewportSize() {
 function detectSafeArea(): SafeAreaInsets {
   const computedStyle = getComputedStyle(document.documentElement)
   return {
-    top: parseFloat(computedStyle.getPropertyValue('--safe-top')) ?? 0,
-    right: parseFloat(computedStyle.getPropertyValue('--safe-right')) ?? 0,
-    bottom: parseFloat(computedStyle.getPropertyValue('--safe-bottom')) ?? 0,
-    left: parseFloat(computedStyle.getPropertyValue('--safe-left')) ?? 0,
+    top: parseFloat(computedStyle.getPropertyValue('--safe-top')) || 0,
+    right: parseFloat(computedStyle.getPropertyValue('--safe-right')) || 0,
+    bottom: parseFloat(computedStyle.getPropertyValue('--safe-bottom')) || 0,
+    left: parseFloat(computedStyle.getPropertyValue('--safe-left')) || 0,
   }
 }
 
