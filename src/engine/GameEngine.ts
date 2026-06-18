@@ -20,7 +20,6 @@ export abstract class GameEngine {
   private accumulator = 0
   private animFrameId = 0
   private resizeObserver: ResizeObserver | null = null
-  private resizeTimer = 0
 
   protected width = 0
   protected height = 0
@@ -80,12 +79,16 @@ export abstract class GameEngine {
     this.dpr = window.devicePixelRatio || 1
     this.syncCanvasToParent()
 
+    let pendingResize = false
     this.resizeObserver = new ResizeObserver(() => {
-      clearTimeout(this.resizeTimer)
-      this.resizeTimer = window.setTimeout(() => {
-        this.syncCanvasToParent()
-        this.onResize(this.width, this.height)
-      }, 100)
+      if (!pendingResize) {
+        pendingResize = true
+        requestAnimationFrame(() => {
+          pendingResize = false
+          this.syncCanvasToParent()
+          this.onResize(this.width, this.height)
+        })
+      }
     })
     if (this.canvas.parentElement) {
       this.resizeObserver.observe(this.canvas.parentElement)
@@ -118,7 +121,6 @@ export abstract class GameEngine {
     cancelAnimationFrame(this.animFrameId)
     this.resizeObserver?.disconnect()
     this.resizeObserver = null
-    clearTimeout(this.resizeTimer)
     this.input?.destroy()
   }
 
