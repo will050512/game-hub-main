@@ -6,7 +6,7 @@ import { iconForGame } from '@/data/iconManifest'
 import { useCurrencyStore } from '@/stores/currencyStore'
 import { usePlayerStore } from '@/stores/playerStore'
 import { useSoundManager } from '@/composables/useSoundManager'
-import { useGamePlatformLayout, type SafeAreaInsets } from '@/composables/useGamePlatformLayout'
+import { useResponsiveLayout, type SafeAreaInsets } from '@/composables/useGamePlatformLayout'
 import AudioMixerPanel from '@/components/settings/AudioMixerPanel.vue'
 import DoodleCard from '@/components/DoodleCard.vue'
 import HudBar from '@/components/HudBar.vue'
@@ -66,7 +66,7 @@ let lastAudioLevel = stats.value.level
 let lastScoreSfxAt = 0
 
 const soundManager = useSoundManager()
-const { layout: platformLayout, snapshot: platformSnapshot } = useGamePlatformLayout()
+const { layout: platformLayout, snapshot: platformSnapshot } = useResponsiveLayout()
 const joystickActive = ref(false)
 const joystickOrigin = ref({ x: 0, y: 0 })
 const isPixelArt = ref(true)
